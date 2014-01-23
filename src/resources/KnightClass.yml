@@ -1,0 +1,37 @@
+# Either a fully-qualified or display name of a class to inherit fields from
+#
+# This does NOT have to be an enabled or restricted class; in other words, Solus does
+# not have to be aware of a constructed instance of the base class. The name is
+# used solely for locating the class file.
+#
+# At the moment, class extensions can only be 1 deep, meaning a Knight will ONLY
+# inherit fields from Base, even if Base inherits fields from another class.
+extends: Base
+metadata:
+    display-name: Knight
+    description: |
+        Only after years of rigorous training is an initiate
+        considered a true Knight. Characterized by their strong
+        dedication to their beliefs and their unwillingness to
+        accept defeat, they are a force to be reckoned with. Woe
+        betide any foe that challenges a Knight without expecting
+        the fight of a lifetime.
+vitals:
+    base-health: 20
+    base-mana: 100
+    core-stats:
+        str: 10
+        con: 10
+        dex: 5
+        int: 2
+        wis: 3
+        chr: 4
+    aux-stas:
+        heavy-weapon-mastery: 5
+leveling:
+    starting-level: 1
+    level-cap: 50
+    global-exp-modifier: 1.0
+    core-stat-points-per-level: 1
+    aux-stat-points-per-level: 5
+    skill-points-per-level: 1

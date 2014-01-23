@@ -1,0 +1,13 @@
+name: SolusRpg
+description: All-purpose RPG and Player Management Plugin
+version: 4.0
+main: me.dbstudios.solusrpg.SolusRpg
+website: http://www.dbstudios.me/plugins/solusrpg
+author: Daybreak Studios
+authors:
+    - LartTyler
+depend:
+    - Spout
+    - DaybreakCommonLib
+softdepend:
+    - Vault

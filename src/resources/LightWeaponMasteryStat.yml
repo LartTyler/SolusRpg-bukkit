@@ -1,0 +1,41 @@
+metadata:
+    path-name: light-weapon-mastery
+    display-name: Light Weapon Mastery
+scaling:
+    # Stat scaling is denoted in the ratio format "x:y[:z]", where z is an optional modifier. It
+    # is read for every x stat, increase aux stat by y. If z is defined and is greater than zero,
+    # no more than z bonus points will be added to the aux stat from this ratio.
+    #
+    # Solus does NOT compute fractional bonuses.
+    core-stats:
+        str: 2:1
+        dex: 1:1
+ranks:
+    rank-cap: 100
+    1:
+        requires:
+            core-stats:
+                str: 1
+        permit:
+            use:
+                - Wood Sword
+    10:
+        requires:
+            core-stats:
+                str: 10
+            # Auxiliary stat requirements can be:
+            #   - A fully-qualified stat name, such as "LightWeaponMasteryStat"
+            #   - An aux stat path name, such as "light-weapon-mastery"
+            #   - An display name, such as "Light Weapon Mastery"
+            #
+            # When attempting to match stat names, searches will be done in the order listed above.
+            # If not stat is matched, Solus will emit a warning into the console and continue
+            # execution, ignoring the unknown stat.
+            aux-stats:
+                LightWeaponMasteryStat: 10
+        permit:
+            use:
+                - Stone Sword
+        # Damage modifiers are ONLY applied when dealing damage with an item
+        # granted by the aux stat.
+        damage-modifier: +1

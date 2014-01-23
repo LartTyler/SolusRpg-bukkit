@@ -1,0 +1,19 @@
+vitals:
+    base-health: 20
+    base-mana: 0
+    core-stats:
+        str: 1
+        con: 1
+        dex: 1
+        int: 1
+        wis: 1
+        chr: 1
+    aux-stas:
+        default: 1
+leveling:
+    starting-level: 1
+    level-cap: 50
+    global-exp-modifier: 1.0
+    core-points-per-level: 1
+    aux-points-per-level: 5
+    skill-points-per-level: 1

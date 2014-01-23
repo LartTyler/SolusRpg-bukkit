@@ -1,0 +1,45 @@
+configuration:
+    logging:
+        verbose: false
+classes:
+    # Valid class names are either:
+    #   - The fully-qualified "KnightClass" variant
+    #   - The display name of the class (i.e. "Light Mage")
+    #
+    # Configurations for each will be found using the following:
+    #   Spaces will be stripped ("Light Mage" -> "LightMage")
+    #   If the name does not end in "Class" (case sensitive)...
+    #       Append "Class" to the name ("LightMage" -> "LightMageClass")
+    #   The classes directory (%rootdir%/config/classes/) is examined for ClassName.yml ("LightMageClass.yml")
+    #   If a configuration is not found, an error will be emitted and Solus will proceed to the next entry
+    #
+    # Any class under the enabled section will be loaded as publicly available. This means that
+    # if a player is ever given the option to select their class (for example, when Solus creates their
+    # player data) they will be able to select the class as their own.
+    enabled:
+        - Knight
+        - Paladin
+        - Thief
+        - Necromancer
+        - Light Mage
+    # Restricted classes are loaded using the same process as enabled classes, but will NOT be added
+    # to the public class list. Restricted classes will be loaded and runtime but won't be visible
+    # in any class listings displayed to a non-administrator player.
+    restricted:
+        - Ancient Entity
+aux-stats:
+    # Valid auxiliary stat names are either:
+    #   - The fully-qualified "LightWeaponMasteryStat" variant
+    #   - The display name of the stat (i.e. "Light Weapon Mastery")
+    #
+    # Configurations for each will be found using the following:
+    #   Spaces and special characters (as matched by /[_,.-]/) will be stripped ("Light Weapon Mastery" -> "LightWeaponMastery")
+    #   If the name does not end in "Stat" (case sensitive)...
+    #       Append "Stat" to the name ("LightWeaponMastery" -> "LightWeaponMasteryStat")
+    #   The stats directory (%rootdir%/config/stats/) is examined for StatName.yml ("LightWeaponMasteryStat.yml")
+    #   If a configuration is not found, an error will be emitted and Solus will proceed to the next entry
+    enabled:
+        - Light Weapon Mastery
+        - Heavy Weapon Mastery
+        - Light Armor Mastery
+        - Heavy Armor Mastery
