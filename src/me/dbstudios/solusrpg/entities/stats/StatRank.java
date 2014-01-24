@@ -9,15 +9,23 @@ import java.util.logging.Level;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
+import me.dbstudios.solusrpg.entities.player.PlayerModifier;
+import me.dbstudios.solusrpg.entities.player.PlayerPermitModifier;
+import me.dbstudios.solusrpg.events.player.RpgActionType;
+import me.dbstudios.solusrpg.events.player.RpgPlayerBeforeActionEvent;
 import me.dbstudios.solusrpg.exceptions.CreationException;
 import me.dbstudios.solusrpg.util.Util;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 
-public class StatRank {
+public class StatRank implements Listener {
 	private final List<StatRequirement> requirements = new ArrayList<>();
+	private final List<PlayerModifier> modifiers = new ArrayList<>();
 	private final AuxStat stat;
 	private final int rank;
 
@@ -52,6 +60,31 @@ public class StatRank {
 
 		if (sect.isInt("requires.player-level"))
 			requirements.add(new PlayerLevelStatRequirement(sect.getInt("requires.player-level")));
+
+		for (RpgActionType t : RpgActionType.values()) {
+			if (!t.isPermitType())
+				continue;
+
+			List<String> permits = sect.getStringList("permit." + t.name().toLowerCase());
+
+			if (permits.empty())
+				continue;
+
+			modifiers.add(new PlayerPermitModifier(t, permits));
+		}
+	}
+
+	public void applyRank(RpgPlayer target) {
+		if (!this.hasRequirements(target))
+			SolusRpg.log(Level.WARNING, String.format("Rank %d of %s applied to %s without meeting rank requirements; was this intentional?", this.rank, this.stat.getName(), target.getName()));
+
+		for (PlayerModifier mod : this.modifiers)
+			mod.modify(target);
+	}
+
+	public void removeRank(RpgPlayer target) {
+		for (PlayerModifier mod : this.modifiers)
+			mod.unmodify(target);
 	}
 
 	public List<StatRequirement> getRequirements() {

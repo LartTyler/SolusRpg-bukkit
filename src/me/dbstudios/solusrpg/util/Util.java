@@ -94,4 +94,22 @@ public class Util {
 	public static String isPathName(String name) {
 		return name.matches("^[^ _.,'-]+(-[^ _.,'-]+)*$");
 	}
+
+	public static String toMaterialName(String name) {
+		if (Util.isMaterialName(name))
+			return name;
+
+		StringBuilder mn = new StringBuilder();
+
+		for (String s : name.split("[ _]"))
+			mn
+				.append("_")
+				.append(s.toUpperCase());
+
+		return mn.toString().substring(1);
+	}
+
+	public static String isMaterialName(String name) {
+		return name.matches("^[A-Z]+(_[A-Z]+)*$");
+	}
 }

@@ -6,6 +6,8 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public abstract class RpgPlayerEvent extends Event {
+	private static HandlerList handlers = new HandlerList();
+
 	private final RpgPlayer player;
 
 	public RpgPlayerEvent(RpgPlayer player) {
@@ -14,5 +16,13 @@ public abstract class RpgPlayerEvent extends Event {
 
 	public RpgPlayer getPlayer() {
 		return this.player;
+	}
+
+	public HandlerList getHandlers() {
+		return handlers;
+	}
+
+	public static HandlerList getHandlerList() {
+		return handlers;
 	}
 }

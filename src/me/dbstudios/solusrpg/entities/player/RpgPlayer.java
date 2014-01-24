@@ -1,8 +1,12 @@
 package me.dbstudios.solusrpg.entities.player;
 
+import java.util.Collection;
+
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.entities.stats.StatType;
+import me.dbstudios.solusrpg.events.player.RpgActionType;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 public interface RpgPlayer {
@@ -21,4 +25,9 @@ public interface RpgPlayer {
 	public RpgPlayer setStatLevel(AuxStat stat, int level);
 	public RpgPlayer setStatLevel(String fqn, int level);
 	public RpgPlayer setStatLevel(StatType type, int level);
+	public boolean isAllowed(RpgActionType action, Material material);
+	public RpgPlayer addAllowed(RpgActionType action, Material material);
+	public RpgPlayer addAllowed(RpgActionType action, Collection<Material> material);
+	public RpgPlayer removeAllowed(RpgActionType action, Material material);
+	public RpgPlayer removeAllowed(RpgActionType action, Collection<Material> material);
 }

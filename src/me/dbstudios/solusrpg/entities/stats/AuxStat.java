@@ -177,6 +177,20 @@ public class AuxStat extends Initializable implements Listener {
 		return this.getRankCap() > 0;
 	}
 
+	public void applyRank(int rank, RpgPlayer target) {
+		if (!ranks.containsKey(rank))
+			return;
+
+		ranks.get(rank).applyRank(target);
+	}
+
+	public void removeRank(int rank, RpgPlayer target) {
+		if (!ranks.containsKey(rank))
+			return;
+
+		ranks.get(rank).removeRank(target);
+	}
+
 	public StatScaler getScalerFor(AuxStat auxStat) {
 		for (StatScaler scaler : this.scalers)
 			if (!scaler.isCoreStatScaler() && auxStat.getName().equals(scaler.getIdentifier()))
