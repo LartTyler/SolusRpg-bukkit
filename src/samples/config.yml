@@ -43,3 +43,5 @@ aux-stats:
         - Heavy Weapon Mastery
         - Light Armor Mastery
         - Heavy Armor Mastery
+leveling:
+    exp-to-level: 50 + ((level - 1) * 50)
