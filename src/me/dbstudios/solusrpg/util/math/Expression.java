@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public class Expression {
 	private final static Map<String, Operator> operators = new HashMap<>();
+	private final static Map<String, Function> functions = new HashMap<>();
 
 	private final Map<String, Double> parameters = new HashMap<>();
 	private final String expr;
@@ -42,6 +43,72 @@ public class Expression {
 				return Math.pow(a, b);
 			}
 		});
+
+		addFunction(new Function("abs") {
+			public double eval(double arg) {
+				return Math.abs(arg);
+			}
+		});
+
+		addFunction(new Function("sin") {
+			public double eval(double arg) {
+				return Math.sin(arg);
+			}
+		});
+
+		addFunction(new Function("cos") {
+			public double eval(double arg) {
+				return Math.cos(arg);
+			}
+		});
+
+		addFunction(new Function("tan") {
+			public double eval(double arg) {
+				return Math.tan(arg);
+			}
+		});
+
+		addFunction(new Function("random", 1.0) {
+			public double eval(double arg) {
+				return Math.random() * arg;
+			}
+		});
+
+		addFunction(new Function("floor") {
+			public double eval(double arg) {
+				return Math.floor(arg);
+			}
+		});
+
+		addFunction(new Function("ceil") {
+			public double eval(double arg) {
+				return Math.ceil(arg);
+			}
+		});
+
+		addFunction(new Function("round") {
+			public double eval(double arg) {
+				return (double)Math.round(arg);
+			}
+		});
+
+		addFunction(new Function("ln") {
+			public double eval(double arg) {
+				return Math.log(arg);
+			}
+		});
+
+		addFunction(new Function("log") {
+			public double eval(double arg) {
+				return Math.log10(arg);
+			}
+		});
+
+		addFunction(new Function("sqrt") {
+			public double eval(double arg) {
+				return Math.sqrt(arg);
+			}
+		});
 	}
 
 	public Expression(String expr) {
@@ -49,7 +116,7 @@ public class Expression {
 	}
 
 	public double eval(String expr) {
-		Tokenizer tokenizer = new Tokenizer(expr);
+		Tokenizer tokenizer = new Tokenizer(expr.toLowerCase());
 		Double res = null;
 
 		while (tokenizer.hasNext()) {
@@ -83,6 +150,39 @@ public class Expression {
 				} catch (NumberFormatException e) {
 					throw new RuntimeException("Invalid token " + token);
 				}
+			} else if (Expression.isFunction(token) && tokenizer.hasNext()) {
+				String nextToken = tokenizer.next();
+				Double nextValue = null;
+
+				if (!nextToken.equals("("))
+					throw new RuntimeException("Invalid token " + nextToken);
+
+				StringBuilder nextExpr = new StringBuilder();
+				int parenDepth = 0;
+
+				while (tokenizer.hasNext()) {
+					String t = tokenizer.next();
+
+					if (t.equals(")") && parenDepth == 0)
+						break;
+
+					if (t.equals(")"))
+						parenDepth--;
+					else if (t.equals("("))
+						parenDepth++;
+
+					nextExpr.append(t);
+				}
+
+				if (nextExpr.length() == 0)
+					nextValue = Expression.getFunction(token).getArgumentDefault();
+				else
+					nextValue = this.eval(nextExpr.toString());
+
+				if (res == null)
+					res = Expression.getFunction(token).eval(nextValue);
+				else
+					res += Expression.getFunction(token).eval(nextValue);
 			} else if (this.hasParameter(token) && res == null) {
 				res = this.getParameter(token);
 			} else if (Expression.isOperator(token) && res != null && tokenizer.hasNext()) {
@@ -106,6 +206,31 @@ public class Expression {
 
 						nextExpr.append(t);
 					}
+
+					nextValue = this.eval(nextExpr.toString());
+				} else if (Expression.isFunction(nextToken)) {
+					StringBuilder nextExpr = new StringBuilder(nextToken);
+					int parenDepth = 0;
+
+					while (tokenizer.hasNext()) {
+						String t = tokenizer.next();
+
+						if (t.equals(")") && parenDepth == 0)
+							break;
+
+						if (t.equals(")"))
+							parenDepth--;
+						else if (t.equals("("))
+							parenDepth++;
+
+						nextExpr.append(t);
+					}
+
+					if (nextExpr.length() == 0)
+						nextExpr
+							.append("(")
+							.append(Expression.getFunction(nextToken).getArgumentDefault())
+							.append(")");
 
 					nextValue = this.eval(nextExpr.toString());
 				} else if (this.hasParameter(nextToken)) {
@@ -189,13 +314,6 @@ public class Expression {
 
 		return this;
 	}
-	public static boolean isOperator(String symbol) {
-		return operators.containsKey(symbol);
-	}
-
-	public static Operator getOperator(String symbol) {
-		return operators.get(symbol);
-	}
 
 	public static boolean isNumber(String str) {
 		if (!Character.isDigit(str.charAt(0)) && str.length() == 1)
@@ -210,5 +328,25 @@ public class Expression {
 
 	public static void addOperator(Operator operator) {
 		operators.put(operator.getSymbol(), operator);
+	}
+
+	public static boolean isOperator(String symbol) {
+		return operators.containsKey(symbol);
+	}
+
+	public static Operator getOperator(String symbol) {
+		return operators.get(symbol);
+	}
+
+	public static void addFunction(Function function) {
+		functions.put(function.getName(), function);
+	}
+
+	public static boolean isFunction(String name) {
+		return functions.containsKey(name);
+	}
+
+	public static Function getFunction(String name) {
+		return functions.get(name);
 	}
 }
