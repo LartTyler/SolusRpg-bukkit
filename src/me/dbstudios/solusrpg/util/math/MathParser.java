@@ -1,5 +1,8 @@
 package me.dbstudios.solusrpg.util.math;
 
+/**
+ * Static test class for Solus's Expression class
+ */
 public final class MathParser {
 	public static void main(String[] args) {
 		if (args.length < 1)
