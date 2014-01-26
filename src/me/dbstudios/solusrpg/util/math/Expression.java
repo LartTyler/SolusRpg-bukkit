@@ -129,8 +129,6 @@ public class Expression {
 						while (tokenizer.hasNext())
 							nextEval.append(tokenizer.next());
 
-						System.out.println(nextEval.toString());
-
 						return Expression.getOperator(token).eval(res, this.eval(nextEval.toString()));
 					}
 				}
