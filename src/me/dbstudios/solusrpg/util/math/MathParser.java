@@ -6,9 +6,9 @@ package me.dbstudios.solusrpg.util.math;
 public final class MathParser {
 	public static void main(String[] args) {
 		if (args.length < 1)
-			args = new String[] {"10 + 5"};
+			args = new String[] {"50 * ((level - 1) * 150)"};
 
-		Expression expr = new Expression("50 * ((level - 1) * 150)");
+		Expression expr = new Expression(args[0]);
 
 		expr.setParameter("level", 7);
 
