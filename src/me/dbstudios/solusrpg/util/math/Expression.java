@@ -3,6 +3,9 @@ package me.dbstudios.solusrpg.util.math;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A math expression evaluator class, inspired by EvalEx by uklimaschewski (https://github.com/uklimaschewski/EvalEx).
+ */
 public class Expression {
 	private final static Map<String, Operator> operators = new HashMap<>();
 
