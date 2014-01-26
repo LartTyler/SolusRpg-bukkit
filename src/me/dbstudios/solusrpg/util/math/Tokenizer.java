@@ -19,6 +19,18 @@ public class Tokenizer implements Iterator<String> {
 		return pos < input.length();
 	}
 
+	public String peek() {
+		int pos = this.pos;
+		String peek = null;
+
+		if (this.hasNext())
+			peek = this.next();
+
+		this.pos = pos;
+
+		return peek;
+	}
+
 	public String next() {
 		if (!this.hasNext()) {
 			this.lastToken = null;
