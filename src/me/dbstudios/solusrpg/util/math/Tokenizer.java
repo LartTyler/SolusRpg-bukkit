@@ -1,4 +1,4 @@
-package me.dbstudios.util.math;
+package me.dbstudios.solusrpg.util.math;
 
 import java.util.Iterator;
 
@@ -38,12 +38,16 @@ public class Tokenizer implements Iterator<String> {
 
 				ch = this.hasNext() ? input.charAt(pos) : 0;
 			}
-		else if (ch == NEGATIVE_SIGN && Character.isDigit(this.peekNextChar())) {
+		else if (ch == NEGATIVE_SIGN && Character.isDigit(this.peekNextChar()) && (lastToken.equals("(") || lastToken == null)) {
 			token.append(NEGATIVE_SIGN);
 
 			pos++;
 
 			token.append(this.next());
+		} else if (ch == NEGATIVE_SIGN) {
+			token.append(NEGATIVE_SIGN);
+
+			pos++;
 		} else if (Character.isLetter(ch))
 			while ((Character.isLetter(ch) || Character.isDigit(ch) || ch == '_') && this.hasNext()) {
 				token.append(input.charAt(pos++));
@@ -61,7 +65,7 @@ public class Tokenizer implements Iterator<String> {
 				ch = this.hasNext() ? input.charAt(pos) : 0;
 			}
 
-		this.lastToken = token.toString();
+		this.lastToken = token.toString().trim();
 
 		return this.lastToken;
 	}

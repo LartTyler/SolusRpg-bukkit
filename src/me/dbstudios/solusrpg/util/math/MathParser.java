@@ -1,21 +1,14 @@
-package me.dbstudios.util.math;
+package me.dbstudios.solusrpg.util.math;
 
 public final class MathParser {
 	public static void main(String[] args) {
 		if (args.length < 1)
 			args = new String[] {"10 + 5"};
 
-		Tokenizer tokenizer = new Tokenizer(args[0]);
+		Expression expr = new Expression("50 * ((level - 1) * 150)");
 
-		System.out.println("\n\n--------------\n");
+		expr.setParameter("level", 7);
 
-		// for (int i = 0; i < 5; i++)
-		// 	if (tokenizer.hasNext())
-		// 		System.out.println(tokenizer.next());
-
-		while (tokenizer.hasNext())
-			System.out.println(tokenizer.next());
-
-		System.out.println("\n\n--> Done.");
+		System.out.println("\nResult: " + expr.eval());
 	}
 }

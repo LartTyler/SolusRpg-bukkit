@@ -1,4 +1,4 @@
-package me.dbstudios.util.math;
+package me.dbstudios.solusrpg.util.math;
 
 public abstract class Operator {
 	private final String symbol;
