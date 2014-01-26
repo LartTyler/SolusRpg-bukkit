@@ -85,7 +85,7 @@ public class Expression {
 				}
 			} else if (this.hasParameter(token) && res == null) {
 				res = this.getParameter(token);
-			} else if (Expression.hasOperator(token) && res != null && tokenizer.hasNext()) {
+			} else if (Expression.isOperator(token) && res != null && tokenizer.hasNext()) {
 				String nextToken = tokenizer.next();
 				Double nextValue = null;
 
@@ -119,6 +119,21 @@ public class Expression {
 
 				if (nextValue == null)
 					throw new RuntimeException("Invalid token " + nextToken);
+
+				if (tokenizer.hasNext()) {
+					String peekedToken = tokenizer.peek();
+
+					if (Expression.isOperator(peekedToken) && Expression.getOperator(peekedToken).getLevel() > Expression.getOperator(token).getLevel()) {
+						StringBuilder nextEval = new StringBuilder(nextValue.toString());
+
+						while (tokenizer.hasNext())
+							nextEval.append(tokenizer.next());
+
+						System.out.println(nextEval.toString());
+
+						return Expression.getOperator(token).eval(res, this.eval(nextEval.toString()));
+					}
+				}
 
 				res = Expression.getOperator(token).eval(res, nextValue);
 			} else {
@@ -176,7 +191,7 @@ public class Expression {
 
 		return this;
 	}
-	public static boolean hasOperator(String symbol) {
+	public static boolean isOperator(String symbol) {
 		return operators.containsKey(symbol);
 	}
 
