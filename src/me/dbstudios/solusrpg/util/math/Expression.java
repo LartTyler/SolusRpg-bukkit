@@ -7,8 +7,8 @@ import java.util.Map;
  * A math expression evaluator class, inspired by EvalEx by uklimaschewski (https://github.com/uklimaschewski/EvalEx).
  */
 public class Expression {
-	private final static Map<String, Operator> operators = new HashMap<>();
-	private final static Map<String, Function> functions = new HashMap<>();
+	private static final Map<String, Operator> operators = new HashMap<>();
+	private static final Map<String, Function> functions = new HashMap<>();
 
 	private final Map<String, Double> parameters = new HashMap<>();
 	private final String expr;
@@ -249,12 +249,12 @@ public class Expression {
 					String peekedToken = tokenizer.peek();
 
 					if (Expression.isOperator(peekedToken) && Expression.getOperator(peekedToken).getLevel() > Expression.getOperator(token).getLevel()) {
-						StringBuilder nextEval = new StringBuilder(nextValue.toString());
+						StringBuilder nextExpr = new StringBuilder(nextValue.toString());
 
 						while (tokenizer.hasNext())
-							nextEval.append(tokenizer.next());
+							nextExpr.append(tokenizer.next());
 
-						return Expression.getOperator(token).eval(res, this.eval(nextEval.toString()));
+						return Expression.getOperator(token).eval(res, this.eval(nextExpr.toString()));
 					}
 				}
 
