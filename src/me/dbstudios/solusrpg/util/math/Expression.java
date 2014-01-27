@@ -1,4 +1,4 @@
-package me.dbstudios.solusrpg.util.math;
+// package me.dbstudios.solusrpg.util.math;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -429,7 +429,7 @@ public class Expression {
 					while (Expression.isOperator(peekedToken) && Expression.getOperator(peekedToken).getLevel() > Expression.getOperator(token).getLevel() && tokenizer.hasNext()) {
 						StringBuilder nextExpr = new StringBuilder(nextValue.toString() + tokenizer.next());
 
-						while (!Expression.isOperator(tokenizer.peek()))
+						while (!Expression.isOperator(tokenizer.peek()) && tokenizer.hasNext())
 							nextExpr.append(tokenizer.next());
 
 						nextValue = this.eval(nextExpr.toString());
