@@ -44,4 +44,4 @@ aux-stats:
         - Light Armor Mastery
         - Heavy Armor Mastery
 leveling:
-    exp-to-level: 50 + ((level - 1) * 50)
+    global-experience-algorithm: 50 + ((level - 1) * 50)
