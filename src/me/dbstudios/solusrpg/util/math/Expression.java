@@ -171,10 +171,10 @@ public class Expression {
 					Expression expr = new Expression(arg);
 
 					if (expr.eval() == 0.0)
-						return "0.0";
+						return "0";
 				}
 
-				return "1.0";
+				return "1";
 			}
 		});
 
@@ -184,10 +184,10 @@ public class Expression {
 					Expression expr = new Expression(arg);
 
 					if (expr.eval() != 0.0)
-						return "1.0";
+						return "1";
 				}
 
-				return "0.0";
+				return "0";
 			}
 		});
 
@@ -199,9 +199,23 @@ public class Expression {
 				Expression expr = new Expression(args[0]);
 
 				if (expr.eval() != 0.0)
-					return "0.0";
+					return "0";
 				else
-					return "1.0";
+					return "1";
+			}
+		});
+
+		addFlowControl(new FlowControl("between") {
+			public String eval(String... args) {
+				if (args.length != 3)
+					throw new RuntimeException("Invalid number of arguments sent to between(num, min, max)");
+
+				Expression expr = new Expression(String.format("and(%s >= %s, %s <= %s)", args[0], args[1], args[0], args[2]));
+
+				if (expr.eval() != 0.0)
+					return "1";
+				else
+					return "0";
 			}
 		});
 	}
