@@ -311,6 +311,39 @@ public class Expression {
 					}
 
 					nextValue = this.eval(nextExpr.toString());
+				} else if (Expression.isFlowControl(nextToken)) {
+					String next = tokenizer.next();
+
+					if (!next.equals("("))
+						throw new RuntimeException("Invalid token " + nextToken);
+
+					List<String> args = new ArrayList<>();
+					StringBuilder nextExpr = new StringBuilder();
+					int parenDepth = 0;
+
+					while (tokenizer.hasNext()) {
+						String t = tokenizer.next();
+
+						if ((t.equals(")") || t.equals(",")) && parenDepth == 0) {
+							args.add(nextExpr.toString());
+
+							nextExpr = new StringBuilder();
+
+							if (t.equals(")"))
+								break;
+							else
+								continue;
+						}
+
+						if (t.equals(")"))
+							parenDepth--;
+						else if (t.equals("("))
+							parenDepth++;
+
+						nextExpr.append(t);
+					}
+
+					nextValue = this.eval(Expression.getFlowControl(nextToken).eval(args.toArray(new String[args.size()])));
 				} else if (Expression.isFunction(nextToken)) {
 					StringBuilder nextExpr = new StringBuilder(nextToken);
 					int parenDepth = 0;
