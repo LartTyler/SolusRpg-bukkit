@@ -426,13 +426,14 @@ public class Expression {
 				if (tokenizer.hasNext()) {
 					String peekedToken = tokenizer.peek();
 
-					if (Expression.isOperator(peekedToken) && Expression.getOperator(peekedToken).getLevel() > Expression.getOperator(token).getLevel()) {
-						StringBuilder nextExpr = new StringBuilder(nextValue.toString());
+					while (Expression.isOperator(peekedToken) && Expression.getOperator(peekedToken).getLevel() > Expression.getOperator(token).getLevel() && tokenizer.hasNext()) {
+						StringBuilder nextExpr = new StringBuilder(nextValue.toString() + tokenizer.next());
 
-						while (tokenizer.hasNext())
+						while (!Expression.isOperator(tokenizer.peek()))
 							nextExpr.append(tokenizer.next());
 
-						return Expression.getOperator(token).eval(res, this.eval(nextExpr.toString()));
+						nextValue = this.eval(nextExpr.toString());
+						peekedToken = tokenizer.peek();
 					}
 				}
 
