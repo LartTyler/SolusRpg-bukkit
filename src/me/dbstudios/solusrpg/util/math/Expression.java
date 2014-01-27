@@ -85,18 +85,6 @@ public class Expression {
 			}
 		});
 
-		addOperator(new Operator("&&", 75) {
-			public double eval(double a, double b) {
-				return a != 0.0 && b != 0.0 ? 1.0 : 0.0;
-			}
-		});
-
-		addOperator(new Operator("||", 70) {
-			public double eval(double a, double b) {
-				return a != 0.0 || b != 0.0 ? 1.0 : 0.0;
-			}
-		});
-
 		addFunction(new Function("abs") {
 			public double eval(double arg) {
 				return Math.abs(arg);
@@ -174,6 +162,46 @@ public class Expression {
 					return args[1];
 				else
 					return args[2];
+			}
+		});
+
+		addFlowControl(new FlowControl("and") {
+			public String eval(String... args) {
+				for (String arg : args) {
+					Expression expr = new Expression(arg);
+
+					if (expr.eval() == 0.0)
+						return "0.0";
+				}
+
+				return "1.0";
+			}
+		});
+
+		addFlowControl(new FlowControl("or") {
+			public String eval(String... args) {
+				for (String arg : args) {
+					Expression expr = new Expression(arg);
+
+					if (expr.eval() != 0.0)
+						return "1.0";
+				}
+
+				return "0.0";
+			}
+		});
+
+		addFlowControl(new FlowControl("not") {
+			public String eval(String... args) {
+				if (args.length != 1)
+					throw new RuntimeException("Invalid number of arguments sent to not(expr)");
+
+				Expression expr = new Expression(args[0]);
+
+				if (expr.eval() != 0.0)
+					return "0.0";
+				else
+					return "1.0";
 			}
 		});
 	}
