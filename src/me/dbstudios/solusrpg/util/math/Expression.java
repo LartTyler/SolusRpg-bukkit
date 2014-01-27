@@ -1,6 +1,7 @@
-// package me.dbstudios.solusrpg.util.math;
+package me.dbstudios.solusrpg.util.math;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,11 +153,14 @@ public class Expression {
 		});
 
 		addFlowControl(new FlowControl("if") {
-			public String eval(String... args) {
+			public String eval(Expression parent, String... args) {
 				if (args.length != 3)
 					throw new RuntimeException("Invalid number of arguments sent to if(expr, trueVal, falseVal)");
 
 				Expression expr = new Expression(args[0]);
+
+				if (parent != null)
+					expr.setParameters(parent.getParameters());
 
 				if (expr.eval() != 0.0)
 					return args[1];
@@ -166,9 +170,12 @@ public class Expression {
 		});
 
 		addFlowControl(new FlowControl("and") {
-			public String eval(String... args) {
+			public String eval(Expression parent, String... args) {
 				for (String arg : args) {
 					Expression expr = new Expression(arg);
+
+					if (parent != null)
+						expr.setParameters(parent.getParameters());
 
 					if (expr.eval() == 0.0)
 						return "0";
@@ -179,9 +186,12 @@ public class Expression {
 		});
 
 		addFlowControl(new FlowControl("or") {
-			public String eval(String... args) {
+			public String eval(Expression parent, String... args) {
 				for (String arg : args) {
 					Expression expr = new Expression(arg);
+
+					if (parent != null)
+						expr.setParameters(parent.getParameters());
 
 					if (expr.eval() != 0.0)
 						return "1";
@@ -192,11 +202,14 @@ public class Expression {
 		});
 
 		addFlowControl(new FlowControl("not") {
-			public String eval(String... args) {
+			public String eval(Expression parent, String... args) {
 				if (args.length != 1)
 					throw new RuntimeException("Invalid number of arguments sent to not(expr)");
 
 				Expression expr = new Expression(args[0]);
+
+				if (parent != null)
+					expr.setParameters(parent.getParameters());
 
 				if (expr.eval() != 0.0)
 					return "0";
@@ -206,11 +219,14 @@ public class Expression {
 		});
 
 		addFlowControl(new FlowControl("between") {
-			public String eval(String... args) {
+			public String eval(Expression parent, String... args) {
 				if (args.length != 3)
 					throw new RuntimeException("Invalid number of arguments sent to between(num, min, max)");
 
 				Expression expr = new Expression(String.format("and(%s >= %s, %s <= %s)", args[0], args[1], args[0], args[2]));
+
+				if (parent != null)
+					expr.setParameters(parent.getParameters());
 
 				if (expr.eval() != 0.0)
 					return "1";
@@ -292,9 +308,9 @@ public class Expression {
 				}
 
 				if (res != null)
-					res += this.eval(Expression.getFlowControl(token).eval(args.toArray(new String[args.size()])));
+					res += this.eval(Expression.getFlowControl(token).eval(this, args.toArray(new String[args.size()])));
 				else
-					res = this.eval(Expression.getFlowControl(token).eval(args.toArray(new String[args.size()])));
+					res = this.eval(Expression.getFlowControl(token).eval(this, args.toArray(new String[args.size()])));
 			} else if (Expression.isFunction(token) && tokenizer.hasNext()) {
 				String nextToken = tokenizer.next();
 				Double nextValue = null;
@@ -385,7 +401,7 @@ public class Expression {
 						nextExpr.append(t);
 					}
 
-					nextValue = this.eval(Expression.getFlowControl(nextToken).eval(args.toArray(new String[args.size()])));
+					nextValue = this.eval(Expression.getFlowControl(nextToken).eval(this, args.toArray(new String[args.size()])));
 				} else if (Expression.isFunction(nextToken)) {
 					StringBuilder nextExpr = new StringBuilder(nextToken);
 					int parenDepth = 0;
@@ -457,6 +473,10 @@ public class Expression {
 		return this.expr;
 	}
 
+	public Map<String, Double> getParameters() {
+		return Collections.unmodifiableMap(this.parameters);
+	}
+
 	public Double getParameter(String param) {
 		return this.getParameter(param, 0.0);
 	}
@@ -478,6 +498,13 @@ public class Expression {
 
 	public Expression setParameter(String param, double value) {
 		parameters.put(param, value);
+
+		return this;
+	}
+
+	public Expression setParameters(Map<String, Double> params) {
+		for (String key : params.keySet())
+			this.setParameter(key, params.get(key));
 
 		return this;
 	}
