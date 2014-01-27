@@ -1,6 +1,8 @@
 package me.dbstudios.solusrpg.util.math;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -9,6 +11,7 @@ import java.util.Map;
 public class Expression {
 	private static final Map<String, Operator> operators = new HashMap<>();
 	private static final Map<String, Function> functions = new HashMap<>();
+	private static final Map<String, FlowControl> controllers = new HashMap<>();
 
 	private final Map<String, Double> parameters = new HashMap<>();
 	private final String expr;
@@ -41,6 +44,56 @@ public class Expression {
 		addOperator(new Operator("^", 250) {
 			public double eval(double a, double b) {
 				return Math.pow(a, b);
+			}
+		});
+
+		// Boolean operators - a return value of 0.0 signifies false; anything else signifies true
+
+		addOperator(new Operator(">", 50) {
+			public double eval(double a, double b) {
+				return a > b ? 1.0 : 0.0;
+			}
+		});
+
+		addOperator(new Operator("<", 50) {
+			public double eval(double a, double b) {
+				return a < b ? 1.0 : 0.0;
+			}
+		});
+
+		addOperator(new Operator("==", 50) {
+			public double eval(double a, double b) {
+				return a == b ? 1.0 : 0.0;
+			}
+		});
+
+		addOperator(new Operator(">=", 50) {
+			public double eval(double a, double b) {
+				return a >= b ? 1.0 : 0.0;
+			}
+		});
+
+		addOperator(new Operator("<=", 50) {
+			public double eval(double a, double b) {
+				return a <= b ? 1.0 : 0.0;
+			}
+		});
+
+		addOperator(new Operator("!=", 50) {
+			public double eval(double a, double b) {
+				return a != b ? 1.0 : 0.0;
+			}
+		});
+
+		addOperator(new Operator("&&", 75) {
+			public double eval(double a, double b) {
+				return a != 0.0 && b != 0.0 ? 1.0 : 0.0;
+			}
+		});
+
+		addOperator(new Operator("||", 70) {
+			public double eval(double a, double b) {
+				return a != 0.0 || b != 0.0 ? 1.0 : 0.0;
 			}
 		});
 
@@ -109,6 +162,20 @@ public class Expression {
 				return Math.sqrt(arg);
 			}
 		});
+
+		addFlowControl(new FlowControl("if") {
+			public String eval(String... args) {
+				if (args.length != 3)
+					throw new RuntimeException("Invalid number of arguments sent to if(expr, trueVal, falseVal)");
+
+				Expression expr = new Expression(args[0]);
+
+				if (expr.eval() != 0.0)
+					return args[1];
+				else
+					return args[2];
+			}
+		});
 	}
 
 	public Expression(String expr) {
@@ -150,6 +217,42 @@ public class Expression {
 				} catch (NumberFormatException e) {
 					throw new RuntimeException("Invalid token " + token);
 				}
+			} else if (Expression.isFlowControl(token) && tokenizer.hasNext()) {
+				String nextToken = tokenizer.next();
+
+				if (!nextToken.equals("("))
+					throw new RuntimeException("Invalid token " + nextToken);
+
+				List<String> args = new ArrayList<>();
+				StringBuilder nextExpr = new StringBuilder();
+				int parenDepth = 0;
+
+				while (tokenizer.hasNext()) {
+					String t = tokenizer.next();
+
+					if ((t.equals(")") || t.equals(",")) && parenDepth == 0) {
+						args.add(nextExpr.toString());
+
+						nextExpr = new StringBuilder();
+
+						if (t.equals(")"))
+							break;
+						else
+							continue;
+					}
+
+					if (t.equals(")"))
+						parenDepth--;
+					else if (t.equals("("))
+						parenDepth++;
+
+					nextExpr.append(t);
+				}
+
+				if (res != null)
+					res += this.eval(Expression.getFlowControl(token).eval(args.toArray(new String[args.size()])));
+				else
+					res = this.eval(Expression.getFlowControl(token).eval(args.toArray(new String[args.size()])));
 			} else if (Expression.isFunction(token) && tokenizer.hasNext()) {
 				String nextToken = tokenizer.next();
 				Double nextValue = null;
@@ -274,6 +377,10 @@ public class Expression {
 		return this.eval(this.expr);
 	}
 
+	public String getAlgorithm() {
+		return this.expr;
+	}
+
 	public Double getParameter(String param) {
 		return this.getParameter(param, 0.0);
 	}
@@ -348,5 +455,17 @@ public class Expression {
 
 	public static Function getFunction(String name) {
 		return functions.get(name);
+	}
+
+	public static void addFlowControl(FlowControl control) {
+		controllers.put(control.getName(), control);
+	}
+
+	public static boolean isFlowControl(String name) {
+		return controllers.containsKey(name);
+	}
+
+	public static FlowControl getFlowControl(String name) {
+		return controllers.get(name);
 	}
 }
