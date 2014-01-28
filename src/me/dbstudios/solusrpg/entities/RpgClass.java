@@ -1,7 +1,7 @@
 package me.dbstudios.solusrpg.entities;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,26 +9,27 @@ import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
-import me.dbstudios.solusrpg.config.Metadata;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
-import me.dbstudios.solusrpg.entities.stats.CoreStat;
 import me.dbstudios.solusrpg.entities.stats.StatType;
+import me.dbstudios.solusrpg.events.player.RpgActionType;
 import me.dbstudios.solusrpg.exceptions.CreationException;
 import me.dbstudios.solusrpg.util.Initializable;
-import me.dbstudios.solusrpg.util.Util;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class RpgClass extends Initializable {
+public abstract class RpgClass extends Initializable {
 	private static Map<String, RpgClass> classes = new HashMap<>();
 	private static Map<String, String> displayNameLookup = new HashMap<>();
 
-	private final String fullyQualifiedName;
-
-	private Map<StatType, Integer> coreStats = new EnumMap<>(StatType.class);
-	private Map<String, Integer> stats = new HashMap<>();
-	private Metadata<String> metadata = new Metadata();
+	public abstract String getName();
+	public abstract String getDisplayName();
+	public abstract String getDescription();
+	public abstract int getStatLevel(AuxStat stat);
+	public abstract int getStatLevel(String fqn);
+	public abstract int getStatLevel(StatType type);
+	public abstract boolean isAllowed(RpgActionType action, Material material);
 
 	static {
 		RpgClass.initialize();
@@ -73,7 +74,7 @@ public class RpgClass extends Initializable {
 			RpgClass cl = null;
 
 			try {
-				cl = new RpgClass(qualifiedName, privClasses.contains(name));
+				cl = new SimpleRpgClass(qualifiedName, privClasses.contains(name));
 			} catch (CreationException e) {
 				SolusRpg.log(Level.WARNING, String.format("I encountered an exception while initializing %s; please check the configuration file for errors.", qualifiedName));
 
@@ -90,42 +91,6 @@ public class RpgClass extends Initializable {
 		initialized = true;
 
 		SolusRpg.log(String.format("Classes initialized in %d milliseconds.", System.currentTimeMillis() - initStart));
-	}
-
-	private RpgClass(String fqn, boolean restricted) {
-		File f = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
-
-		if (!f.exists())
-			throw new CreationException(String.format("No configuraiton file found for class with FQN '%s'.", fqn));
-
-		this.fullyQualifiedName = fqn;
-
-		FileConfiguration conf = YamlConfiguration.load(f);
-
-		// If the class being loaded extends another, grab that class configuration and overwrite paths NOT
-		// present in the child configuration.
-		if (conf.getString("extends", null) != null) {
-			File baseFile = new File(Directories.CONFIG_CLASSES + Util.toQualifiedName(conf.getString("extends"), "Class") + ".yml");
-
-			if (baseFile.exists()) {
-				FileConfiguration base = YamlConfiguration.load(baseFile);
-
-				for (String key : base.getKeys(true))
-					if (!key.equals("extends") && !conf.isSet(key))
-						conf.set(key, base.get(key));
-			}
-		}
-
-		// Only load values under the "metdata" path into our Metdata storage... Everything else will be managed by another system.
-		if (conf.isConfigurationSection("metadata"))
-			for (String key : conf.getConfigurationSection("metadata").getKeys(true))
-				metadata.set(key, conf.get("metadata." + key));
-
-		for (StatType type : StatType.values())
-			coreStats.put(conf.getInt("vitals.core-stats." + type.name().toLowerCase(), 1));
-
-		for (AuxStat stat : AuxStat.getAllAuxStats())
-			stats.put(stat.getName(), conf.getInt("vitals.aux-stats." + stat.getPathName().toLwoerCase(), 1));
 	}
 
 	/**

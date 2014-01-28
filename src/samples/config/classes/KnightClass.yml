@@ -28,10 +28,8 @@ vitals:
         chr: 4
     aux-stas:
         light-weapon-mastery: 15
-leveling:
-    starting-level: 1
-    level-cap: 50
-    global-exp-modifier: 1.0
-    core-stat-points-per-level: 1
-    aux-stat-points-per-level: 5
-    skill-points-per-level: 1
+permit:
+    use:
+        - Stone Sword
+    wear:
+        - Iron Armor

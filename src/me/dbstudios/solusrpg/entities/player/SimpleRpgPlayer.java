@@ -76,6 +76,23 @@ public class SimpleRpgPlayer implements RpgPlayer {
 			rpgClass = RpgClass.getByFQN(Util.toQualifiedName(conf.getString("vitals.class")));
 
 		this.rpgClass = rpgClass;
+
+		for (RpgActionType action : RpgActionType.values()) {
+			Set<Material> p =  new EnumSet<>();
+
+			for (String m : conf.getStringList("permit." + action.name().toLowerCase())) {
+				Material material = Material.matchMaterial(m);
+
+				if (material != null && !p.contains(material))
+					p.add(material);
+				else if (material == null)
+					SolusRpg.log(Level.WARNING, String.format("Invalid material name '%s' found in permit.%s node while loading %s.", m, action.name().toLowerCase(), this.fullyQualifiedName));
+				else
+					SolusRpg.log(Level.WARNING, String.format("Duplicate material found with name '%s' while loading %s.", material.name(), this.fullyQualifiedName));
+			}
+
+			permits.put(action, p);
+		}
 	}
 
 	public Player getBasePlayer() {
@@ -144,17 +161,11 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public int getStatLevel(String fqn) {
-		if (stats.containsKey(fqn))
-			return stats.get(fqn);
-
-		return 0;
+		return stats.get(fqn);
 	}
 
 	public int getStatLevel(StatType type) {
-		if (coreStats.containsKey(type))
-			return coreStats.get(type);
-
-		return 0;
+		return coreStats.get(type);
 	}
 
 	public RpgPlayer setStatLevel(AuxStat stat, int level) {
@@ -177,10 +188,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public boolean isAllowed(RpgActionType action, Material material) {
-		if (permits.containsKey(action))
-			return permits.get(action).contains(material);
-
-		return false;
+		return permits.get(action).contains(material) || rpgClass.isAllowed(action, material);
 	}
 
 	public RpgPlayer addAllowed(RpgActionType action, Material material) {
@@ -191,25 +199,22 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public RpgPlayer addAllowed(RpgActionType action, Collection<Material> materials) {
-		if (permits.containsKey(action)) // I _was_ going to just call RpgPlayer#isAllowed()... but then I realized it was pointless to repeat the permits#containsKey call in the loop
-			for (Material material : materials)
-				if (!permits.get(action).contains(material))
-					permits.get(action).add(material);
+		for (Material material : materials)
+			if (!this.isAllowed(action, material))
+				permits.get(action).add(material);
 
 		return this;
 	}
 
 	public RpgPlayer removeAllowed(RpgActionType action, Material material) {
-		if (permits.containsKey(action))
-			permits.get(action).remove(material);
+		permits.get(action).remove(material);
 
 		return this;
 	}
 
 	public RpgPlayer removeAllowed(RpgActionType action, Collection<Material> materials) {
-		if (permits.containsKey(action))
-			for (Material material : materials)
-				permits.get(action).remove(material);
+		for (Material material : materials)
+			permits.get(action).remove(material);
 
 		return this;
 	}
