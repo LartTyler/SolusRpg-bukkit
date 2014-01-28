@@ -44,4 +44,8 @@ aux-stats:
         - Light Armor Mastery
         - Heavy Armor Mastery
 leveling:
-    global-experience-algorithm: 50 + ((level - 1) * 50)
+    # The experience algorithm will always receive the player's level as a variable called "level".
+    # This variable can be freely placed anywhere in the algorithm.
+    # 
+    # For more information on this, and all of SolusRpg's mathematical functions, please visit https://github.com/LartTyler/SolusRpg/wiki/Expressions-System.
+    global-experience-algorithm: if(level <= 15, 17 * level, if(between(level, 16, 30), 1.5 * level ^ 2 - 29.5 * level + 360, 3.5 * level^2 - 151.5 * level + 2220))
