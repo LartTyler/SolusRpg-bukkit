@@ -8,6 +8,4 @@ authors:
     - LartTyler
 depend:
     - Spout
-    - DaybreakCommonLib
-softdepend:
     - Vault
