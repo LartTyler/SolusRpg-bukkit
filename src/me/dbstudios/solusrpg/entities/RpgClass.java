@@ -120,6 +120,12 @@ public class RpgClass extends Initializable {
 		if (conf.isConfigurationSection("metadata"))
 			for (String key : conf.getConfigurationSection("metadata").getKeys(true))
 				metadata.set(key, conf.get("metadata." + key));
+
+		for (StatType type : StatType.values())
+			coreStats.put(conf.getInt("vitals.core-stats." + type.name().toLowerCase(), 1));
+
+		for (AuxStat stat : AuxStat.getAllAuxStats())
+			stats.put(stat.getName(), conf.getInt("vitals.aux-stats." + stat.getPathName().toLwoerCase(), 1));
 	}
 
 	/**
