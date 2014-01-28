@@ -1,0 +1,3 @@
+system:
+    player-init:
+        kick-data-dir-not-writeable: "Oh no! A configuration on the server prevented your player data from being created :( Please contact your server administrator!"

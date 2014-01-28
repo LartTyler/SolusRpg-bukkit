@@ -1,3 +1,16 @@
 metadata:
     experience: 0
+vitals:
     class: KnightClass
+    core-stats:
+        str: 10
+        con: 15
+        dex: 8
+        int: 8
+        wis: 6
+        chr: 6
+    # Auxiliar stats are stored without their stat bonuses applied. In other words, though
+    # Light Weapon Mastery is stored as level 10 below, it's effective level would actually
+    # be 23 (10 + str / 2 + dex)
+    aux-stats:
+        light-weapon-mastery: 10

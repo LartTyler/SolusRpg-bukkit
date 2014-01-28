@@ -7,7 +7,8 @@ public enum Directories {
 	CONFIG(BASE + "config::"),
 	CONFIG_CLASSES(CONFIG + "classes::"),
 	CONFIG_STATS(CONFIG + "stats::"),
-	DATA(BASE + "data::");
+	DATA(BASE + "data::"),
+	DATA_PLAYERS(DATA + "players::");
 
 	private final String path;
 
@@ -17,5 +18,9 @@ public enum Directories {
 
 	public String toString() {
 		return this.path;
+	}
+
+	public static String getPlayerDataDir(String username) {
+		return String.format("%s%s::%s::", Directories.DATA_PLAYERS.toString(), username.toLowerCase().substring(0, 2), username.toLowerCase()).replace("::", File.separator);
 	}
 }

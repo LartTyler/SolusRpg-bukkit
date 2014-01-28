@@ -8,12 +8,18 @@ vitals:
         int: 1
         wis: 1
         chr: 1
+    # The Auxiliary stats configuration supports a special key called "default".
+    # If default is defined, all auxiliary stats NOT explicitly defined will
+    # have their starting value set to "default".
+    #
+    # In other words, if light-weapon-mastery is set to 1 and heavy-weapon-mastery
+    # is not defined, it's value will be the value defined by "default".
     aux-stas:
         default: 1
 leveling:
     starting-level: 1
     level-cap: 50
-    global-exp-modifier: 1.0
+    exp-multiplier: 1.0
     core-points-per-level: 1
     aux-points-per-level: 5
     skill-points-per-level: 1

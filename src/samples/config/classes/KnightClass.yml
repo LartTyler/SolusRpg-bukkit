@@ -27,7 +27,7 @@ vitals:
         wis: 3
         chr: 4
     aux-stas:
-        heavy-weapon-mastery: 5
+        light-weapon-mastery: 15
 leveling:
     starting-level: 1
     level-cap: 50

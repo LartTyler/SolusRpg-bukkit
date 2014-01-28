@@ -26,8 +26,8 @@ public class RpgClass extends Initializable {
 
 	private final String fullyQualifiedName;
 
-	private Map<StatType, Integer> stats = new EnumMap<>(StatType.class);
-	private Map<String, Integer> auxStats = new HashMap<>();
+	private Map<StatType, Integer> coreStats = new EnumMap<>(StatType.class);
+	private Map<String, Integer> stats = new HashMap<>();
 	private Metadata<String> metadata = new Metadata();
 
 	static {
