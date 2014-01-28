@@ -55,27 +55,27 @@ public class ExperienceScaler extends Initializable {
 	}
 
 	public float toRealExp(int currentLevel, int exp) {
-		return (float)(exp / this.getLevelTotal(currentLevel));
+		return (float)(exp / this.getLevelCost(currentLevel));
 	}
 
 	public int fromRealExp(int currentLevel, float exp) {
-		return (int)Math.floor((double)this.getLevelTotal(currentLevel) * (double)exp);
+		return (int)Math.floor((double)this.getLevelCost(currentLevel) * (double)exp);
 	}
 
-	public int getLevelTotal(int level) {
+	public int getLevelCost(int level) {
 		if (algorithmCache.containsKey(level))
 			return algorithmCache.get(level);
 
-		int total = (int)Math.floor(
+		int cost = (int)Math.floor(
 			algorithm
 				.clearParameters()
 				.setParameter("level", level)
 				.eval();
 		);
 
-		algorithmCache.put(level, total);
+		algorithmCache.put(level, cost);
 
-		return total;
+		return cost;
 	}
 
 	public Expression getAlgorithm() {
