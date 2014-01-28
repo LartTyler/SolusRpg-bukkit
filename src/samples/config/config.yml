@@ -50,4 +50,4 @@ leveling:
     # Default algorithm adapted from the information here: http://minecraft.gamepedia.com/Experience#Formulas_and_Tables
     # 
     # For more information on this, and all of SolusRpg's mathematical functions, please visit https://github.com/LartTyler/SolusRpg/wiki/Expressions-System.
-    global-experience-algorithm: if(level <= 15, 17 * level, if(between(level, 16, 30), 1.5 * level^2 - 29.5 * level + 360, 3.5 * level^2 - 151.5 * level + 2220))
+    global-level-cost: if(level <= 15, 17 * level, if(between(level, 16, 30), 1.5 * level^2 - 29.5 * level + 360, 3.5 * level^2 - 151.5 * level + 2220))
