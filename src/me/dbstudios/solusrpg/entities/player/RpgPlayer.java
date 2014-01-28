@@ -2,6 +2,7 @@ package me.dbstudios.solusrpg.entities.player;
 
 import java.util.Collection;
 
+import me.dbstudios.solusrpg.entities.RpgClass;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.entities.stats.StatType;
 import me.dbstudios.solusrpg.events.player.RpgActionType;
@@ -30,4 +31,8 @@ public interface RpgPlayer {
 	public RpgPlayer addAllowed(RpgActionType action, Collection<Material> material);
 	public RpgPlayer removeAllowed(RpgActionType action, Material material);
 	public RpgPlayer removeAllowed(RpgActionType action, Collection<Material> material);
+	public ExperienceScaler getExperienceScaler();
+	public RpgPlayer setExperienceScaler();
+	public boolean hasExperienceScaler();
+	public RpgClass getRpgClass();
 }

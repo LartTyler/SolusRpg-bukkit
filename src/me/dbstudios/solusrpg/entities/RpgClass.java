@@ -20,15 +20,15 @@ import me.dbstudios.solusrpg.util.Util;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public abstract class RpgClass extends Initializable {
+public class RpgClass extends Initializable {
 	private static Map<String, RpgClass> classes = new HashMap<>();
 	private static Map<String, String> displayNameLookup = new HashMap<>();
 
-	protected final String fullyQualifiedName;
+	private final String fullyQualifiedName;
 
-	protected Map<StatType, CoreStat> stats = new EnumMap<>(StatType.class);
-	protected Map<String, Integer> auxStats = new HashMap<>();
-	protected Metadata<String> metadata = new Metadata();
+	private Map<StatType, Integer> stats = new EnumMap<>(StatType.class);
+	private Map<String, Integer> auxStats = new HashMap<>();
+	private Metadata<String> metadata = new Metadata();
 
 	static {
 		RpgClass.initialize();
@@ -62,11 +62,6 @@ public abstract class RpgClass extends Initializable {
 
 		for (String name : allClasses) {
 			String qualifiedName = Util.toQualifiedName(name, "Class");
-			// String qualifiedName = name.replace(" ", "");
-
-			// if (!qualifiedName.endsWith("Class"))
-			// 	qualifiedName = qualifiedName + "Class";
-
 			File classFile = new File(Directories.CONFIG_CLASSES + qualifiedName + ".yml");
 
 			if (!classFile.exists()) {
@@ -97,7 +92,7 @@ public abstract class RpgClass extends Initializable {
 		SolusRpg.log(String.format("Classes initialized in %d milliseconds.", System.currentTimeMillis() - initStart));
 	}
 
-	public RpgClass(String fqn, boolean restricted) {
+	private RpgClass(String fqn, boolean restricted) {
 		File f = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
 
 		if (!f.exists())

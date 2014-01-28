@@ -1,12 +1,21 @@
 package me.dbstudios.solusrpg.entities.player;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.SolusRpg;
+import me.dbstudios.solusrpg.config.Directories;
+import me.dbstudios.solusrpg.util.Initializable;
 import me.dbstudios.solusrpg.util.math.Expression;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ExperienceScaler extends Initializable {
 	private static final ExperienceScaler globalScaler;
+	private static final String defaultLevelCost = "if(level <= 15, 17 * level, if(between(level, 16, 30), 1.5 * level^2 - 29.5 * level + 360, 3.5 * level^2 - 151.5 * level + 2220))";
 
 	private final Map<Integer, Integer> algorithmCache = new HashMap<>();
 
@@ -34,6 +43,11 @@ public class ExperienceScaler extends Initializable {
 		}
 
 		FileConfiguration conf = YamlConfiguration.load(f);
+		
+		globalScaler = new ExperienceScaler(conf.getString("leveling.global-level-cost", defaultLevelCost));
+		initialized = true;
+
+		SolusRpg.log(String.format("Initialized global experience scaler in %d milliseconds.", System.currentTimeMillis() - initStart));
 	}
 
 	public ExperienceScaler(String algorithm) {
