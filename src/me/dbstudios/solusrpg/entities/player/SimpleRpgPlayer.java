@@ -1,6 +1,7 @@
 package me.dbstudios.solusrpg.entities.player;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -12,6 +13,7 @@ import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.config.Metadata;
 import me.dbstudios.solusrpg.entities.RpgClass;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
+import me.dbstudios.solusrpg.entities.stats.StatScaler;
 import me.dbstudios.solusrpg.entities.stats.StatType;
 import me.dbstudios.solusrpg.events.player.RpgActionType;
 import me.dbstudios.solusrpg.language.LanguageManager;
@@ -26,6 +28,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 
 	private final Map<RpgActionType, Set<Material>> permits = new EnumMap<>(RpgActionType.class);
 	private final Map<StatType, Integer> coreStats = new EnumMap<>(StatType.class);
+	private final Set<PlayerModifier> modifiers = new HashSet<>();
 	private final Map<String, Integer> stats = new HashMap<>();
 	private final Metadata<String> metadata = new Metadata<>();
 	private final Player basePlayer;
@@ -156,16 +159,30 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this;
 	}
 
-	public int getStatLevel(AuxStat stat) {
-		return this.getStatLevel(stat.getName());
+	public int getRealStatLevel(AuxStat stat) {
+		return this.getRealStatLevel(stat.getName());
 	}
 
-	public int getStatLevel(String fqn) {
+	public int getRealStatLevel(String fqn) {
 		return stats.get(fqn);
 	}
 
-	public int getStatLevel(StatType type) {
+	public int getRealStatLevel(StatType type) {
 		return coreStats.get(type);
+	}
+
+	public int getStatLevel(AuxStat stat) {
+		int currentLevel = this.getRealStatLevel(stat);
+		int level = currentLevel;
+
+		for (StatScaler scaler : stat.getStatScalers())
+			level += scaler.getBonus(currentLevel);
+
+		return level;
+	}
+
+	public int getStatLevel(String fqn) {
+		return this.getStatLevel(AuxStat.getByFQN(fqn));
 	}
 
 	public RpgPlayer setStatLevel(AuxStat stat, int level) {
@@ -185,6 +202,28 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		coreStats.put(type, level);
 
 		return this;
+	}
+
+	public RpgPlayer addModifier(PlayerModifier modifier) {
+		if (!modifiers.contains(modifier)) {
+			modifier.modify(this);
+			modifiers.add(modifier);
+		}
+
+		return this;
+	}
+
+	public RpgPlayer removeModifier(PlayerModifier modifier) {
+		if (modifiers.contains(modifier)) {
+			modifier.unmodify(this);
+			modifiers.remove(modifier);
+		}
+
+		return this;
+	}
+
+	public Set<PlayerModifier> getModifiers() {
+		return Collections.unmodifiableSet(this.modifiers);
 	}
 
 	public boolean isAllowed(RpgActionType action, Material material) {

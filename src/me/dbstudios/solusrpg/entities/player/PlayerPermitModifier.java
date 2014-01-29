@@ -8,7 +8,6 @@ import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.events.player.RpgActionType;
-import me.dbstudios.solusrpg.util.Util;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,7 +20,7 @@ public class PlayerPermitModifier implements PlayerModifier {
 		this.type = type;
 
 		for (String p : items) {
-			Material m = Material.getMaterial(Util.toMaterialName(p));
+			Material m = Material.matchMaterial(p);
 
 			if (m == null) {
 				SolusRpg.log(Level.WARNING, String.format("Invalid material name '%s' in PlayerPermitModifier of type %s; it has been removed, but it is recommended that you fix the configuration", p, type.name()));

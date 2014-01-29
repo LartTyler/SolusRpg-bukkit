@@ -99,7 +99,7 @@ public interface RpgPlayer {
 	 * @param  stat the stat to look up
 	 * @return      the integer level of the aux. stat
 	 */
-	public int getStatLevel(AuxStat stat);
+	public int getRealStatLevel(AuxStat stat);
 
 	/**
 	 * Gets the level of the auxiliary stat with the given fully-qualified name.
@@ -107,7 +107,7 @@ public interface RpgPlayer {
 	 * @param  fqn the fully-qualified name of the aux. stat
 	 * @return     the integer level of the aux. stat
 	 */
-	public int getStatLevel(String fqn);
+	public int getRealStatLevel(String fqn);
 
 	/**
 	 * Gets the level of the core stat with the given {@link StatType}.
@@ -115,7 +115,23 @@ public interface RpgPlayer {
 	 * @param  type the core stat type to look up
 	 * @return      the integer level of the core stat
 	 */
-	public int getStatLevel(StatType type);
+	public int getRealStatLevel(StatType type);
+
+	/**
+	 * Gets the "real" level (stat level + bonuses) of an auxiliary stat.
+	 *
+	 * @param  stat the aux. stat to look up
+	 * @return      the integer level, with bonuses, of the aux. stat
+	 */
+	public int getStatLevel(AuxStat stat);
+
+	/**
+	 * Gets the "real" level (stat level + bonuses) of an auxiliary stat.
+	 *
+	 * @param  fqn the fully-qualified name of the auxiliary stat to look up
+	 * @return     the integer level, with bonuses, of the aux. stat
+	 */
+	public int getStatLevel(String fqn);
 
 	/**
 	 * Sets the level of an auxiliary stat.
@@ -143,6 +159,35 @@ public interface RpgPlayer {
 	 * @return       object reference for method chaining
 	 */
 	public RpgPlayer setStatLevel(StatType type, int level);
+
+	/**
+	 * Adds a {@link PlayerModifier} to the player.
+	 *
+	 * This is the preferred way for temporarily modifying a player's stats / state, as Solus will walk through all player
+	 * modifiers and run the <code>PlayerModifier#unmodify</code> method to undo the changes made.
+	 *
+	 * @param  modifier the {@link PlayerModifier} to apply
+	 * @return          object reference for method chaining
+	 */
+	public RpgPlayer addModifier(PlayerModifier modifier);
+
+	/**
+	 * Removes a {@link PlayerModifier} from the player.
+	 *
+	 * This method will be called for every active {@link PlayerModifier} on the player when the server stops
+	 * or the player is unloaded.
+	 *
+	 * @param  modifier the modifier to remove
+	 * @return          object reference for method chaining
+	 */
+	public RpgPlayer removeModifier(PlayerModifier modifier);
+
+	/**
+	 * Gets a set of all active {@link PlayerModifier}s on the player.
+	 *
+	 * @return a set of {@link PlayerModifier}s
+	 */
+	public Set<PlayerModifier> getModifiers();
 
 	/**
 	 * Checks if the player is allowed to perform {@link RpgActionType} using <code>Material</code>.

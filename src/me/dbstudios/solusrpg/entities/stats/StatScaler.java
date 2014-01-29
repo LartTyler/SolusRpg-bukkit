@@ -54,7 +54,7 @@ public class StatScaler {
 	}
 
 	public int getBonus(int statLevel) {
-		int bonus = Math.floor(statLevel / this.ratioZ) * ratioY;
+		int bonus = Math.floor(statLevel / this.ratioX) * ratioY;
 
 		if (this.getBonusCap() > 0)
 			return Math.max(bonus, this.ratioZ);

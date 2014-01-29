@@ -2,6 +2,7 @@ package me.dbstudios.solusrpg.entities.stats;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -191,6 +192,10 @@ public class AuxStat extends Initializable implements Listener {
 		ranks.get(rank).removeRank(target);
 	}
 
+	public StatScaler getScalerFor(String fqn) {
+		return this.getScalerFor(AuxStat.getByFQN(fqn));
+	}
+
 	public StatScaler getScalerFor(AuxStat auxStat) {
 		for (StatScaler scaler : this.scalers)
 			if (!scaler.isCoreStatScaler() && auxStat.getName().equals(scaler.getIdentifier()))
@@ -205,6 +210,14 @@ public class AuxStat extends Initializable implements Listener {
 				return scaler;
 
 		return null;
+	}
+
+	public List<StatScaler> getStatScalers() {
+		return Collections.unmodifiableList(this.scalers);
+	}
+
+	public boolean hasScalerFor(String fqn) {
+		return this.hasScalerFor(AuxStat.getByFQN(fqn));
 	}
 
 	public boolean hasScalerFor(AuxStat auxStat) {
@@ -229,7 +242,7 @@ public class AuxStat extends Initializable implements Listener {
 			} else if (!scaler.isCoreStatScaler() && AuxStat.getByFQN(scaler.getIdentifier()) == this) {
 				scalers.remove(scaler);
 
-				SolusRpg.log(Level.WARNGING, String.format("A cyclical scaler reference was detected in %s; it has been removed, but it is recommended that you remove the unnecessary definition.", this.getQualifiedName()));
+				SolusRpg.log(Level.WARNGING, String.format("A circular scaler reference was detected in %s; it has been removed, but it is recommended that you remove the unnecessary definition.", this.getQualifiedName()));
 			}
 
 		return this;
