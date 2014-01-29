@@ -68,10 +68,8 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		for (StatType type : StatType.values())
 			coreStats.put(type, conf.getInt("vitals.core-stats." + type.name().toLowerCase(), 1));
 
-		int defAuxLevel = conf.getInt("vitals.aux-stats.default", 1);
-
 		for (AuxStat stat : AuxStat.getAllAuxStats())
-			stats.put(stat.getName(), conf.getInt("vitals.aux-stats." + stat.getPathName(), defAuxLevel));
+			stats.put(stat.getName(), conf.getInt("vitals.aux-stats." + stat.getPathName(), 1));
 
 		RpgClass rpgClass = null;
 
@@ -278,6 +276,33 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this;
 	}
 
+	public RpgPlayer save() {
+		File f = new File(Directories.getPlayerDataDir(this.getName()) + "player.yml");
+		FileConfiguration conf = YamlConfiguration.load(f);
+
+		for (String key : metadata.keySet())
+			conf.set("metadata." + key, metadata.get(key));
+
+		for (StatType type : StatType.values())
+			conf.set("vitals.core-stats." + type.name().toLowerCase(), coreStats.get(type));
+
+		for (AuxStat stat : AuxStat.getAllAuxStats())
+			conf.set("vitals.aux-stats." + stat.getPathName(), stats.get(stat.getName()));
+
+		conf.set("vitals.class", rpgClass.getName());
+
+		try {
+			conf.save();
+		} catch (IOException e) {
+			SolusRpg.log(Level.SEVERE, String.format("Could not save player data for %s; any changes made during this session will be lost", this.getName()));
+
+			if (Configuration.is("logging.verbose"))
+				e.printStackTrace();
+
+			return;
+		}
+	}
+
 	public static RpgPlayer getOrCreate(Player basePlayer) {
 		if (players.containsKey(basePlayer.getUniqueId()))
 			return players.get(basePlayer.getUniqueId());
@@ -286,5 +311,11 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		players.put(basePlayer.getUniqueId(), player);
 
 		return player;
+	}
+
+	public static void destroy(RpgPlayer player) {
+		player.save();
+
+		players.remove(player.getBasePlayer().getUniqueId());
 	}
 }

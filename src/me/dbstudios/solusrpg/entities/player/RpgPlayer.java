@@ -275,4 +275,11 @@ public interface RpgPlayer {
 	 * @return the {@link RpgClass} of the player
 	 */
 	public RpgClass getRpgClass();
+
+	/**
+	 * Saves non-transient player data to file.
+	 *
+	 * @return object reference for method chaining
+	 */
+	public RpgPlayer save();
 }

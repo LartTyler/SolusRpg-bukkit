@@ -16,14 +16,10 @@ import me.dbstudios.solusrpg.events.player.RpgPlayerCoreStatLevelEvent;
 import me.dbstudios.solusrpg.exception.CreationException;
 import me.dbstudios.solusrpg.util.Initializable;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
 
-public class AuxStat extends Initializable implements Listener {
+public class AuxStat extends Initializable {
 	private static Map<String, AuxStat> stats = new HashMap<>();
 	private static Map<String, String> displayNameLookup = new HashMap<>();
 	private static Map<String, String> pathNameLookup = new HashMap<>();
@@ -77,8 +73,6 @@ public class AuxStat extends Initializable implements Listener {
 
 				pathNameLookup.put(stat.getPathName(), qualifiedName);
 				displayNameLookup.put(stat.getDisplayName(), qualifiedName);
-
-				Bukkit.getPluginManager().registerEvents(stat, SolusRpg.getInstance());
 			} catch (CreationException e) {
 				SolusRpg.log(Level.WARNING, String.format("I encountered an exception while initializing %s; please check the configuration file for errors.", qualifiedName));
 
@@ -251,32 +245,6 @@ public class AuxStat extends Initializable implements Listener {
 	protected AuxStat validateRanks() {
 		for (StatRank rank : ranks)
 			rank.validateRequirements();
-	}
-
-	// -------- Event Listeners ----------
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onRpgPlayerAuxStatLevel(RpgPlayerAuxStatLevelEvent ev) {
-		if (ev.isCancelled() || !this.hasScalerFor(ev.getStat()))
-			return;
-
-		StatScaler scaler = this.getScalerFor(ev.getStat());
-		RpgPlayer player  = ev.getPlayer();
-
-		// stat level = this level + scaler bonus @ new level
-		player.setStatLevel(this, player.getStatLevel(this) + scaler.getBonus(ev.getNewLevel()));
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onRpgPlayerCoreStatLevel(RpgPlayerCoreStatLevel ev) {
-		if (ev.isCancelled() || !this.hasScalerFor(ev.getType())
-			return;
-
-		StatScaler scaler = this.getScalerFor(ev.getType());
-		RpgPlayer player  = ev.getPlayer();
-
-		// stat level = this level + scaler bonus @ new level
-		player.setStatLevel(ev.getType(), player.getStatLevel(this) + scaler.getBonus(ev.getNewLevel()));
 	}
 
 	// -------- Static factory methods ------------

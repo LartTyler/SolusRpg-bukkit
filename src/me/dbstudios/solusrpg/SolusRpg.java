@@ -3,6 +3,10 @@ package me.dbstudios.solusrpg;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import me.dbstudios.solusrpg.events.EventDistributor;
+import me.dbstudios.solusrpg.events.RpgStockListener;
+
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class SolusRpg extends JavaPlugin {
@@ -13,6 +17,9 @@ public class SolusRpg extends JavaPlugin {
 		long loadStart = System.currentTimeMillis();
 
 		instance = this;
+
+		Bukkit.getPluginManager().registerEvents(new EventDistributor(), this);
+		Bukkit.getPluginManager().registerEvents(new RpgStockListener(), this);
 
 		SolusRpg.log("Successfully loaded in {0} milliseconds.", System.currentTimeMillis() - loadStart);
 	}

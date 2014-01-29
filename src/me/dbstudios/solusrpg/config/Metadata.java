@@ -1,5 +1,9 @@
 package me.dbstudios.solusrpg.config;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 public class Metadata<K> {
 	private final Map<K, Object> data = new HashMap<>();
 
@@ -49,5 +53,9 @@ public class Metadata<K> {
 		data.clear();
 
 		return this;
+	}
+
+	public Set<K> keySet() {
+		return data.keySet();
 	}
 }
