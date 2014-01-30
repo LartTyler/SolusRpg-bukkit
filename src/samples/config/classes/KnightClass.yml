@@ -17,8 +17,6 @@ metadata:
         betide any foe that challenges a Knight without expecting
         the fight of a lifetime.
 vitals:
-    base-health: 20
-    base-mana: 100
     core-stats:
         str: 10
         con: 10

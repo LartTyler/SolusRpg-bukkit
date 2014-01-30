@@ -1,6 +1,19 @@
 vitals:
-    base-health: 20
-    base-mana: 0
+    meters:
+        health:
+            base: 20
+            name: Health
+            regen:
+                disabled: false
+                rate: 5.0
+                formula: "health * 0.1"     # Will always be at least 1, unless regen.disabled is set to "true"
+        energy:
+            base: 100
+            name: Mana
+            regen:
+                disabled: false
+                rate: 5.0                   # Regeneration inverval, in seconds (will be converted to ticks via "rate * 20.0")
+                formula: "energy * 0.05"    # Will always be at least 1, unless regen.disabled is set to "true"
     core-stats:
         str: 1
         con: 1
