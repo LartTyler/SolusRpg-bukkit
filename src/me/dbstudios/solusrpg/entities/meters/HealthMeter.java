@@ -2,7 +2,7 @@ package me.dbstudios.solusrpg.entities.meters;
 
 import me.dbstudios.solusrpg.util.math.Expression;
 
-public interface HealthMeter implements VitalMeter {
+public class HealthMeter extends VitalMeter {
 	private Expression regenFormula;
 	private long regenRate;
 	private int max;
