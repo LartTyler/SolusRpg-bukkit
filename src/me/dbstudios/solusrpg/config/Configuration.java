@@ -10,7 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class Configuration extends Initializable {
-	private static Map<String, Object> options = new HashMap<>();
+	private static final Metadata<String> metadata = new Metadata<>();
 
 	static {
 		Configuration.initialize();
@@ -39,7 +39,7 @@ public final class Configuration extends Initializable {
 			return;
 
 		for (String key : conf.getConfigurationSection("configuration").getKeys(true))
-			options.put(key, conf.get("configuration." + key));
+			metadata.set(key, conf.get("configuration." + key));
 
 		initialized = true;
 
@@ -59,12 +59,7 @@ public final class Configuration extends Initializable {
 	}
 
 	public static Object get(String key, Object def) {
-		Object o = options.get(key);
-
-		if (o == null)
-			return def;
-
-		return o;
+		return metadata.getAsType(key, Object.class, def);
 	}
 
 	public static <T> T getAs(String key, Class<T> type) {
@@ -72,24 +67,19 @@ public final class Configuration extends Initializable {
 	}
 
 	public static <T> T getAs(String key, Class<T> type, T def) {
-		Object o = options.get(key);
-
-		if (!type.isInstance(o))
-			return def;
-
-		return type.cast(o);
+		return metadata.getAsType(key, type, def);
 	}
 
 	public static void set(String key, Object value) {
-		options.put(key, value);
+		metadata.set(key, value);
 	}
 
 	public static void save() {
 		File f = new File(Directories.CONFIG + "config.yml");
 		FileConfiguration conf = YamlConfiguration.load(f);
 
-		for (String key : options.keySet())
-			conf.set("configuration." + key, options.get(key));
+		for (String key : metadata.keySet())
+			conf.set("configuration." + key, metadata.get(key));
 
 		try {
 			conf.save(f);
