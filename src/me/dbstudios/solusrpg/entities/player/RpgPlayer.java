@@ -183,6 +183,17 @@ public interface RpgPlayer {
 	public RpgPlayer removeModifier(PlayerModifier modifier);
 
 	/**
+	 * Removes a {@link PlayerModifier} from the player.
+	 *
+	 * In addition to removing the modifier, this method should also call the PlayerModifer#unmodify method on
+	 * each modifier before removing it.
+	 * 
+	 * @param  modifier the modifier to clean and remove
+	 * @return          object reference for method chaining
+	 */
+	public RpgPlayer cleanModifier(PlayerModifier modifier);
+
+	/**
 	 * Gets a set of all active {@link PlayerModifier}s on the player.
 	 *
 	 * @return a set of {@link PlayerModifier}s

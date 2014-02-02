@@ -54,6 +54,8 @@ public class PlayerPermitModifier implements PlayerModifier {
 	}
 
 	public void unmodify(RpgPlayer player) {
-		player.removeAllowed(this.getActionType(), this.getPermitSet());
+		player
+			.removeAllowed(this.getActionType(), this.getPermitSet())
+			.removeModifier(this);
 	}
 }

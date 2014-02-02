@@ -203,18 +203,21 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public RpgPlayer addModifier(PlayerModifier modifier) {
-		if (!modifiers.contains(modifier)) {
-			modifier.modify(this);
-			modifiers.add(modifier);
-		}
+		return this.addModifier(modifier, false);
+	}
+
+	public RpgPlayer removeModifier(PlayerModifier modifier) {
+		if (modifiers.contains(modifier))
+			modifiers.remove(modifier);
 
 		return this;
 	}
 
-	public RpgPlayer removeModifier(PlayerModifier modifier) {
+	public RpgPlayer cleanModifier(PlayerModifier modifier) {
 		if (modifiers.contains(modifier)) {
 			modifier.unmodify(this);
-			modifiers.remove(modifier);
+
+			this.removeModifier(modifier);
 		}
 
 		return this;
