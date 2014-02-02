@@ -25,7 +25,7 @@ public class SimpleRpgClass implements RpgClass {
 	private Map<String, Integer> stats = new HashMap<>();
 	private Metadata<String> metadata = new Metadata();
 
-	private RpgClass(String fqn, boolean restricted) {
+	private SimpleRpgClass(String fqn, boolean restricted) {
 		File f = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
 
 		if (!f.exists())
