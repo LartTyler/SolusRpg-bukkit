@@ -70,7 +70,7 @@ public class Util {
 		return fqn.toString();
 	}
 
-	public boolean isQualifiedName(String name) {
+	public static boolean isQualifiedName(String name) {
 		return Util.isQualifiedName(name, "");
 	}
 
@@ -92,7 +92,7 @@ public class Util {
 		return pn.toString().substring(1);
 	}
 
-	public static String isPathName(String name) {
+	public static boolean isPathName(String name) {
 		return name.matches("^[^ _.,'-]+(-[^ _.,'-]+)*$");
 	}
 
@@ -110,7 +110,7 @@ public class Util {
 		return mn.toString().substring(1);
 	}
 
-	public static String isMaterialName(String name) {
+	public static boolean isMaterialName(String name) {
 		return name.matches("^[A-Z]+(_[A-Z]+)*$");
 	}
 }

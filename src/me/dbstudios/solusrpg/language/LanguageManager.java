@@ -46,7 +46,7 @@ public final class LanguageManager extends Initializable {
 		if (!f.exists())
 			return;
 
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		for (String key : conf.getKeys(true))
 			language.put(key, new SimplePhrase(conf.getString(key)));

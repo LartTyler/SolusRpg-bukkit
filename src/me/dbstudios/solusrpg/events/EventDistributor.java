@@ -5,6 +5,7 @@ import me.dbstudios.solusrpg.entities.player.SimpleRpgPlayer;
 import me.dbstudios.solusrpg.events.player.RpgPlayerJoinEvent;
 import me.dbstudios.solusrpg.events.player.RpgPlayerQuitEvent;
 
+import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;

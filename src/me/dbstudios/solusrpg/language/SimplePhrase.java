@@ -12,7 +12,7 @@ public class SimplePhrase implements Phrase {
 	}
 
 	public Phrase setParameter(String key, String value) {
-		parameteres.put(key, value);
+		parameters.put(key, value);
 
 		return this;
 	}
