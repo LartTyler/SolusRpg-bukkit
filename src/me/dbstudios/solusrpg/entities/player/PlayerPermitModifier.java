@@ -35,6 +35,10 @@ public class PlayerPermitModifier implements PlayerModifier {
 		}
 	}
 
+	public boolean isMalus() {
+		return false;
+	}
+
 	public RpgActionType getActionType() {
 		return this.type;
 	}

@@ -5,15 +5,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
+import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.entities.stats.StatType;
 import me.dbstudios.solusrpg.events.player.RpgActionType;
 import me.dbstudios.solusrpg.exceptions.CreationException;
 import me.dbstudios.solusrpg.util.Initializable;
+import me.dbstudios.solusrpg.util.Util;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -35,7 +38,7 @@ public abstract class RpgClass extends Initializable {
 		RpgClass.initialize();
 	}
 
-	private static void initialize() {
+	public static void initialize() {
 		if (initialized) {
 			SolusRpg.log(Level.WARNING, "Additional calls made to RpgClass.initialize(); this may indicate an internal optimization issue, and should be reported to my Creator.");
 
@@ -52,7 +55,7 @@ public abstract class RpgClass extends Initializable {
 			return;
 		}
 
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		List<String> pubClasses = conf.getStringList("classes.enabled");
 		List<String> privClasses = conf.getStringList("classes.restricted");

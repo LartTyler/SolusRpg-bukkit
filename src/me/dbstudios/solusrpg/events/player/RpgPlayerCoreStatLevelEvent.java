@@ -2,6 +2,7 @@ package me.dbstudios.solusrpg.events.player;
 
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
+import me.dbstudios.solusrpg.entities.stats.StatType;
 
 import org.bukkit.event.Cancellable;
 

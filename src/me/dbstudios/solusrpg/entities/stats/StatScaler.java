@@ -3,6 +3,7 @@ package me.dbstudios.solusrpg.entities.stats;
 import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
+import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.exceptions.CreationException;
 import me.dbstudios.solusrpg.util.Util;
 
@@ -33,12 +34,21 @@ public class StatScaler {
 		if (parts.length < 2) {
 			SolusRpg.log(Level.WARNING, String.format("I encountered an error while initialzing a StatScaler; '%s' with identifier '%s' is an invalid ratio.", scaling, identifier));
 
-			throw CreationException("Invalid scaler ratio");
+			throw new CreationException("Invalid scaler ratio");
 		}
 
-		this.ratioX = parts[0];
-		this.ratioY = parts[1];
-		this.ratioZ = parts.length >= 3 ? parts[2] : 0;
+		try {
+			this.ratioX = Integer.valueOf(parts[0]);
+			this.ratioY = Integer.valueOf(parts[1]);
+			this.ratioZ = parts.length >= 3 ? Integer.valueOf(parts[2]) : 0;
+		} catch (NumberFormatException e) {
+			SolusRpg.log(Level.WARNING, String.format("Could not parse ratio '%s'.", scaling));
+
+			if (Configuration.is("logging.verbose"))
+				e.printStackTrace();
+
+			throw new CreationException("Invalid scaler ratio");
+		}
 	}
 
 	public boolean isCoreStatScaler() {
@@ -49,12 +59,12 @@ public class StatScaler {
 		return this.coreStatType;
 	}
 
-	public String getIdentitifer() {
+	public String getIdentifier() {
 		return this.identifier;
 	}
 
 	public int getBonus(int statLevel) {
-		int bonus = Math.floor(statLevel / this.ratioX) * ratioY;
+		int bonus = (int)Math.floor(statLevel / this.ratioX) * ratioY;
 
 		if (this.getBonusCap() > 0)
 			return Math.max(bonus, this.ratioZ);

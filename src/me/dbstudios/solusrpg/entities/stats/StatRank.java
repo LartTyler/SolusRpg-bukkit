@@ -30,12 +30,12 @@ public class StatRank implements Listener {
 	private final int rank;
 
 	public StatRank(AuxStat stat, int rank) {
-		FileConfiguration conf = YamlConfiguration.load(new File(Directories.CONFIG_STATS + stat.getQualifiedName() + ".yml"));
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(new File(Directories.CONFIG_STATS + stat.getName() + ".yml"));
 
 		if (!conf.isConfigurationSection("ranks." + rank)) {
-			SolusRpg.log(Level.WARNING, String.format("I encountered an error while defining rank %d of %s; there is no rank node of that level present in the configuration.", rank, stat.getQualifiedName()));
+			SolusRpg.log(Level.WARNING, String.format("I encountered an error while defining rank %d of %s; there is no rank node of that level present in the configuration.", rank, stat.getName()));
 
-			throw new CreationException(String.format("Missing rank %d definition in %s", rank, stat.getQualifiedName()));
+			throw new CreationException(String.format("Missing rank %d definition in %s", rank, stat.getName()));
 		}
 
 		this.stat = stat;
@@ -62,12 +62,12 @@ public class StatRank implements Listener {
 			requirements.add(new PlayerLevelStatRequirement(sect.getInt("requires.player-level")));
 
 		for (RpgActionType t : RpgActionType.values()) {
-			if (!t.isPermitType())
+			if (!t.isPermitAction())
 				continue;
 
 			List<String> permits = sect.getStringList("permit." + t.name().toLowerCase());
 
-			if (permits.empty())
+			if (permits.isEmpty())
 				continue;
 
 			modifiers.add(new PlayerPermitModifier(t, permits));
@@ -92,7 +92,7 @@ public class StatRank implements Listener {
 	}
 
 	public StatRank validateRequirements() {
-		for (int i = 0; i < requirements.length; i++) {
+		for (int i = 0; i < requirements.size(); i++) {
 			if (!(requirements.get(i) instanceof AuxStatRequirement))
 				continue;
 
@@ -104,7 +104,7 @@ public class StatRank implements Listener {
 			AuxStat stat = AuxStat.getByFQN(req.getStatName());
 
 			if (stat == null) {
-				SolusRpg.log(Level.WARNING, String.format("Could not locate auxiliary stat with qualified name '%s' during initialization of rank %d of %s", req.getStatName(), this.level, this.stat.getName()));
+				SolusRpg.log(Level.WARNING, String.format("Could not locate auxiliary stat with qualified name '%s' during initialization of rank %d of %s", req.getStatName(), this.rank, this.stat.getName()));
 
 				continue;
 			}

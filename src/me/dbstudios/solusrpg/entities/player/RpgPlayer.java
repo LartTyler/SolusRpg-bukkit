@@ -1,6 +1,7 @@
 package me.dbstudios.solusrpg.entities.player;
 
 import java.util.Collection;
+import java.util.Set;
 
 import me.dbstudios.solusrpg.entities.RpgClass;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
@@ -134,6 +135,14 @@ public interface RpgPlayer {
 	public int getStatLevel(String fqn);
 
 	/**
+	 * Gets the "real" level (stat level + bonuses) of the core stat with the given {@link StatType}.
+	 * 
+	 * @param  type the core stat to look up
+	 * @return      the integer level, with bonuses, of the core stat
+	 */
+	public int getStatLevel(StatType type);
+
+	/**
 	 * Sets the level of an auxiliary stat.
 	 *
 	 * @param  stat  the stat to set
@@ -262,7 +271,7 @@ public interface RpgPlayer {
 	 *
 	 * @return object reference for method chaining
 	 */
-	public RpgPlayer setExperienceScaler();
+	public RpgPlayer setExperienceScaler(ExperienceScaler expScaler);
 
 	/**
 	 * Checks if the player has an {@link ExperienceScaler} set.

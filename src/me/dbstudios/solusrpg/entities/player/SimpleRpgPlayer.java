@@ -1,13 +1,19 @@
 package me.dbstudios.solusrpg.entities.player;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.config.Metadata;
@@ -17,6 +23,8 @@ import me.dbstudios.solusrpg.entities.stats.StatScaler;
 import me.dbstudios.solusrpg.entities.stats.StatType;
 import me.dbstudios.solusrpg.events.player.RpgActionType;
 import me.dbstudios.solusrpg.language.LanguageManager;
+import me.dbstudios.solusrpg.language.Phrase;
+import me.dbstudios.solusrpg.util.Util;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -56,10 +64,10 @@ public class SimpleRpgPlayer implements RpgPlayer {
 				if (LanguageManager.has("system.player-init.kick-data-dir-not-writeable"))
 					kickPhrase = LanguageManager.get("system.player-init.kick-data-dir-not-writeable").reset();
 
-				basePlayer.kickPlayer(kickPhrase != null ? phrase.asText() : "");
+				basePlayer.kickPlayer(kickPhrase != null ? kickPhrase.asText() : "");
 			}
 
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		if (conf.isConfigurationSection("metadata"))
 			for (String key : conf.getConfigurationSection("metadata").getKeys(false))
@@ -79,7 +87,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		this.rpgClass = rpgClass;
 
 		for (RpgActionType action : RpgActionType.values()) {
-			Set<Material> p =  new EnumSet<>();
+			Set<Material> p =  EnumSet.noneOf(Material.class);
 
 			for (String m : conf.getStringList("permit." + action.name().toLowerCase())) {
 				Material material = Material.matchMaterial(m);
@@ -87,9 +95,9 @@ public class SimpleRpgPlayer implements RpgPlayer {
 				if (material != null && !p.contains(material))
 					p.add(material);
 				else if (material == null)
-					SolusRpg.log(Level.WARNING, String.format("Invalid material name '%s' found in permit.%s node while loading %s.", m, action.name().toLowerCase(), this.fullyQualifiedName));
+					SolusRpg.log(Level.WARNING, String.format("Invalid material name '%s' found in permit.%s node while loading %s.", m, action.name().toLowerCase(), this.getName()));
 				else
-					SolusRpg.log(Level.WARNING, String.format("Duplicate material found with name '%s' while loading %s.", material.name(), this.fullyQualifiedName));
+					SolusRpg.log(Level.WARNING, String.format("Duplicate material found with name '%s' while loading %s.", material.name(), this.getName()));
 			}
 
 			permits.put(action, p);
@@ -183,6 +191,10 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this.getStatLevel(AuxStat.getByFQN(fqn));
 	}
 
+	public int getStatLevel(StatType type) {
+		
+	}
+
 	public RpgPlayer setStatLevel(AuxStat stat, int level) {
 		return this.setStatLevel(stat.getName(), level);
 	}
@@ -203,7 +215,12 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public RpgPlayer addModifier(PlayerModifier modifier) {
-		return this.addModifier(modifier, false);
+		if (!modifiers.contains(modifier)) {
+			modifiers.add(modifier);
+			modifier.modify(this);
+		}
+
+		return this;
 	}
 
 	public RpgPlayer removeModifier(PlayerModifier modifier) {
@@ -279,9 +296,13 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this;
 	}
 
+	public RpgClass getRpgClass() {
+		return this.rpgClass;
+	}
+
 	public RpgPlayer save() {
 		File f = new File(Directories.getPlayerDataDir(this.getName()) + "player.yml");
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		for (String key : metadata.keySet())
 			conf.set("metadata." + key, metadata.get(key));
@@ -295,22 +316,22 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		conf.set("vitals.class", rpgClass.getName());
 
 		try {
-			conf.save();
+			conf.save(f);
 		} catch (IOException e) {
 			SolusRpg.log(Level.SEVERE, String.format("Could not save player data for %s; any changes made during this session will be lost", this.getName()));
 
 			if (Configuration.is("logging.verbose"))
 				e.printStackTrace();
-
-			return;
 		}
+
+		return this;
 	}
 
 	public static RpgPlayer getOrCreate(Player basePlayer) {
 		if (players.containsKey(basePlayer.getUniqueId()))
 			return players.get(basePlayer.getUniqueId());
 
-		RpgPlayer player = new RpgPlayer(basePlayer);
+		RpgPlayer player = new SimpleRpgPlayer(basePlayer);
 		players.put(basePlayer.getUniqueId(), player);
 
 		return player;

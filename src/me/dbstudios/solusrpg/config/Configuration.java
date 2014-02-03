@@ -1,7 +1,10 @@
 package me.dbstudios.solusrpg.config;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.util.Initializable;
@@ -16,7 +19,7 @@ public final class Configuration extends Initializable {
 		Configuration.initialize();
 	}
 
-	private static void initialize() {
+	public static void initialize() {
 		if (initialized) {
 			SolusRpg.log(Level.WARNING, "Additional calls made to Configuration.initialize(); this may indicate an internal optimization issue, and should be reported to my Creator.");
 
@@ -33,7 +36,7 @@ public final class Configuration extends Initializable {
 			return;
 		}
 
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		if (!conf.isConfigurationSection("configuration"))
 			return;
@@ -76,7 +79,7 @@ public final class Configuration extends Initializable {
 
 	public static void save() {
 		File f = new File(Directories.CONFIG + "config.yml");
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		for (String key : metadata.keySet())
 			conf.set("configuration." + key, metadata.get(key));

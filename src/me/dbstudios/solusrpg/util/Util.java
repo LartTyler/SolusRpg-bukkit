@@ -1,6 +1,7 @@
 package me.dbstudios.solusrpg.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Util {

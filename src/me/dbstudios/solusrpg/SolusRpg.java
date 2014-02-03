@@ -46,4 +46,8 @@ public class SolusRpg extends JavaPlugin {
 
 		SolusRpg.log(level, message);
 	}
+
+	public static SolusRpg getInstance() {
+		return instance;
+	}
 }

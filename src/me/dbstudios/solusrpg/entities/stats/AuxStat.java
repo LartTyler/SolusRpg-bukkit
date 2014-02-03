@@ -2,19 +2,24 @@ package me.dbstudios.solusrpg.entities.stats;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
+import me.dbstudios.solusrpg.config.Metadata;
+import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.events.player.RpgPlayerAuxStatLevelEvent;
 import me.dbstudios.solusrpg.events.player.RpgPlayerCoreStatLevelEvent;
-import me.dbstudios.solusrpg.exception.CreationException;
+import me.dbstudios.solusrpg.exceptions.CreationException;
 import me.dbstudios.solusrpg.util.Initializable;
+import me.dbstudios.solusrpg.util.Util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -51,7 +56,7 @@ public class AuxStat extends Initializable {
 			return;
 		}
 
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		for (String name : conf.getStringList("aux-stats.enabled")) {
 			String qualifiedName = Util.toQualifiedName(name, "Stat");
@@ -81,7 +86,7 @@ public class AuxStat extends Initializable {
 			}
 		}
 
-		for (AuxStat stat : AuxStats.getAllAuxStats())
+		for (AuxStat stat : AuxStat.getAllAuxStats())
 			stat
 				.validateScalers()
 				.validateRanks();
@@ -99,7 +104,7 @@ public class AuxStat extends Initializable {
 
 		this.fullyQualifiedName = fqn;
 
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		if (conf.isConfigurationSection("metadata"))
 			for (String key : conf.getConfigurationSection("metadata").getKeys(true))
@@ -118,7 +123,7 @@ public class AuxStat extends Initializable {
 				try {
 					scalers.add(new StatScaler(type, conf.getString("scaling.core-stats." + ident)));
 				} catch (CreationException e) {
-					if (Configuraiton.is("logging.verbose"))
+					if (Configuration.is("logging.verbose"))
 						e.printStackTrace();
 				}
 			else
@@ -129,7 +134,7 @@ public class AuxStat extends Initializable {
 			try {
 				scalers.add(new StatScaler(ident, conf.getString("scaling.aux-stats." + ident)));
 			} catch (CreationException e) {
-				if (Configuraiton.is("logging.verbose"))
+				if (Configuration.is("logging.verbose"))
 					e.printStackTrace();
 			}
 
@@ -231,20 +236,22 @@ public class AuxStat extends Initializable {
 
 				SolusRpg.log(
 					Level.WARNING,
-					String.format("An invalid identifier '%s' was found in a stat scaler for %s; it has been removed, but it is recommended that you remove the unnecessary definition.", scaler.getIdentifier(), this.getQualifiedName())
+					String.format("An invalid identifier '%s' was found in a stat scaler for %s; it has been removed, but it is recommended that you remove the unnecessary definition.", scaler.getIdentifier(), this.getName())
 				);
 			} else if (!scaler.isCoreStatScaler() && AuxStat.getByFQN(scaler.getIdentifier()) == this) {
 				scalers.remove(scaler);
 
-				SolusRpg.log(Level.WARNGING, String.format("A circular scaler reference was detected in %s; it has been removed, but it is recommended that you remove the unnecessary definition.", this.getQualifiedName()));
+				SolusRpg.log(Level.WARNING, String.format("A circular scaler reference was detected in %s; it has been removed, but it is recommended that you remove the unnecessary definition.", this.getName()));
 			}
 
 		return this;
 	}
 
 	protected AuxStat validateRanks() {
-		for (StatRank rank : ranks)
+		for (StatRank rank : ranks.values())
 			rank.validateRequirements();
+
+		return this;
 	}
 
 	// -------- Static factory methods ------------
@@ -284,7 +291,7 @@ public class AuxStat extends Initializable {
 		List<AuxStat> matches = new ArrayList<>();
 
 		for (String s : search)
-			matches.add(AuxStat.getByDisplayName(s))
+			matches.add(AuxStat.getByDisplayName(s));
 
 		return matches;
 	}

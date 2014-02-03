@@ -9,7 +9,7 @@ public enum RpgActionType {
 	ATTACK,
 	DEFEND;
 
-	private final permitAction;
+	private final boolean permitAction;
 
 	private RpgActionType() {
 		this(false);

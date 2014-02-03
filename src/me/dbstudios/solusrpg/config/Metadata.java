@@ -11,7 +11,7 @@ public class Metadata<K> {
 		return data.containsKey(key);
 	}
 
-	public boolean hasOfType(K key, Class<T> type) {
+	public <T> boolean hasOfType(K key, Class<T> type) {
 		return this.has(key) && type.isInstance(data.get(key));
 	}
 

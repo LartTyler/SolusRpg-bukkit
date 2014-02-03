@@ -14,8 +14,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ExperienceScaler extends Initializable {
-	private static final ExperienceScaler globalScaler;
 	private static final String defaultLevelCost = "if(level <= 15, 17 * level, if(between(level, 16, 30), 1.5 * level^2 - 29.5 * level + 360, 3.5 * level^2 - 151.5 * level + 2220))";
+	
+	private static ExperienceScaler globalScaler;
 
 	private final Map<Integer, Integer> algorithmCache = new HashMap<>();
 
@@ -42,7 +43,7 @@ public class ExperienceScaler extends Initializable {
 			return;
 		}
 
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 		
 		globalScaler = new ExperienceScaler(conf.getString("leveling.global-level-cost", defaultLevelCost));
 		initialized = true;
@@ -70,7 +71,7 @@ public class ExperienceScaler extends Initializable {
 			algorithm
 				.clearParameters()
 				.setParameter("level", level)
-				.eval();
+				.eval()
 		);
 
 		algorithmCache.put(level, cost);

@@ -1,5 +1,8 @@
 package me.dbstudios.solusrpg.language;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class SimplePhrase implements Phrase {
 	private Map<String, String> parameters = new HashMap<>();
 	private String phrase;

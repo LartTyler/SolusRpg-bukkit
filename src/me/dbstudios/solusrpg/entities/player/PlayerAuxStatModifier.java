@@ -14,11 +14,15 @@ public class PlayerAuxStatModifier implements PlayerModifier {
 		this.modifier = modifier;
 	}
 
+	public boolean isMalus() {
+		return this.modifier < 0;
+	}
+
 	public void modify(RpgPlayer player) {
 		player.setStatLevel(this.stat, player.getRealStatLevel(this.stat) + this.modifier);
 	}
 
-	public void modifiy(RpgPlayer player, long duration) {
+	public void modify(RpgPlayer player, long duration) {
 		this.modify(player);
 
 		Bukkit.getScheduler().scheduleSyncDelayedTask(SolusRpg.getInstance(), new ModifierUndoTask(this, player), duration);

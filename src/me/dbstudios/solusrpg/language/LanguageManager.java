@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 
-import me.dbstudios.solusrpg.Directories;
 import me.dbstudios.solusrpg.SolusRpg;
+import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.util.Initializable;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -63,7 +63,7 @@ public final class LanguageManager extends Initializable {
 		return null;
 	}
 
-	public LanguageManger setPhrase(String key, Phrase phrase) {
+	public LanguageManager setPhrase(String key, Phrase phrase) {
 		if (phrase == null)
 			return this.removePhrase(key);
 

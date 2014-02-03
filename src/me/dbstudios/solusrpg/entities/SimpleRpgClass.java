@@ -1,11 +1,15 @@
 package me.dbstudios.solusrpg.entities;
 
+import java.io.File;
 import java.util.EnumSet;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.SolusRpg;
+import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.config.Metadata;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.entities.stats.StatType;
@@ -17,7 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class SimpleRpgClass implements RpgClass {
+public class SimpleRpgClass extends RpgClass {
 	private final String fullyQualifiedName;
 
 	private Map<RpgActionType, Set<Material>> permits = new EnumMap<>(RpgActionType.class);
@@ -25,7 +29,7 @@ public class SimpleRpgClass implements RpgClass {
 	private Map<String, Integer> stats = new HashMap<>();
 	private Metadata<String> metadata = new Metadata();
 
-	private SimpleRpgClass(String fqn, boolean restricted) {
+	protected SimpleRpgClass(String fqn, boolean restricted) {
 		File f = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
 
 		if (!f.exists())
@@ -33,7 +37,7 @@ public class SimpleRpgClass implements RpgClass {
 
 		this.fullyQualifiedName = fqn;
 
-		FileConfiguration conf = YamlConfiguration.load(f);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		// If the class being loaded extends another, grab that class configuration and overwrite paths NOT
 		// present in the child configuration.
@@ -41,7 +45,7 @@ public class SimpleRpgClass implements RpgClass {
 			File baseFile = new File(Directories.CONFIG_CLASSES + Util.toQualifiedName(conf.getString("extends"), "Class") + ".yml");
 
 			if (baseFile.exists()) {
-				FileConfiguration base = YamlConfiguration.load(baseFile);
+				FileConfiguration base = YamlConfiguration.loadConfiguration(baseFile);
 
 				for (String key : base.getKeys(true))
 					if (!key.equals("extends") && !conf.isSet(key))
@@ -55,13 +59,13 @@ public class SimpleRpgClass implements RpgClass {
 				metadata.set(key, conf.get("metadata." + key));
 
 		for (StatType type : StatType.values())
-			coreStats.put(conf.getInt("vitals.core-stats." + type.name().toLowerCase(), 1));
+			coreStats.put(type, conf.getInt("vitals.core-stats." + type.name().toLowerCase(), 1));
 
 		for (AuxStat stat : AuxStat.getAllAuxStats())
 			stats.put(stat.getName(), conf.getInt("vitals.aux-stats." + stat.getPathName().toLowerCase(), 1));
 
 		for (RpgActionType action : RpgActionType.values()) {
-			Set<Material> p =  new EnumSet<>();
+			Set<Material> p =  EnumSet.noneOf(Material.class);
 
 			for (String m : conf.getStringList("permit." + action.name().toLowerCase())) {
 				Material material = Material.matchMaterial(m);

@@ -1,5 +1,7 @@
 package me.dbstudios.solusrpg.entities.stats;
 
+import me.dbstudios.solusrpg.util.Util;
+
 public enum StatType {
 	STR("strength"),
 	CON("constitution"),

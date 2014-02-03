@@ -6,7 +6,7 @@ public interface PlayerModifier {
 	 * 
 	 * @return true if the effect of this modifier should be a considered a malus on the player
 	 */
-	public boolean isEffectNegative();
+	public boolean isMalus();
 
 	/**
 	 * Applies this modifier to the player.

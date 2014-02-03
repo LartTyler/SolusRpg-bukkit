@@ -28,7 +28,7 @@ public class RpgPlayerBeforeActionEvent extends RpgPlayerEvent implements Cancel
 	private boolean cancelled = true;
 	private boolean dirty = false;
 
-	public RpgPlayerActionEvent(RpgPlayer player, RpgActionType action, Material item) {
+	public RpgPlayerBeforeActionEvent(RpgPlayer player, RpgActionType action, Material item) {
 		super(player);
 
 		this.action = action;

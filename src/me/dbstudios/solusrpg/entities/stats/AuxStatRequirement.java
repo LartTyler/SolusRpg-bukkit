@@ -1,5 +1,8 @@
 package me.dbstudios.solusrpg.entities.stats;
 
+import java.util.logging.Level;
+
+import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.util.Util;
 
@@ -41,7 +44,7 @@ public class AuxStatRequirement implements StatRequirement {
 		return this.statName != null ? this.statName : stat.getName();
 	}
 
-	public getLevel() {
+	public int getLevel() {
 		return this.level;
 	}
 }
