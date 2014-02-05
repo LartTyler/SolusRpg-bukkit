@@ -17,10 +17,12 @@ public class HealthMeter implements VitalMeter {
 		this.regenRate = regenRate;
 		this.name = meterName;
 
-		this.regenAmount = this.regenFormula
-			.clearParameters()
-			.setParameter("max_health", max)
-			.eval();
+		this.regenAmount = (int)Math.floor(
+			this.regenFormula
+				.clearParameters()
+				.setParameter("max_health", max)
+				.eval()
+		);
 	}
 
 	public int get() {
@@ -40,7 +42,7 @@ public class HealthMeter implements VitalMeter {
 	public VitalMeter setMax(int max) {
 		this.max = max;
 
-		return this;
+		return this.refreshRegenAmount();
 	}
 
 	public String getName() {
@@ -51,5 +53,42 @@ public class HealthMeter implements VitalMeter {
 		this.name = meterName;
 
 		return this;
+	}
+
+	public long getRegenRate() {
+		return this.regenRate;
+	}
+
+	public VitalMeter setRegenRate(long regenRate) {
+		this.regenRate = regenRate;
+
+		return this;
+	}
+
+	public VitalMeter setRegenRate(double regenRate) {
+		return this.setRegenRate((int)Math.ceil(regenRate * 20));
+	}
+
+	public int getRegenAmount() {
+		return this.regenAmount;
+	}
+
+	public VitalMeter refreshRegenAmount() {
+		this.regenAmount = (int)Math.floor(
+			this.regenFormula
+				.clearParameters()
+				.setParameter("max_health", this.getMax())
+				.eval()
+		);
+
+		return this;
+	}
+
+	public VitalMeter damage(int amount) {
+		return this.set(Math.max(0, this.get() - amount));
+	}
+
+	public VitalMeter heal(int amount) {
+		return this.set(Math.min(this.getMax(), this.get() - amount));
 	}
 }

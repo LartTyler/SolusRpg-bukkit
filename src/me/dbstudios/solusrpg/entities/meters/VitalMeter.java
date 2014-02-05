@@ -79,13 +79,34 @@ public interface VitalMeter {
 	public int getRegenAmount();
 
 	/**
+	 * Refreshes the amount that one regeneration step should recover this meter by.
+	 *
+	 * This is useful for any implementations that utilize a potentially processor heavy evaluation to
+	 * determine the player's regeneration amount.
+	 * 
+	 * @return object reference for method chaining
+	 */
+	public VitalMeter refreshRegenAmount();
+
+	/**
 	 * "Damages" the meter, removing <code>amount</code> from it's value, and playing any animations that go along with
 	 * a damage event.
 	 *
-	 * This should be the same as calling VialMeter#set(VitalMeter#get() - amount).
+	 * This should be the same as calling {@link #set(int) VitalMeter#set(}{@link #get() VitalMeter#get()} - amount).
 	 *
 	 * @param  amount the amount to remove from the meter
 	 * @return        object reference for method chaining
 	 */
 	public VitalMeter damage(int amount);
+
+	/**
+	 * "Heals" the meter, restoring <code>amount</code> to it's value, and playing any animations that go along with
+	 * a heal event.
+	 *
+	 * This should be the same as calling {@link #set(int) VitalMeter#set(}{@link #get() VitalMeter#get()} - amount).
+	 * 
+	 * @param  amount the amount to restore to the meter
+	 * @return        object reference for method chaining
+	 */
+	public VitalMeter heal(int amount);
 }

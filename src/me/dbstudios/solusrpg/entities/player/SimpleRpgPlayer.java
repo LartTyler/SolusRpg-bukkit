@@ -178,11 +178,13 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public int getStatLevel(AuxStat stat) {
-		int currentLevel = this.getRealStatLevel(stat);
-		int level = currentLevel;
+		int level = this.getRealStatLevel(stat);
 
 		for (StatScaler scaler : stat.getStatScalers())
-			level += scaler.getBonus(currentLevel);
+			if (scaler.isCoreStatScaler())
+				level += scaler.getBonus(coreStats.get(scaler.getCoreStatType()));
+			else
+				level += scaler.getBonus(this.getRealStatLevel(scaler.getIdentifier()));
 
 		return level;
 	}
@@ -192,7 +194,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public int getStatLevel(StatType type) {
-		
+		return coreStats.get(type);
 	}
 
 	public RpgPlayer setStatLevel(AuxStat stat, int level) {

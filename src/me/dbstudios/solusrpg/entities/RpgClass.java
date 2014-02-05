@@ -137,7 +137,7 @@ public abstract class RpgClass extends Initializable {
 	}
 
 	/**
-	 * Attempts to find an RpgClass using the given string. Matches are found using {@link Util#getFuzzyMatch(String, List<String>)}.
+	 * Attempts to find an RpgClass using the given string. Matches are found using {@link Util#getFuzzyMatch(String, Collection) Util.getFuzzyMatch(String, Collection)}.
 	 *
 	 * @param  name the string to use as the "pattern" for the fuzzy match
 	 * @return      a list of RpgClass instances that matched the search string
