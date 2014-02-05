@@ -1,4 +1,5 @@
 /build/
+/doc/
 *.class
 
 # Package Files #
