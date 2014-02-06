@@ -33,6 +33,16 @@ public abstract class RpgClass extends Initializable {
 	public abstract int getStatLevel(String fqn);
 	public abstract int getStatLevel(StatType type);
 	public abstract boolean isAllowed(RpgActionType action, Material material);
+	public abstract int getBaseHealth();
+	public abstract String getHealthName();
+	public abstract boolean hasBaseHealthRegen();
+	public abstract double getBaseHealthRegenRate();
+	public abstract String getBaseHealthRegenFormula();
+	public abstract int getBaseEnergy();
+	public abstract String getEnergyName();
+	public abstract boolean hasBaseEnergyRegen();
+	public abstract double getBaseEnergyRegenRate();
+	public abstract String getBaseEnergyRegenFormula();
 
 	static {
 		RpgClass.initialize();

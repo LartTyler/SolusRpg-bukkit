@@ -102,6 +102,8 @@ public class SimpleRpgPlayer implements RpgPlayer {
 
 			permits.put(action, p);
 		}
+
+
 	}
 
 	public Player getBasePlayer() {

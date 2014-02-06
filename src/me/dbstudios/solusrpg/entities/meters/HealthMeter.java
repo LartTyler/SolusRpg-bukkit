@@ -1,6 +1,9 @@
 package me.dbstudios.solusrpg.entities.meters;
 
+import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.util.math.Expression;
+
+import org.bukkit.Bukkit;
 
 public class HealthMeter implements VitalMeter {
 	private Expression regenFormula;
@@ -9,6 +12,7 @@ public class HealthMeter implements VitalMeter {
 	private long regenRate;
 	private int max;
 	private int current;
+	private int taskId;
 
 	public HealthMeter(int max, String regenFormula, long regenRate, String meterName) {
 		this.max = max;
@@ -17,12 +21,16 @@ public class HealthMeter implements VitalMeter {
 		this.regenRate = regenRate;
 		this.name = meterName;
 
-		this.regenAmount = (int)Math.floor(
-			this.regenFormula
-				.clearParameters()
-				.setParameter("max_health", max)
-				.eval()
-		);
+		if (regenRate > 0) {
+			this.regenAmount = (int)Math.floor(
+				this.regenFormula
+					.clearParameters()
+					.setParameter("max_health", max)
+					.eval()
+			);
+
+			this.taskId = Bukkit.getScheduler().runTaskTimerAsynchronously(SolusRpg.getInstance(), new RegenerationTask(this), 0, regenRate);
+		}
 	}
 
 	public int get() {

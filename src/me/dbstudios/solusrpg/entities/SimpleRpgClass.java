@@ -27,7 +27,9 @@ public class SimpleRpgClass extends RpgClass {
 	private Map<RpgActionType, Set<Material>> permits = new EnumMap<>(RpgActionType.class);
 	private Map<StatType, Integer> coreStats = new EnumMap<>(StatType.class);
 	private Map<String, Integer> stats = new HashMap<>();
-	private Metadata<String> metadata = new Metadata();
+	private Metadata<String> metadata = new Metadata<>();
+	private Metadata<String> healthMeta = new Metadata<>();
+	private Metadata<String> energyMeta = new Metadata<>();
 
 	protected SimpleRpgClass(String fqn, boolean restricted) {
 		File f = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
@@ -80,6 +82,14 @@ public class SimpleRpgClass extends RpgClass {
 
 			permits.put(action, p);
 		}
+
+		if (conf.isConfigurationSection("vitals.meters.health"))
+			for (String key : conf.getConfigurationSection("vitals.meters.health").getKeys(true))
+				healthMeta.set(key, conf.get("vitals.meters.health." + key));
+
+		if (conf.isConfigurationSection("vitals.meters.energy"))
+			for (String key : conf.getConfigurationSection("vitals.meters.energy").getKeys(true))
+				energyMeta.set(key, conf.get("vitals.meters.energy." + key));
 	}
 
 	public String getName() {
