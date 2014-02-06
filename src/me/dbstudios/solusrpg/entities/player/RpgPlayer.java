@@ -136,7 +136,7 @@ public interface RpgPlayer {
 
 	/**
 	 * Gets the "real" level (stat level + bonuses) of the core stat with the given {@link StatType}.
-	 * 
+	 *
 	 * @param  type the core stat to look up
 	 * @return      the integer level, with bonuses, of the core stat
 	 */
@@ -196,7 +196,7 @@ public interface RpgPlayer {
 	 *
 	 * In addition to removing the modifier, this method should also call the PlayerModifer#unmodify method on
 	 * each modifier before removing it.
-	 * 
+	 *
 	 * @param  modifier the modifier to clean and remove
 	 * @return          object reference for method chaining
 	 */
@@ -302,4 +302,15 @@ public interface RpgPlayer {
 	 * @return object reference for method chaining
 	 */
 	public RpgPlayer save();
+
+	/**
+	 * This method should ONLY be called when removing an RpgPlayer from the game.
+	 *
+	 * The goal of this method is to clean up any remaining tasks or outstanding events
+	 * that was being utilized by the player.
+	 *
+	 * After this method is called, the {@link RpgPlayer} object <strong>is no longer guaranteed to be
+	 * valid or viable</strong>. As such, any behavior after this method is called considered undefined.
+	 */
+	public void close();
 }

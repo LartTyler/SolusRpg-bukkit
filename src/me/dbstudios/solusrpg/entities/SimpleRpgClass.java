@@ -31,7 +31,7 @@ public class SimpleRpgClass extends RpgClass {
 	private Metadata<String> healthMeta = new Metadata<>();
 	private Metadata<String> energyMeta = new Metadata<>();
 
-	protected SimpleRpgClass(String fqn, boolean restricted) {
+	public SimpleRpgClass(String fqn, boolean restricted) {
 		File f = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
 
 		if (!f.exists())

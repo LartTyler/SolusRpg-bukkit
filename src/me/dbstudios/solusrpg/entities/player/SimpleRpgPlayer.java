@@ -32,8 +32,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 public class SimpleRpgPlayer implements RpgPlayer {
-	private static final Map<UUID, RpgPlayer> players = new HashMap<>();
-
 	private final Map<RpgActionType, Set<Material>> permits = new EnumMap<>(RpgActionType.class);
 	private final Map<StatType, Integer> coreStats = new EnumMap<>(StatType.class);
 	private final Set<PlayerModifier> modifiers = new HashSet<>();
@@ -44,7 +42,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	private ExperienceScaler expScaler = null;
 	private RpgClass rpgClass = null;
 
-	private SimpleRpgPlayer(Player basePlayer) {
+	public SimpleRpgPlayer(Player basePlayer) {
 		this.basePlayer = basePlayer;
 
 		File f = new File(Directories.getPlayerDataDir(basePlayer.getName()) + "player.yml");
@@ -188,7 +186,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 			else
 				level += scaler.getBonus(this.getRealStatLevel(scaler.getIdentifier()));
 
-		return level;
+		return level + rpgClass.getStatLevel(stat);
 	}
 
 	public int getStatLevel(String fqn) {
@@ -196,7 +194,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public int getStatLevel(StatType type) {
-		return coreStats.get(type);
+		return coreStats.get(type) + rpgClass.getStatLevel(type);
 	}
 
 	public RpgPlayer setStatLevel(AuxStat stat, int level) {
@@ -331,19 +329,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this;
 	}
 
-	public static RpgPlayer getOrCreate(Player basePlayer) {
-		if (players.containsKey(basePlayer.getUniqueId()))
-			return players.get(basePlayer.getUniqueId());
+	public void close() {
 
-		RpgPlayer player = new SimpleRpgPlayer(basePlayer);
-		players.put(basePlayer.getUniqueId(), player);
-
-		return player;
-	}
-
-	public static void destroy(RpgPlayer player) {
-		player.save();
-
-		players.remove(player.getBasePlayer().getUniqueId());
 	}
 }
