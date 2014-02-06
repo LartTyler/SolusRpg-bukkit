@@ -16,10 +16,12 @@ public interface RpgClass {
 	public boolean isAllowed(RpgActionType action, Material material);
 	public int getHealth();
 	public String getHealthName();
+	public boolean hasHealthRegeneration();
 	public double getHealthRegenRate();
 	public String getHealthRegenFormula();
 	public int getEnergy();
 	public String getEnergyName();
+	public boolean hasEnergyRegeneration();
 	public double getEnergyRegenRate();
 	public String getEnergyRegenFormula();
 }

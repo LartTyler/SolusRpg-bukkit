@@ -1,0 +1,9 @@
+str:
+    modifies:
+        physical-damage: "1 + 5 * ln(level)"
+con:
+    modifies:
+        health: "5 * level"
+wis:
+    modifies:
+        energy: "10 * level"

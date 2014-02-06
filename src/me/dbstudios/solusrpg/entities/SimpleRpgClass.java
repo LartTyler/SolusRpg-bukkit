@@ -119,4 +119,44 @@ public class SimpleRpgClass extends RpgClass {
 	public boolean isAllowed(RpgActionType action, Material material) {
 		return permits.get(action).contains(material);
 	}
+
+	public int getHealth() {
+		return healthMeta.getAsType("base", 20, Integer.class);
+	}
+
+	public String getHealthName() {
+		return healthMeta.getAsType("name", "Health", String.class);
+	}
+
+	public boolean hasHealthRegeneration() {
+		return healthMeta.getAsType("regen.enabled", true, Boolean.class) && this.getHealthRegenRate() >= 0.05;
+	}
+
+	public double getHealthRegenRate() {
+		return healthMeta.getAsType("regen.rate", 5.0, Double.class);
+	}
+
+	public String getHealthRegenFormula() {
+		return healthMeta.getAsType("regen.formula", "max * 0.1", String.class);
+	}
+
+	public int getEnergy() {
+		return energyMeta.getAsType("base", 100, Integer.class);
+	}
+
+	public String getEnergyName() {
+		return energyMeta.getAsType("name", "Energy", String.class);
+	}
+
+	public boolean hasEnergyRegeneration() {
+		return energyMeta.getAsType("regen.enabled", true, Boolean.class) && this.getEnergyRegenRate() >= 0.05;
+	}
+
+	public double getEnergyRegenRate() {
+		return energyMeta.getAsType("regen.rate", 5.0, Double.class);
+	}
+
+	public String getEnergyRegenFormula() {
+		return energyMeta.getAsType("regen.formula", "max * 0.05", String.class);
+	}
 }

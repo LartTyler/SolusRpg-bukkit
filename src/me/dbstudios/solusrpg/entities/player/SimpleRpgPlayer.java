@@ -18,6 +18,7 @@ import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.config.Metadata;
 import me.dbstudios.solusrpg.entities.RpgClass;
+import me.dbstudios.solusrpg.entities.meters.HealthMeter;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.entities.stats.StatScaler;
 import me.dbstudios.solusrpg.entities.stats.StatType;
@@ -100,8 +101,6 @@ public class SimpleRpgPlayer implements RpgPlayer {
 
 			permits.put(action, p);
 		}
-
-
 	}
 
 	public Player getBasePlayer() {
