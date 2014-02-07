@@ -4,6 +4,11 @@ str:
 con:
     modifies:
         health: "5 * level"
+        physical-resistance: "1 + 2 * ln(level)"
+        ranged-resistance: "1 + 1.5 * ln(level)"
+dex:
+    modifier:
+        ranged-damage: "1 + 5.5 * ln(level)"
 wis:
     modifies:
         energy: "10 * level"
