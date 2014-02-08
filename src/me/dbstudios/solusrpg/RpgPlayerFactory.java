@@ -19,11 +19,11 @@ import org.bukkit.entity.Player;
 public final class RpgPlayerFactory {
 	private static final Map<UUID, RpgPlayer> players = new HashMap<>();
 
-	private static final Class<? extends RpgPlayer> playerClass;
+	private static Class<? extends RpgPlayer> playerClass;
 
 	static {
 		long initStart = System.currentTimeMillis();
-		String name = Configuration.getAs("factory.player", "me.dbstudios.solusrpg.entities.player.SimpleRpgPlayer");
+		String name = Configuration.getAs("factory.player", String.class, "me.dbstudios.solusrpg.entities.player.SimpleRpgPlayer");
 
 		try {
 			Class<?> cl = Class.forName(name);
@@ -46,8 +46,8 @@ public final class RpgPlayerFactory {
 	}
 
 	public static RpgPlayer getPlayer(Player player) {
-		if (players.containsKey(uid))
-			return players.get(uid);
+		if (players.containsKey(player.getUniqueId()))
+			return players.get(player.getUniqueId());
 
 		RpgPlayer p = null;
 
@@ -55,7 +55,7 @@ public final class RpgPlayerFactory {
 			Constructor<? extends RpgPlayer> ctor = playerClass.getConstructor(Player.class);
 
 			p = ctor.newInstance(player);
-		} catch (NoSuchMethodException e) {
+		} catch (Exception e) {
 			SolusRpg.log(Level.SEVERE, String.format("Factory target class %s has no constructor capable of accepting %s as an argument.", playerClass.getName(), player.getClass().getName()));
 
 			if (Configuration.is("logging.verbose"))

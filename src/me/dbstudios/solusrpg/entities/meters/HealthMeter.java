@@ -4,6 +4,7 @@ import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.util.math.Expression;
 
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitTask;
 
 public class HealthMeter implements VitalMeter {
 	private Expression regenFormula;
@@ -12,7 +13,7 @@ public class HealthMeter implements VitalMeter {
 	private long regenRate;
 	private int max;
 	private int current;
-	private int taskId;
+	private BukkitTask task;
 
 	public HealthMeter(int max, String regenFormula, long regenRate, String meterName) {
 		this.max = max;
@@ -29,7 +30,7 @@ public class HealthMeter implements VitalMeter {
 					.eval()
 			);
 
-			this.taskId = Bukkit.getScheduler().runTaskTimerAsynchronously(SolusRpg.getInstance(), new RegenerationTask(this), 0, regenRate);
+			this.task = Bukkit.getScheduler().runTaskTimerAsynchronously(SolusRpg.getInstance(), new RegenerationTask(this), 0, regenRate);
 		}
 	}
 

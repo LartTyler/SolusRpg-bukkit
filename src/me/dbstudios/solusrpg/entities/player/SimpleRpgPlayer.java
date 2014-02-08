@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.RpgClassFactory;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
@@ -81,7 +82,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		RpgClass rpgClass = null;
 
 		if (conf.isString("vitals.class"))
-			rpgClass = RpgClass.getByFQN(Util.toQualifiedName(conf.getString("vitals.class")));
+			rpgClass = RpgClassFactory.getByFQN(Util.toQualifiedName(conf.getString("vitals.class")));
 
 		this.rpgClass = rpgClass;
 

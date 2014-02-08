@@ -1,6 +1,7 @@
 package me.dbstudios.solusrpg;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,6 +13,7 @@ import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.entities.RpgClass;
 import me.dbstudios.solusrpg.entities.SimpleRpgClass;
+import me.dbstudios.solusrpg.exceptions.CreationException;
 import me.dbstudios.solusrpg.util.Util;
 
 import org.bukkit.configuration.file.FileConfiguration;
@@ -21,17 +23,18 @@ public final class RpgClassFactory {
 	private static final Map<String, RpgClass> classes = new HashMap<>();
 	private static final Map<String, String> dnameLookup = new HashMap<>();
 	private static final Map<String, Set<RpgClass>> findCache = new HashMap<>();
-	private static final Class<? extends RpgClass> rpgClass;
+
+	private static Class<? extends RpgClass> rpgClass;
 
 	static {
 		long initStart = System.currentTimeMillis();
-		String name = Configuration.getAs("factory.rpg-class", "me.dbstudios.solusrpg.entities.SimpleRpgClass");
+		String name = Configuration.getAs("factory.rpg-class", String.class, "me.dbstudios.solusrpg.entities.SimpleRpgClass");
 
 		try {
 			Class<?> cl = Class.forName(name);
 
 			if (RpgClass.class.isAssignableFrom(cl))
-				rpgclass = cl.asSubclass(RpgClass.class);
+				rpgClass = cl.asSubclass(RpgClass.class);
 		} catch (Exception e) {
 			SolusRpg.log(Level.SEVERE, String.format("Could not get class '%s'; please check your configuration and restart the server.", name));
 
@@ -51,12 +54,12 @@ public final class RpgClassFactory {
 
 		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
-		for (String name : conf.getStringList("classes.enabled")) {
-			String fqn = Util.toQualifiedName(name);
+		for (String className : conf.getStringList("classes.enabled")) {
+			String fqn = Util.toQualifiedName(className);
 			File classFile = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
 
 			if (!classFile.exists()) {
-				SolusRpg.log(Level.WARNING, String.format("I could not find a configuration for %s using fully-qualified name '%s'.", name, fqn));
+				SolusRpg.log(Level.WARNING, String.format("I could not find a configuration for %s using fully-qualified name '%s'.", className, fqn));
 
 				continue;
 			}
@@ -72,7 +75,7 @@ public final class RpgClassFactory {
 
 				if (Configuration.is("logging.verbose"))
 					e.printStackTrace();
-			} catch (NoSuchMethodException e) {
+			} catch (Exception e) {
 				SolusRpg.log(Level.SEVERE, String.format("%s has no constructor capable of accepting a String as it's argument! THIS IS VERY, VERY BAD!!!", rpgClass.getName()));
 
 				if (Configuration.is("logging.verbose"))

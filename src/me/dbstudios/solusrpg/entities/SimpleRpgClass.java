@@ -21,7 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class SimpleRpgClass extends RpgClass {
+public class SimpleRpgClass implements RpgClass {
 	private final String fullyQualifiedName;
 
 	private Map<RpgActionType, Set<Material>> permits = new EnumMap<>(RpgActionType.class);
@@ -121,42 +121,42 @@ public class SimpleRpgClass extends RpgClass {
 	}
 
 	public int getHealth() {
-		return healthMeta.getAsType("base", 20, Integer.class);
+		return healthMeta.getAsType("base", Integer.class, 20);
 	}
 
 	public String getHealthName() {
-		return healthMeta.getAsType("name", "Health", String.class);
+		return healthMeta.getAsType("name", String.class, "Health");
 	}
 
 	public boolean hasHealthRegeneration() {
-		return healthMeta.getAsType("regen.enabled", true, Boolean.class) && this.getHealthRegenRate() >= 0.05;
+		return healthMeta.getAsType("regen.enabled", Boolean.class, true) && this.getHealthRegenRate() >= 0.05;
 	}
 
 	public double getHealthRegenRate() {
-		return healthMeta.getAsType("regen.rate", 5.0, Double.class);
+		return healthMeta.getAsType("regen.rate", Double.class, 5.0);
 	}
 
 	public String getHealthRegenFormula() {
-		return healthMeta.getAsType("regen.formula", "max * 0.1", String.class);
+		return healthMeta.getAsType("regen.formula", String.class, "max * 0.1");
 	}
 
 	public int getEnergy() {
-		return energyMeta.getAsType("base", 100, Integer.class);
+		return energyMeta.getAsType("base", Integer.class, 100);
 	}
 
 	public String getEnergyName() {
-		return energyMeta.getAsType("name", "Energy", String.class);
+		return energyMeta.getAsType("name", String.class, "Energy");
 	}
 
 	public boolean hasEnergyRegeneration() {
-		return energyMeta.getAsType("regen.enabled", true, Boolean.class) && this.getEnergyRegenRate() >= 0.05;
+		return energyMeta.getAsType("regen.enabled", Boolean.class, true) && this.getEnergyRegenRate() >= 0.05;
 	}
 
 	public double getEnergyRegenRate() {
-		return energyMeta.getAsType("regen.rate", 5.0, Double.class);
+		return energyMeta.getAsType("regen.rate", Double.class, 5.0);
 	}
 
 	public String getEnergyRegenFormula() {
-		return energyMeta.getAsType("regen.formula", "max * 0.05", String.class);
+		return energyMeta.getAsType("regen.formula", String.class, "max * 0.05");
 	}
 }
