@@ -19,7 +19,9 @@ import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.config.Metadata;
 import me.dbstudios.solusrpg.entities.RpgClass;
-import me.dbstudios.solusrpg.entities.meters.HealthMeter;
+import me.dbstudios.solusrpg.entities.resources.EnergyResource;
+import me.dbstudios.solusrpg.entities.resources.HealthResource;
+import me.dbstudios.solusrpg.entities.resources.Resource;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.entities.stats.StatScaler;
 import me.dbstudios.solusrpg.entities.stats.StatType;
@@ -36,6 +38,7 @@ import org.bukkit.entity.Player;
 public class SimpleRpgPlayer implements RpgPlayer {
 	private final Map<RpgActionType, Set<Material>> permits = new EnumMap<>(RpgActionType.class);
 	private final Map<StatType, Integer> coreStats = new EnumMap<>(StatType.class);
+	private final Map<String, Resource> resources = new HashMap<>();
 	private final Set<PlayerModifier> modifiers = new HashSet<>();
 	private final Map<String, Integer> stats = new HashMap<>();
 	private final Metadata<String> metadata = new Metadata<>();
@@ -300,6 +303,32 @@ public class SimpleRpgPlayer implements RpgPlayer {
 
 	public RpgClass getRpgClass() {
 		return this.rpgClass;
+	}
+
+	public HealthResource getHealth() {
+		Resource r = this.getResource("health");
+
+		if (r instanceof HealthResource)
+			return (HealthResource)r;
+
+		return null;
+	}
+
+	public EnergyResource getEnergy() {
+		Resource r = this.getResource("energy");
+
+		if (r instanceof EnergyResource)
+			return (EnergyResource)r;
+
+		return null;
+	}
+
+	public Resource getResource(String name) {
+		return resources.get(name);
+	}
+
+	public Collection<Resource> getResources() {
+		return Collections.unmodifiableCollection(resources.values());
 	}
 
 	public RpgPlayer save() {

@@ -6,6 +6,9 @@ import java.util.Set;
 import me.dbstudios.solusrpg.entities.RpgClass;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.entities.stats.StatType;
+import me.dbstudios.solusrpg.entities.resources.HealthResource;
+import me.dbstudios.solusrpg.entities.resources.EnergyResource;
+import me.dbstudios.solusrpg.entities.resources.Resource;
 import me.dbstudios.solusrpg.events.player.RpgActionType;
 
 import org.bukkit.Material;
@@ -295,6 +298,41 @@ public interface RpgPlayer {
 	 * @return the {@link RpgClass} of the player
 	 */
 	public RpgClass getRpgClass();
+
+	/**
+	 * Gets the {@link HealthResource} in charge of managing the player's health.
+	 * 
+	 * This method will return <code>null</code> if a {@link HealthResource} does not exist, or has
+	 * been overridden improperly.
+	 * 
+	 * @return the {@link HealthResource} backing the player's health
+	 */
+	public HealthResource getHealth();
+
+	/**
+	 * Gets the {@link EnergyResource} in charge of managing the player's energy.
+	 * 
+	 * This method will return <code>null</code> if an {@link EnergyResource} does not exist, or has
+	 * been overridden improperly.
+	 * 
+	 * @return the {@link EnergyResource} backing the player's energy
+	 */
+	public EnergyResource getEnergy();
+
+	/**
+	 * Gets a named {@link Resource} tracking one of the player's resources.
+	 * 
+	 * @param  name the {@link Resource} to get
+	 * @return      the resource, or <code>null</code> if one was not found
+	 */
+	public Resource getResource(String name);
+
+	/**
+	 * Gets {@link Collection} view of all the {@link Resource Resources} the player currently has.
+	 * 
+	 * @return a collection of all the player's {@link Resource Resources}
+	 */
+	public Collection<Resource> getResources();
 
 	/**
 	 * Saves non-transient player data to file.
