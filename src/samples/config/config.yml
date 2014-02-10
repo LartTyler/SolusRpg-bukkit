@@ -1,9 +1,30 @@
 configuration:
+    color:
+        primary: green
+        secondary: aqua
     logging:
         verbose: false
     factory:
         player: me.dbstudios.solusrpg.entities.player.SimpleRpgPlayer
         rpg-class: me.dbstudios.solusrpg.entities.SimpleRpgClass
+        channel-logger: me.dbstudios.solusrpg.chat.ChatChannelLogger
+chat:
+    enabled: true
+    # Valid channel names are either:
+    #   - the fully-qualified "GlobalChannel" variant
+    #   - The display name of the channel (i.e. "Global" or "Server Announcements")
+    #
+    # Configurations for each will be found using the following:
+    #   Spaces and special characters (as matched by /[_,.-]/) will be stripped ("Server Accouncements" -> "ServerAnnouncements")
+    #   If the name does not end with "Channel" (case sensitive)...
+    #       Append "Channel" to the name ("Gobal" -> "GlobalChannel")
+    #   The channels directory (%rootdir%/config/channels/) is examined for ChannelName.yml ("GlobalChannel.yml")
+    #   If a configuration is not found, an error will be emitted and Solus will proceed to the next entry
+    channels:
+        - Global
+        - Whisper
+        - Local
+        - Yell
 classes:
     # Valid class names are either:
     #   - The fully-qualified "KnightClass" variant

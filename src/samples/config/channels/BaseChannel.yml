@@ -1,0 +1,10 @@
+formatting:
+    message: "{primary-color}[{symbol}] {secondary-color}{sender}: {message}"
+    page: "{secondary-color}{page}"
+    # Page styles can be used to decide how SolusRpg breaks up long chat messages into individual pages.
+    #
+    # Possible values are:
+    #  word-break           - attempt to start the following page with an entire word, rather than
+    #                           truncating the message wherever the length limit forces it to be
+    #   - length-break      - default action; truncate the message at the length limit
+    page-style: word-break

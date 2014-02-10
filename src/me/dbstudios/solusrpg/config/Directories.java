@@ -5,6 +5,7 @@ import java.io.File;
 public enum Directories {
 	BASE("plugins::dbstudios::SolusRpg::"),
 	CONFIG(BASE + "config::"),
+	CONFIG_CHANNELS(CONFIG + "channels::"),
 	CONFIG_CLASSES(CONFIG + "classes::"),
 	CONFIG_STATS(CONFIG + "stats::"),
 	DATA(BASE + "data::"),

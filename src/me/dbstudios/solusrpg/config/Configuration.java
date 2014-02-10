@@ -9,6 +9,7 @@ import java.util.logging.Level;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.util.Initializable;
 
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -71,6 +72,59 @@ public final class Configuration extends Initializable {
 
 	public static <T> T getAs(String key, Class<T> type, T def) {
 		return metadata.getAsType(key, type, def);
+	}
+
+	public static String getAsString(String key) {
+		return Configuration.getAs(key, String.class);
+	}
+
+	public static String getAsString(String key, String def) {
+		return Configuration.getAs(key, String.class, def);
+	}
+
+	public static Integer getAsInt(String key) {
+		return Configuration.getAs(key, Integer.class);
+	}
+
+	public static Integer getAsInt(String key, Integer def) {
+		return Configuration.getAs(key, Integer.class, def);
+	}
+
+	public static Double getAsDouble(String key) {
+		return Configuration.getAs(key, Double.class);
+	}
+
+	public static Double getAsDouble(String key, Double def) {
+		return Configuration.getAs(key, Double.class, def);
+	}
+
+	public static ChatColor getAsChatColor(String key) {
+		return Configuration.getAsChatColor(key, ChatColor.WHITE);
+	}
+
+	public static ChatColor getAsChatColor(String key, ChatColor def) {
+		if (!metadata.has(key))
+			return def;
+
+		if (metadata.hasOfType(key, ChatColor.class))
+			return Configuration.getAs(key, ChatColor.class);
+
+		String name = metadata.getAsType(key, String.class);
+
+		try {
+			ChatColor color = ChatColor.valueOf(name);
+
+			Configuration.set(key, color);
+
+			return color;
+		} catch (Exception e) {
+			SolusRpg.log(Level.WARNING, String.format("ChatColor expected at %s; got %s.", key, name));
+
+			if (Configuration.is("logging.enabled"))
+				e.printStackTrace();
+		}
+
+		return def;
 	}
 
 	public static void set(String key, Object value) {

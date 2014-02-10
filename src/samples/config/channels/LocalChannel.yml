@@ -1,0 +1,34 @@
+# The fully-qualified name of a channel to extend.
+#
+# The channel named here does NOT have to be loaded or enabled; it's configuration will be loaded
+# at runtime and used to write missing nodes in this channel's configuration.
+#
+# Extension can only be a single parent deep. If the parent channel has an extends directive, it will
+# be ignored.
+extends: BaseChannel
+metadata:
+    display-name: Local
+    symbol: L
+distortion:
+    enabled: true
+    # The maximum range a message can be sent out. No player beyond this number of blocks will recieve
+    # the message.
+    #
+    # A value of zero or less indicates that there is no range limit.
+    max-range: 15
+    # The distortion algorithm is used to determine the chance that a character in a message packet will
+    # be distorted.
+    algorithm: 1.32 ^ distance - 4
+    threshold:
+        # The minimum distance from the message source a player must be before distortion occurs.
+        #
+        # A value of zero or less indicates that there is no distance threshold.
+        distance: 5
+        # The minimum chance of character distortion that must be reached before a character will be
+        # tested for distortion.
+        #
+        # In other words, distort chance must be greater than the value of this node before a character
+        # has a chance to be distorted.
+        #
+        # A value of zero or less indicates that there is no chance threshold.
+        chance: 15
