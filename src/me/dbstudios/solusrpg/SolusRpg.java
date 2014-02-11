@@ -1,5 +1,6 @@
 package me.dbstudios.solusrpg;
 
+import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -13,6 +14,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class SolusRpg extends JavaPlugin {
 	private static final Logger logger = Logger.getLogger("Minecraft");
+	private static final Class<?>[] init = new Class<?>[] {
+		Configuration.class,
+		LanguageManager.class,
+		AuxStatFactory.class,
+		RpgClassFactory.class,
+		RpgPlayerFactory.class
+	};
+
 	private static SolusRpg instance = null;
 
 	public void onEnable() {
@@ -23,10 +32,16 @@ public class SolusRpg extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new EventDistributor(), this);
 		Bukkit.getPluginManager().registerEvents(new RpgStockListener(), this);
 
-		AuxStat.initialize();
-		LanguageManager.initialize();
-		RpgClassFactory.initialize();
-		RpgPlayerFactory.initialize();
+		for (Class<?> cl : init)
+			try {
+				cl.getMethod("initialize", null).invoke(null, null);
+			} catch (Exception e) {
+				SolusRpg.log(Level.SEVERE, String.format("Could not initialize required class %s; SolusRpg will be disabled until server restart", cl.getSimpleName()));
+
+				e.printStackTrace();
+
+				Bukkit.getPluginManager().disablePlugin(this);
+			}
 
 		SolusRpg.log("Successfully loaded in {0} milliseconds.", System.currentTimeMillis() - loadStart);
 	}
