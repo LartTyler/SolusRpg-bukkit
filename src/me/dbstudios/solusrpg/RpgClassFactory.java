@@ -63,7 +63,7 @@ public final class RpgClassFactory {
 		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		for (String className : conf.getStringList("classes.enabled")) {
-			String fqn = Util.toQualifiedName(className);
+			String fqn = Util.toQualifiedName(className, "Class");
 			File classFile = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
 
 			if (!classFile.exists()) {

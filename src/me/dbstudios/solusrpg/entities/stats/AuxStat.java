@@ -1,295 +1,203 @@
 package me.dbstudios.solusrpg.entities.stats;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-
-import me.dbstudios.solusrpg.SolusRpg;
-import me.dbstudios.solusrpg.config.Configuration;
-import me.dbstudios.solusrpg.config.Directories;
-import me.dbstudios.solusrpg.config.Metadata;
-import me.dbstudios.solusrpg.entities.player.RpgPlayer;
-import me.dbstudios.solusrpg.events.player.RpgPlayerAuxStatLevelEvent;
-import me.dbstudios.solusrpg.events.player.RpgPlayerCoreStatLevelEvent;
-import me.dbstudios.solusrpg.exceptions.CreationException;
-import me.dbstudios.solusrpg.util.Util;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-public class AuxStat {
-	private static Map<String, AuxStat> stats = new HashMap<>();
-	private static Map<String, String> displayNameLookup = new HashMap<>();
-	private static Map<String, String> pathNameLookup = new HashMap<>();
-	private static boolean initialized = false;
-
-	private final String fullyQualifiedName;
-
-	private Metadata<String> metadata = new Metadata<>();
-	private List<StatScaler> scalers = new ArrayList<>();
-	private Map<Integer, StatRank> ranks = new HashMap<>();
-
-	public static void initialize() {
-		if (initialized)
-			return;
-
-		long initStart = System.currentTimeMillis();
-
-		File f = new File(Directories.CONFIG + "config.yml");
-
-		if (!f.exists()) {
-			SolusRpg.log(Level.SEVERE, "I could not find required file 'config.yml'; if I did not unpack a copy for you, please report this issue to my Creator.");
-
-			return;
-		}
-
-		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
-
-		for (String name : conf.getStringList("aux-stats.enabled")) {
-			String qualifiedName = Util.toQualifiedName(name, "Stat");
-
-			File statFile = new File(Directories.CONFIG_STATS + qualifiedName + ".yml");
-
-			if (!statFile.exists()) {
-				SolusRpg.log(Level.WARNING, String.format("I could not find a configuration for %s using fully-qualified name '%s'.", name, qualifiedName));
-
-				continue;
-			}
-
-			AuxStat stat = null;
-
-			try {
-				stat = new AuxStat(qualifiedName);
-
-				stats.put(qualifiedName, stat);
-
-				pathNameLookup.put(stat.getPathName(), qualifiedName);
-				displayNameLookup.put(stat.getDisplayName(), qualifiedName);
-			} catch (CreationException e) {
-				SolusRpg.log(Level.WARNING, String.format("I encountered an exception while initializing %s; please check the configuration file for errors.", qualifiedName));
-
-				if (Configuration.is("logging.verbose"))
-					e.printStackTrace();
-			}
-		}
-
-		for (AuxStat stat : AuxStat.getAllAuxStats())
-			stat
-				.validateScalers()
-				.validateRanks();
-
-		initialized = true;
-
-		SolusRpg.log(String.format("Auxiliary stats initialized in %d milliseconds.", System.currentTimeMillis() - initStart));
-	}
-
-	private AuxStat(String fqn) {
-		File f = new File(Directories.CONFIG_STATS + fqn + ".yml");
-
-		if (!f.exists())
-			throw new CreationException(String.format("No configuration file found for auxiliary stat with qualified name '%s'.", fqn));
-
-		this.fullyQualifiedName = fqn;
-
-		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
-
-		if (conf.isConfigurationSection("metadata"))
-			for (String key : conf.getConfigurationSection("metadata").getKeys(true))
-				metadata.set(key, conf.get("metadata." + key));
-
-		if (!metadata.hasOfType("display-name", String.class))
-			SolusRpg.log(Level.WARNING, String.format("%s does not have a display name explicitly defined; '%s' will be used, though it is recommended that you set one", fqn, this.getDisplayName()));
-
-		if (!metadata.hasOfType("path-name", String.class))
-			SolusRpg.log(Level.WARNING, String.format("%s does not have a path name explicitly defined; '%s' will be used, thought it is recommended that you set one", fqn, this.getPathName()));
-
-		for (String ident : conf.getConfigurationSection("scaling.core-stats").getKeys(false)) {
-			StatType type = StatType.fromAbbreviation(ident);
-
-			if (type != null)
-				try {
-					scalers.add(new StatScaler(type, conf.getString("scaling.core-stats." + ident)));
-				} catch (CreationException e) {
-					if (Configuration.is("logging.verbose"))
-						e.printStackTrace();
-				}
-			else
-				SolusRpg.log(Level.WARNING, String.format("'%s' is not a valid identifier for a core stat; please make sure you've used the abbreviation in the core stat scaling definition.", ident));
-		}
-
-		for (String ident : conf.getConfigurationSection("scaling.aux-stats").getKeys(false))
-			try {
-				scalers.add(new StatScaler(ident, conf.getString("scaling.aux-stats." + ident)));
-			} catch (CreationException e) {
-				if (Configuration.is("logging.verbose"))
-					e.printStackTrace();
-			}
-
-		metadata.set("rank-cap", conf.getInt("ranks.rank-cap", 0));
-
-		for (String key : conf.getConfigurationSection("ranks").getKeys(false))
-			try {
-				int rankLevel = Integer.parseInt(key);
-				StatRank rank = new StatRank(this, rankLevel);
-
-				ranks.put(rankLevel, rank);
-			} catch (CreationException e) {
-				if (Configuration.is("logging.verbose"))
-					e.printStackTrace();
-			} catch (NumberFormatException e) {
-				SolusRpg.log(Level.WARNING, String.format("'%s' is not a valid rank level for %s; ranks must be an integer.", key, this.getDisplayName()));
-
-				if (Configuration.is("logging.verbose"))
-					e.printStackTrace();
-			}
-	}
-
-	public String getName() {
-		return this.fullyQualifiedName;
-	}
-
-	public String getDisplayName() {
-		return metadata.getAsType("display-name", String.class, this.fullyQualifiedName);
-	}
-
-	public String getPathName() {
-		return metadata.getAsType("path-name", String.class, Util.toPathName(this.getDisplayName()));
-	}
-
-	public int getRankCap() {
-		return metadata.getAsType("rank-cap", Integer.class, 0);
-	}
-
-	public boolean isRankCapped() {
-		return this.getRankCap() > 0;
-	}
-
-	public void applyRank(int rank, RpgPlayer target) {
-		if (!ranks.containsKey(rank))
-			return;
-
-		ranks.get(rank).applyRank(target);
-	}
-
-	public void removeRank(int rank, RpgPlayer target) {
-		if (!ranks.containsKey(rank))
-			return;
-
-		ranks.get(rank).removeRank(target);
-	}
-
-	public StatScaler getScalerFor(String fqn) {
-		return this.getScalerFor(AuxStat.getByFQN(fqn));
-	}
-
-	public StatScaler getScalerFor(AuxStat auxStat) {
-		for (StatScaler scaler : this.scalers)
-			if (!scaler.isCoreStatScaler() && auxStat.getName().equals(scaler.getIdentifier()))
-				return scaler;
-
-		return null;
-	}
-
-	public StatScaler getScalerFor(StatType coreStat) {
-		for (StatScaler scaler : this.scalers)
-			if (scaler.isCoreStatScaler() && coreStat == scaler.getCoreStatType())
-				return scaler;
-
-		return null;
-	}
-
-	public List<StatScaler> getStatScalers() {
-		return Collections.unmodifiableList(this.scalers);
-	}
-
-	public boolean hasScalerFor(String fqn) {
-		return this.hasScalerFor(AuxStat.getByFQN(fqn));
-	}
-
-	public boolean hasScalerFor(AuxStat auxStat) {
-		return this.getScalerFor(auxStat) != null;
-	}
-
-	public boolean hasScalerFor(StatType coreStat) {
-		return this.getScalerFor(coreStat) != null;
-	}
-
-	// -------- Post-initialization methods ----------
-
-	protected AuxStat validateScalers() {
-		for (StatScaler scaler : scalers)
-			if (!scaler.isCoreStatScaler() && AuxStat.getByFQN(scaler.getIdentifier()) == null) {
-				scalers.remove(scaler);
-
-				SolusRpg.log(
-					Level.WARNING,
-					String.format("An invalid identifier '%s' was found in a stat scaler for %s; it has been removed, but it is recommended that you remove the unnecessary definition.", scaler.getIdentifier(), this.getName())
-				);
-			} else if (!scaler.isCoreStatScaler() && AuxStat.getByFQN(scaler.getIdentifier()) == this) {
-				scalers.remove(scaler);
-
-				SolusRpg.log(Level.WARNING, String.format("A circular scaler reference was detected in %s; it has been removed, but it is recommended that you remove the unnecessary definition.", this.getName()));
-			}
-
-		return this;
-	}
-
-	protected AuxStat validateRanks() {
-		for (StatRank rank : ranks.values())
-			rank.validateRequirements();
-
-		return this;
-	}
-
-	// -------- Static factory methods ------------
-
-	public static Set<String> getQualifiedNames() {
-		return stats.keySet();
-	}
-
-	public static Set<String> getDisplayNames() {
-		return displayNameLookup.keySet();
-	}
-
-	public static Set<String> getPathNames() {
-		return pathNameLookup.keySet();
-	}
-
-	public static AuxStat getByFQN(String fqn) {
-		return stats.get(fqn);
-	}
-
-	public static AuxStat getByDisplayName(String name) {
-		if (!displayNameLookup.containsKey(name))
-			return null;
-
-		return AuxStat.getByFQN(displayNameLookup.get(name));
-	}
-
-	public static AuxStat getByPathName(String path) {
-		if (!pathNameLookup.containsKey(path))
-			return null;
-
-		return AuxStat.getByFQN(pathNameLookup.get(path));
-	}
-
-	public static List<AuxStat> find(String name) {
-		List<String> search = Util.getFuzzyMatch(name, AuxStat.getDisplayNames());
-		List<AuxStat> matches = new ArrayList<>();
-
-		for (String s : search)
-			matches.add(AuxStat.getByDisplayName(s));
-
-		return matches;
-	}
-
-	public static Collection<AuxStat> getAllAuxStats() {
-		return stats.values();
-	}
+public interface AuxStat {
+	/**
+	 * Gets the fully-qualified name of the stat.
+	 *
+	 * @return the stat's fully-qualified name
+	 */
+	public String getName();
+
+	/**
+	 * Gets the display name of the stat.
+	 *
+	 * @return the stat's display name
+	 */
+	public String getDisplayName();
+
+	/**
+	 * Gets the path name of the stat.
+	 *
+	 * The path name is used anywhere the stat should appear in a YML configuration in order
+	 * to point to the stat (as opposed to referencing it by using the FQN, or the display name
+	 * which might contain invalid characters for a node name).
+	 *
+	 * @return gets the stat's path name
+	 */
+	public String getPathName();
+
+	/**
+	 * Gets the maximum level this stat can be on an entity.
+	 *
+	 * @return the stat's max possible rank
+	 */
+	public int getRankCap();
+
+	/**
+	 * Gets if the stat's rank should be capped, or if progression should not
+	 * be limited.
+	 *
+	 * @return true if the stat is capped, false otherwise
+	 */
+	public boolean isRankCapped();
+
+	/**
+	 * Applies the effects of this stat at the given rank to the player.
+	 *
+	 * @param  target the player to apply the stat rank to
+	 * @param  rank   the level of the stat being applied
+	 * @return        object reference for method chaining
+	 */
+	public AuxStat applyRank(RpgPlayer target, int rank);
+
+	/**
+	 * Removes the effects of this stat at the given rank from the player.
+	 *
+	 * @param  target the player to remove the stat rank from
+	 * @param  rank   the level of the stat being removed
+	 * @return        object reference for method chaining
+	 */
+	public AuxStat removeRank(RpgPlayer target, int rank);
+
+	/**
+	 * Gets the {@link StatScaler} associated with the <code>AuxStat</code> with the given fully-qualified name.
+	 *
+	 * @param  fqn the fully-qualified stat name to look up
+	 * @return     a {@link StatScaler} instance, or <code>null</code> if one does not exist
+	 */
+	public StatScaler getScalerFor(String fqn);
+
+	/**
+	 * Gets the {@link StatScaler} associated with the given <code>AuxStat</code>.
+	 *
+	 * @param  stat the auxiliary stat to look up
+	 * @return      a {@link StatScaler} instance, or <code>null</code> if one does not exist
+	 */
+	public StatScaler getScalerFor(AuxStat stat);
+
+	/**
+	 * Gets the {@link StatScaler} associated with the given {@link StatType}.
+	 *
+	 * @param  type the core stat ({@link StatType}) to look up
+	 * @return      a {@link StatScaler} instance, or <code>null</code> if one does not exist
+	 */
+	public StatScaler getScalerFor(StatType type);
+
+	/**
+	 * Adds a {@link StatScaler} for the auxiliary stat with the given fully-qualified name.
+	 *
+	 * If one already exists, the new {@link StatScaler} should override it. Additionally, all
+	 * implementations should ensure that player's stats are updated accordingly as
+	 * soon as possible; this is, however, an optional operation.
+	 *
+	 * @param  scaler the new {@link StatScaler} to add to this auxiliary stat
+	 * @param  fqn    the fully-qualified stat name to add the scaler under
+	 * @return        object reference for method chaining
+	 */
+	public AuxStat addStatScaler(StatScaler scaler, String fqn);
+
+	/**
+	 * Adds a {@link StatScaler} for the given auxiliary stat.
+	 *
+	 * If one already exists, the new {@link StatScaler} should override it. Additionally, all
+	 * implementations should ensure that player's stats are updated accordingly as
+	 * soon as possible; this is, however, an optional operation.
+	 *
+	 * @param  scaler the new {@link StatScaler} to add to this auxiliary stat
+	 * @param  stat   the auxiliary stat to add the scaler under
+	 * @return        object reference for method chaining
+	 */
+	public AuxStat addStatScaler(StatScaler scaler, AuxStat stat);
+
+	/**
+	 * Adds a {@link StatScaler} for the given core stat ({@link StatType}).
+	 *
+	 * If one already exists, the new {@link StatScaler} should override it. Additionally, all
+	 * implementations should ensure that player's stats are updated accordingly as
+	 * soon as possible; this is, however, an optional operation.
+	 *
+	 * @param  scaler the new {@link StatScaler} to add to this auxiliary stat
+	 * @param  type   the {@link StatType} to add the scaler under
+	 * @return        object reference for method chaining
+	 */
+	public AuxStat addStatScaler(StatScaler scaler, StatType type);
+
+	/**
+	 * Removes a {@link StatScaler} from this auxiliary stat.
+	 *
+	 * If one does not exist, implementations should fail silently.
+	 *
+	 * @param  fqn the fully-qualified auxiliary stat the scaler exists under
+	 * @return     object reference for method chaining
+	 */
+	public AuxStat removeStatScaler(String fqn);
+
+	/**
+	 * Removes a {@link StatScaler} from this auxiliary stat.
+	 * If one does not exist, implementations should fail silently.
+	 *
+	 * @param  stat the auxiliary stat that the scaler exists under
+	 * @return      object reference for method chaining
+	 */
+	public AuxStat removeStatScaler(AuxStat stat);
+
+	/**
+	 * Removes a {@link StatScaler} from this auxiliary stat.
+	 * If one does not exist, implementations should fail silently.
+	 *
+	 * @param  type the {@link StatType} of the core stat the scaler exists under
+	 * @return      object reference for method chaining
+	 */
+	public AuxStat removeStatScaler(StatType type);
+
+	/**
+	 * Checks if a {@link StatScaler} exists for the auxiliary stat with the given fully-qualified name.
+	 *
+	 * @param  fqn the fully-qualified name of the auxiliary stat to look up
+	 * @return     true if a scaler exists, false otherwise
+	 */
+	public boolean hasScalerFor(String fqn);
+
+	/**
+	 * Checks if a {@link StatScaler} exists for the given auxiliary stat.
+	 *
+	 * @param  stat the auxiliary stat to look up
+	 * @return      true if a scaler exists, false otherwise
+	 */
+	public boolean hasScalerFor(AuxStat stat);
+
+	/**
+	 * Checks if a {@link StatScaler} exists for the core stat with the given {@link StatType}.
+	 *
+	 * @param  type the {@link StatType} to look up
+	 * @return      true if a scaler exists, false otherwise
+	 */
+	public boolean hasScalerFor(StatType type);
+
+	/**
+	 * Gets a list view of all the {@link StatScaler}s associated with this stat.
+	 *
+	 * @return a list of all {@link StatScaler}s attached to this stat
+	 */
+	public List<StatScaler> getStatScalers();
+
+	/**
+	 * Validates the auxiliary stat and it's attached scalers and ranks.
+	 *
+	 * Since auxiliary stats are loaded sequentially, there may be some cases where stat ranks
+	 * or scalers are not fully initialized. For example:
+	 *
+	 * 		Heavy Weapon Forging depends on a rank of 50+ in Light Weapon Forging. However, due to
+	 * 		it's location in the stats list, HWF is loaded before LWF. When constructing rank
+	 * 		requirements, it would be impossible to get the dependency without messing up the load order.
+	 * 		Instead of implementing a complex fix for this, aux stats have a two part initialization. First,
+	 * 		they are created and their ranks and scalers use soft references to stats (i.e. a String containing
+	 * 		the fully-qualified name of the stat). Next, after all known aux stats have been loaded, the factory
+	 * 		iterates over all aux stats and calls the <code>AuxStat#validate()</code> method, telling
+	 * 		each stat to make sure that their ranks and scalers are referencing valid auxiliary stats. Any attachments
+	 * 		that do NOT reference a valid stat should be removed, and a warning should be emitted into the console.
+	 *
+	 * @return object reference for method chaining
+	 */
+	public AuxStat validate();
 }

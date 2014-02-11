@@ -50,7 +50,7 @@ public final class RpgChannelFactory {
 
 		// if (conf.getBoolean("chat.enabled", true)) {
 		// 	for (String name : conf.getStringList("chat.channels")) {
-		// 		String fqn = Util.toQualifiedName(name);
+		// 		String fqn = Util.toQualifiedName(name, "Channel");
 		// 		File file = new File(Directories.CONFIG_CHANNELS + fqn + ".yml");
 
 		// 		if (!file.exists()) {

@@ -8,6 +8,7 @@ configuration:
         player: me.dbstudios.solusrpg.entities.player.SimpleRpgPlayer
         rpg-class: me.dbstudios.solusrpg.entities.SimpleRpgClass
         channel-logger: me.dbstudios.solusrpg.chat.ChatChannelLogger
+        aux-stat: me.dbstudios.solusrpg.entities.stats.SimpleAuxStat;
 chat:
     enabled: true
     # Valid channel names are either:
