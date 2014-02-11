@@ -224,31 +224,4 @@ public class AuxStat {
 
 		return this;
 	}
-
-	// -------- Post-initialization methods ----------
-
-	protected AuxStat validateScalers() {
-		for (StatScaler scaler : scalers)
-			if (!scaler.isCoreStatScaler() && AuxStat.getByFQN(scaler.getIdentifier()) == null) {
-				scalers.remove(scaler);
-
-				SolusRpg.log(
-					Level.WARNING,
-					String.format("An invalid identifier '%s' was found in a stat scaler for %s; it has been removed, but it is recommended that you remove the unnecessary definition.", scaler.getIdentifier(), this.getName())
-				);
-			} else if (!scaler.isCoreStatScaler() && AuxStat.getByFQN(scaler.getIdentifier()) == this) {
-				scalers.remove(scaler);
-
-				SolusRpg.log(Level.WARNING, String.format("A circular scaler reference was detected in %s; it has been removed, but it is recommended that you remove the unnecessary definition.", this.getName()));
-			}
-
-		return this;
-	}
-
-	protected AuxStat validateRanks() {
-		for (StatRank rank : ranks.values())
-			rank.validateRequirements();
-
-		return this;
-	}
 }
