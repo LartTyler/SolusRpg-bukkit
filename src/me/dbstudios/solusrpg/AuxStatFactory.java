@@ -71,9 +71,7 @@ public final class AuxStatFactory {
 		}
 
 		for (AuxStat stat : AuxStatFactory.getAllAuxStats())
-			stat
-				.validateScalers()
-				.validateRanks();
+			stat.validate();
 
 		initialized = true;
 
