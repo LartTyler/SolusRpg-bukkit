@@ -18,16 +18,16 @@ import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.events.player.RpgPlayerAuxStatLevelEvent;
 import me.dbstudios.solusrpg.events.player.RpgPlayerCoreStatLevelEvent;
 import me.dbstudios.solusrpg.exceptions.CreationException;
-import me.dbstudios.solusrpg.util.Initializable;
 import me.dbstudios.solusrpg.util.Util;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class AuxStat extends Initializable {
+public class AuxStat {
 	private static Map<String, AuxStat> stats = new HashMap<>();
 	private static Map<String, String> displayNameLookup = new HashMap<>();
 	private static Map<String, String> pathNameLookup = new HashMap<>();
+	private static boolean initialized = false;
 
 	private final String fullyQualifiedName;
 
@@ -35,16 +35,9 @@ public class AuxStat extends Initializable {
 	private List<StatScaler> scalers = new ArrayList<>();
 	private Map<Integer, StatRank> ranks = new HashMap<>();
 
-	static {
-		AuxStat.initialize();
-	}
-
 	public static void initialize() {
-		if (initialized) {
-			SolusRpg.log(Level.WARNING, "Additional calls made to RpgClass.initialize(); this may indicate an internal optimization issue, and should be reported to my Creator.");
-
+		if (initialized)
 			return;
-		}
 
 		long initStart = System.currentTimeMillis();
 

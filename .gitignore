@@ -1,6 +1,7 @@
 /build/
 /doc/
 *.class
+build.xml
 
 # Package Files #
 *.jar

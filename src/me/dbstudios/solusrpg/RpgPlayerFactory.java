@@ -20,8 +20,16 @@ public final class RpgPlayerFactory {
 	private static final Map<UUID, RpgPlayer> players = new HashMap<>();
 
 	private static Class<? extends RpgPlayer> playerClass;
+	private static boolean initialized = false;
 
 	static {
+		RpgPlayerFactory.initialize();
+	}
+
+	public static void initialize() {
+		if (initialized)
+			return;
+
 		long initStart = System.currentTimeMillis();
 		String name = Configuration.getAs("factory.player", String.class, "me.dbstudios.solusrpg.entities.player.SimpleRpgPlayer");
 
@@ -41,6 +49,8 @@ public final class RpgPlayerFactory {
 
 		if (Configuration.is("logging.verbose"))
 			SolusRpg.log(Level.INFO, String.format("Using %s as player class.", playerClass.getName()));
+
+		initialized = true;
 
 		SolusRpg.log(Level.INFO, String.format("RpgPlayerFactory initialized in %d milliseconds.", System.currentTimeMillis() - initStart));
 	}

@@ -58,4 +58,12 @@ public class Metadata<K> {
 	public Set<K> keySet() {
 		return data.keySet();
 	}
+
+	public int size() {
+		return data.size();
+	}
+
+	public boolean isEmpty() {
+		return data.isEmpty();
+	}
 }

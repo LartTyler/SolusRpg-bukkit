@@ -7,25 +7,23 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
-import me.dbstudios.solusrpg.util.Initializable;
 
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public final class Configuration extends Initializable {
+public final class Configuration {
 	private static final Metadata<String> metadata = new Metadata<>();
+
+	private static boolean initialized = false;
 
 	static {
 		Configuration.initialize();
 	}
 
 	public static void initialize() {
-		if (initialized) {
-			SolusRpg.log(Level.WARNING, "Additional calls made to Configuration.initialize(); this may indicate an internal optimization issue, and should be reported to my Creator.");
-
+		if (initialized)
 			return;
-		}
 
 		long initStart = System.currentTimeMillis();
 

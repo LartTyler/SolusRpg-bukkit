@@ -15,10 +15,10 @@ public class RpgStockListener implements Listener {
 	public void onRpgPlayerJoin(RpgPlayerJoinEvent ev) {
 		RpgPlayer player = ev.getPlayer();
 
-		if (LanguageManager.has("server.player-join-message"))
+		if (LanguageManager.hasPhrase("server.player-join-message"))
 			ev.setJoinMessage(
 				LanguageManager
-					.get("server.player-join-message")
+					.getPhrase("server.player-join-message")
 						.reset()
 						.setParameter("player", player.getDisplayName())
 						.setParameter("player-name", player.getDisplayName())
@@ -34,10 +34,10 @@ public class RpgStockListener implements Listener {
 	public void onRpgPlayerQuit(RpgPlayerQuitEvent ev) {
 		RpgPlayer player = ev.getPlayer();
 
-		if (LanguageManager.has("server.player-quit-message"))
+		if (LanguageManager.hasPhrase("server.player-quit-message"))
 			ev.setQuitMessage(
 				LanguageManager
-					.get("server.player-quit-message")
+					.getPhrase("server.player-quit-message")
 						.reset()
 						.setParameter("player", player.getDisplayName())
 						.setParameter("player-name", player.getDisplayName())

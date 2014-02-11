@@ -25,8 +25,16 @@ public final class RpgClassFactory {
 	private static final Map<String, Set<RpgClass>> findCache = new HashMap<>();
 
 	private static Class<? extends RpgClass> rpgClass;
+	private static boolean initialized = false;
 
 	static {
+		RpgClassFactory.initialize();
+	}
+
+	public static void initialize() {
+		if (initialized)
+			return;
+
 		long initStart = System.currentTimeMillis();
 		String name = Configuration.getAs("factory.rpg-class", String.class, "me.dbstudios.solusrpg.entities.SimpleRpgClass");
 
@@ -87,6 +95,8 @@ public final class RpgClassFactory {
 				dnameLookup.put(cl.getDisplayName(), fqn);
 			}
 		}
+
+		initialized = true;
 
 		SolusRpg.log(Level.INFO, String.format("RpgClassFactory initialized in %d milliseconds with %d class%s.", System.currentTimeMillis() - initStart, classes.size(), classes.size() != 1 ? "s" : ""));
 	}
