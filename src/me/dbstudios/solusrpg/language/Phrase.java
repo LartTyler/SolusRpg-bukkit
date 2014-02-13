@@ -11,7 +11,7 @@ public interface Phrase {
 	public Phrase setParameter(String key, String value);
 
 	/**
-	 * Gets the text output (using the currently provided parameter values) and calls Phrase#reset on the object.
+	 * Gets the text output (using the currently provided parameter values).
 	 *
 	 * @return the text output using the current parameters
 	 */

@@ -9,16 +9,16 @@ extends: BaseChannel
 metadata:
     display-name: Local
     symbol: L
-distortion:
-    enabled: true
     # The maximum range a message can be sent out. No player beyond this number of blocks will recieve
     # the message.
     #
     # A value of zero or less indicates that there is no range limit.
     max-range: 15
+distortion:
+    enabled: true
     # The distortion algorithm is used to determine the chance that a character in a message packet will
     # be distorted.
-    algorithm: 1.32 ^ distance - 4
+    algorithm: 1.3 ^ distance - 1
     threshold:
         # The minimum distance from the message source a player must be before distortion occurs.
         #

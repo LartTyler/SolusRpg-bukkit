@@ -9,7 +9,8 @@ public interface Channel {
 	public String getName();
 	public String getDisplayName();
 	public String getSymbol();
-	public int getMemberLimit();
+	public String getFormat();
+	// public int getMemberLimit();
 	public int getMemberCount();
 	public Set<RpgPlayer> getMembers();
 	public Channel addMember(RpgPlayer player);

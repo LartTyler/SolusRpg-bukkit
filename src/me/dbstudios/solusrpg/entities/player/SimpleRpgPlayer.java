@@ -331,6 +331,10 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return Collections.unmodifiableCollection(resources.values());
 	}
 
+	public Location getLocation() {
+		return basePlayer.getLocation();
+	}
+
 	public RpgPlayer save() {
 		File f = new File(Directories.getPlayerDataDir(this.getName()) + "player.yml");
 		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);

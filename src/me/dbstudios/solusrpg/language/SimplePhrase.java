@@ -23,8 +23,6 @@ public class SimplePhrase implements Phrase {
 		for (String key : parameters.keySet())
 			s = s.replace("{" + key + "}", parameters.get(key));
 
-		this.reset();
-
 		return s;
 	}
 
@@ -32,5 +30,9 @@ public class SimplePhrase implements Phrase {
 		parameters.clear();
 
 		return this;
+	}
+
+	public static Phrase newInstance(String phrase) {
+		return new SimplePhrase(phrase);
 	}
 }

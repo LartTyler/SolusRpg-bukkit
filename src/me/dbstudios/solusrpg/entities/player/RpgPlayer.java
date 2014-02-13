@@ -11,6 +11,7 @@ import me.dbstudios.solusrpg.entities.resources.EnergyResource;
 import me.dbstudios.solusrpg.entities.resources.Resource;
 import me.dbstudios.solusrpg.events.player.RpgActionType;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
@@ -301,27 +302,27 @@ public interface RpgPlayer {
 
 	/**
 	 * Gets the {@link HealthResource} in charge of managing the player's health.
-	 * 
+	 *
 	 * This method will return <code>null</code> if a {@link HealthResource} does not exist, or has
 	 * been overridden improperly.
-	 * 
+	 *
 	 * @return the {@link HealthResource} backing the player's health
 	 */
 	public HealthResource getHealth();
 
 	/**
 	 * Gets the {@link EnergyResource} in charge of managing the player's energy.
-	 * 
+	 *
 	 * This method will return <code>null</code> if an {@link EnergyResource} does not exist, or has
 	 * been overridden improperly.
-	 * 
+	 *
 	 * @return the {@link EnergyResource} backing the player's energy
 	 */
 	public EnergyResource getEnergy();
 
 	/**
 	 * Gets a named {@link Resource} tracking one of the player's resources.
-	 * 
+	 *
 	 * @param  name the {@link Resource} to get
 	 * @return      the resource, or <code>null</code> if one was not found
 	 */
@@ -329,10 +330,25 @@ public interface RpgPlayer {
 
 	/**
 	 * Gets {@link Collection} view of all the {@link Resource Resources} the player currently has.
-	 * 
+	 *
 	 * @return a collection of all the player's {@link Resource Resources}
 	 */
 	public Collection<Resource> getResources();
+
+	/**
+	 * Gets the player's current location.
+	 *
+	 * @return a new copy of Location containing the position of this player
+	 */
+	public Location getLocation();
+
+	/**
+	 * Sends a message to the player.
+	 *
+	 * @param  msg the message to send
+	 * @return     object reference for method chaining
+	 */
+	public RpgPlayer sendMessage(String msg);
 
 	/**
 	 * Saves non-transient player data to file.
