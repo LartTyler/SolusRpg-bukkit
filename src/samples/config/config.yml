@@ -26,6 +26,42 @@ chat:
         - Whisper
         - Local
         - Yell
+    # Log formats follow the definition for Java's String.format method, documented here: http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
+    log-format:
+        log-original: true
+        # For reference, the arguments passed to this format are in the order:
+        #   [0] String:Sender Display Name
+        #   [1] String:Sender Username
+        #   [2] String:Message
+        #   [3] Long:System Time
+        #
+        # The purpose of log-original* is to record the original, undistorted (if applicable) message sent by a user. Just
+        # because a message was logged does not mean that there was anyone in range to recieve it.
+        log-original-format: "[%3$tF %3$tH:%3$tM:%3$tS] %1$s (%0$s): %2$s"
+        log-recieved: true
+        # For reference, the arguments passed to this format are in the order:
+        #   [0] String:Sender Display Name
+        #   [1] String:Sender Username
+        #   [2] String:Receiver Display Name
+        #   [3] String:Receiver Username
+        #   [4] String:Message
+        #   [5] Long:System Time
+        #
+        # The purpose of log-recieved* is to record each message as recieved by all players in the channel. The message logged here
+        # may be distorted, if applicable.
+        log-recieved-format: "[%5$tF %5$tH:%5$tM:%5$tS] %1$s (%0$s) -> %3$s (%2$s): %4$s"
+        log-joins: true
+        # For reference, the arguments passed to this format are in the order:
+        #   [0] String:Joiner Display Name
+        #   [1] String:Joiner Username
+        #   [2] Long:System Time
+        log-joins-format: "[%2$tF %2$tH:%2$tM:%2$tS] %1$s (%0$s) has joined the channel."
+        log-leaves: true
+        # For reference, the arguments passed to this format are in the order:
+        #   [0] String:Leaver Display Name
+        #   [1] String:Leaver Username
+        #   [2] Long:System Time
+        log-leaves-format: "[%2$tF %2$tH:%2$tM:%2$tS] %1$s (%0$s) has left the channel."
 classes:
     # Valid class names are either:
     #   - The fully-qualified "KnightClass" variant

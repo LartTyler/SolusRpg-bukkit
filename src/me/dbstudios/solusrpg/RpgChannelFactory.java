@@ -20,6 +20,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class RpgChannelFactory {
 	private static final Map<String, Channel> channels = new HashMap<>();
+	private static final Map<String, String> dnameLookup = new HashMap<>();
+	private static final Map<String, String> symbolLookup = new HashMap<>();
 
 	private static Class<? extends ChannelLogger> loggerClass;
 
@@ -35,7 +37,7 @@ public final class RpgChannelFactory {
 		} catch (Exception e) {
 			SolusRpg.log(Level.SEVERE, String.format("Could not get class '%s'; please check your configuration and restart the server.", loggerName));
 
-			loggerClass = SimpleChannelLogger.class;
+			loggerClass = null;
 
 			if (Configuration.is("logging.verbose"))
 				e.printStackTrace();
@@ -88,8 +90,23 @@ public final class RpgChannelFactory {
 						e.printStackTrace();
 				}
 
-				if (channel != null)
+				if (loggerClass != null)
+					try {
+						Constructor<? extends ChannelLogger> ctor = loggerClass.getConstructor(Channel.class);
+
+						channel.attachLogger(ctor.newInstance(channel));
+					} catch (Exception e) {
+						SolusRpg.log(Level.SEVERE, String.format("Could not create new ChannelLogger from %s! Check your configuration and restart the server."));
+
+						if (Configuration.is("logging.verbose"))
+							e.printStackTrace();
+					}
+
+				if (channel != null) {
 					channels.put(fqn, channel);
+					dnameLookup.put(channel.getDisplayName(), fqn);
+					symbolLookup.put(channel.getSymbol(), fqn);
+				}
 			}
 
 			if (channels.size() > 0)
@@ -97,18 +114,18 @@ public final class RpgChannelFactory {
 		}
 	}
 
-	public static ChannelLogger newChannelLogger(Channel channel) {
-		try {
-			Constructor<? extends ChannelLogger> ctor = loggerClass.getConstructor(Channel.class);
+	public static Channel getByFQN(String fqn) {
+		if (fqn != null)
+			return channels.get(fqn);
 
-			return ctor.newInstance(channel);
-		} catch (Exception e) {
-			SolusRpg.log(Level.SEVERE, String.format("Could not create new ChannelLogger from %s; default internal logger supplied instead", loggerClass.getName()));
+		return null;
+	}
 
-			if (Configuration.is("logging.verbose"))
-				e.printStackTrace();
-		}
+	public static Channel getByDisplayName(String dname) {
+		return RpgChannelFactory.getByFQN(dnameLookup.get(dname));
+	}
 
-		return new SimpleChannelLogger(channel);
+	public static Channel getBySymbol(String symbol) {
+		return RpgChannelFactory.getByFQN(symbolLookup.get(symbol));
 	}
 }

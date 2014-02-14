@@ -22,7 +22,7 @@ public class ChatChannel implements Channel {
 	private final DistortionManager distorter;
 	private final qualifiedName;
 
-	private ChannelLogger logger;
+	private ChannelLogger logger = null;
 
 	public ChatChannel(String fqn) {
 		File f = new File(Directories.CONFIG_CHANNELS + fqn + ".yml");
@@ -70,8 +70,6 @@ public class ChatChannel implements Channel {
 			);
 		else
 			this.distorter = null;
-
-		this.logger = new SimpleChannelLogger(this);
 	}
 
 	public String getName() {
@@ -102,11 +100,17 @@ public class ChatChannel implements Channel {
 		if (!members.contains(player))
 			members.add(player);
 
+		if (this.logger != null)
+			logger.logChannelJoin(player).flush();
+
 		return this;
 	}
 
 	public ChatChannel removeMember(RpgPlayer player) {
 		members.remove(player);
+
+		if (this.logger != null)
+			logger.logChannelLeave(player).flush();
 
 		return this;
 	}
@@ -121,14 +125,27 @@ public class ChatChannel implements Channel {
 			.setParameter("sender-name", sender.getName())
 			.setParameter("sender-class", sender.getRpgClass().getDisplayName());
 
+		if (this.logger != null)
+			logger.logMessageSent(msg.setParameter("message", message).asText());
+
 		for (RpgPlayer member : this.members) {
 			if (this.distorter != null)
 				msg.setParameter("message", distorter.distort(message, sender, member));
 			else
 				msg.setParameter("message", message);
 
-			member.sendMessage(msg.asText());
+			String toSend = msg.asText();
+
+			if (this.logger != null)
+				logger.logMessageRecieved(toSend);
+
+			member.sendMessage(toSend);
 		}
+
+		if (this.logger != null)
+			logger.flush();
+
+		return this;
 	}
 
 	public ChatChannel attachLogger(ChannelLogger logger) {

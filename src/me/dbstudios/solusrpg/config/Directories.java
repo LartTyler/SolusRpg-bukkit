@@ -9,6 +9,7 @@ public enum Directories {
 	CONFIG_CLASSES(CONFIG + "classes::"),
 	CONFIG_STATS(CONFIG + "stats::"),
 	DATA(BASE + "data::"),
+	DATA_LOGS(DATA + "logs::"),
 	DATA_PLAYERS(DATA + "players::");
 
 	private final String path;
