@@ -13,6 +13,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.AuxStatFactory;
 import me.dbstudios.solusrpg.RpgClassFactory;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
@@ -30,6 +31,7 @@ import me.dbstudios.solusrpg.language.LanguageManager;
 import me.dbstudios.solusrpg.language.Phrase;
 import me.dbstudios.solusrpg.util.Util;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -64,8 +66,8 @@ public class SimpleRpgPlayer implements RpgPlayer {
 
 				Phrase kickPhrase = null;
 
-				if (LanguageManager.has("system.player-init.kick-data-dir-not-writeable"))
-					kickPhrase = LanguageManager.get("system.player-init.kick-data-dir-not-writeable").reset();
+				if (LanguageManager.hasPhrase("system.player-init.kick-data-dir-not-writeable"))
+					kickPhrase = LanguageManager.getPhrase("system.player-init.kick-data-dir-not-writeable").reset();
 
 				basePlayer.kickPlayer(kickPhrase != null ? kickPhrase.asText() : "");
 			}
@@ -79,7 +81,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		for (StatType type : StatType.values())
 			coreStats.put(type, conf.getInt("vitals.core-stats." + type.name().toLowerCase(), 1));
 
-		for (AuxStat stat : AuxStat.getAllAuxStats())
+		for (AuxStat stat : AuxStatFactory.getAll())
 			stats.put(stat.getName(), conf.getInt("vitals.aux-stats." + stat.getPathName(), 1));
 
 		RpgClass rpgClass = null;
@@ -123,7 +125,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return basePlayer.getLevel();
 	}
 
-	public RpgPlayer setLevel(int level) {
+	public SimpleRpgPlayer setLevel(int level) {
 		basePlayer.setLevel(level);
 
 		// Silly fix to update exp bar progression on level up
@@ -136,7 +138,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return metadata.getAsType("experience", Integer.class, 0);
 	}
 
-	public RpgPlayer setExp(int exp) {
+	public SimpleRpgPlayer setExp(int exp) {
 		metadata.set("experience", exp);
 
 		ExperienceScaler scaler = this.getExperienceScaler();
@@ -162,7 +164,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return basePlayer.getExp();
 	}
 
-	public RpgPlayer setRealExp(float exp) {
+	public SimpleRpgPlayer setRealExp(float exp) {
 		basePlayer.setExp(exp);
 
 		return this;
@@ -193,19 +195,19 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	}
 
 	public int getStatLevel(String fqn) {
-		return this.getStatLevel(AuxStat.getByFQN(fqn));
+		return this.getStatLevel(AuxStatFactory.getByFQN(fqn));
 	}
 
 	public int getStatLevel(StatType type) {
 		return coreStats.get(type) + rpgClass.getStatLevel(type);
 	}
 
-	public RpgPlayer setStatLevel(AuxStat stat, int level) {
+	public SimpleRpgPlayer setStatLevel(AuxStat stat, int level) {
 		return this.setStatLevel(stat.getName(), level);
 	}
 
-	public RpgPlayer setStatLevel(String fqn, int level) {
-		if (AuxStat.getByFQN(fqn) == null)
+	public SimpleRpgPlayer setStatLevel(String fqn, int level) {
+		if (AuxStatFactory.getByFQN(fqn) == null)
 			SolusRpg.log(Level.WARNING, String.format("Attempted to set non-existant auxiliary stat '%s'.", fqn));
 		else
 			stats.put(fqn, level);
@@ -213,13 +215,13 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this;
 	}
 
-	public RpgPlayer setStatLevel(StatType type, int level) {
+	public SimpleRpgPlayer setStatLevel(StatType type, int level) {
 		coreStats.put(type, level);
 
 		return this;
 	}
 
-	public RpgPlayer addModifier(PlayerModifier modifier) {
+	public SimpleRpgPlayer addModifier(PlayerModifier modifier) {
 		if (!modifiers.contains(modifier)) {
 			modifiers.add(modifier);
 			modifier.modify(this);
@@ -228,14 +230,14 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this;
 	}
 
-	public RpgPlayer removeModifier(PlayerModifier modifier) {
+	public SimpleRpgPlayer removeModifier(PlayerModifier modifier) {
 		if (modifiers.contains(modifier))
 			modifiers.remove(modifier);
 
 		return this;
 	}
 
-	public RpgPlayer cleanModifier(PlayerModifier modifier) {
+	public SimpleRpgPlayer cleanModifier(PlayerModifier modifier) {
 		if (modifiers.contains(modifier)) {
 			modifier.unmodify(this);
 
@@ -253,14 +255,14 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return permits.get(action).contains(material) || rpgClass.isAllowed(action, material);
 	}
 
-	public RpgPlayer addAllowed(RpgActionType action, Material material) {
+	public SimpleRpgPlayer addAllowed(RpgActionType action, Material material) {
 		if (!this.isAllowed(action, material)) // if this material isn't already permitted
 			permits.get(action).add(material);
 
 		return this;
 	}
 
-	public RpgPlayer addAllowed(RpgActionType action, Collection<Material> materials) {
+	public SimpleRpgPlayer addAllowed(RpgActionType action, Collection<Material> materials) {
 		for (Material material : materials)
 			if (!this.isAllowed(action, material))
 				permits.get(action).add(material);
@@ -268,13 +270,13 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this;
 	}
 
-	public RpgPlayer removeAllowed(RpgActionType action, Material material) {
+	public SimpleRpgPlayer removeAllowed(RpgActionType action, Material material) {
 		permits.get(action).remove(material);
 
 		return this;
 	}
 
-	public RpgPlayer removeAllowed(RpgActionType action, Collection<Material> materials) {
+	public SimpleRpgPlayer removeAllowed(RpgActionType action, Collection<Material> materials) {
 		for (Material material : materials)
 			permits.get(action).remove(material);
 
@@ -285,7 +287,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this.expScaler;
 	}
 
-	public RpgPlayer setExperienceScaler(ExperienceScaler expScaler) {
+	public SimpleRpgPlayer setExperienceScaler(ExperienceScaler expScaler) {
 		this.expScaler = expScaler;
 
 		return this;
@@ -295,7 +297,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return this.expScaler != null;
 	}
 
-	public RpgPlayer removeExperienceScaler() {
+	public SimpleRpgPlayer removeExperienceScaler() {
 		this.setExperienceScaler(null);
 
 		return this;
@@ -335,7 +337,13 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		return basePlayer.getLocation();
 	}
 
-	public RpgPlayer save() {
+	public SimpleRpgPlayer sendMessage(String message) {
+		basePlayer.sendMessage(message);
+
+		return this;
+	}
+
+	public SimpleRpgPlayer save() {
 		File f = new File(Directories.getPlayerDataDir(this.getName()) + "player.yml");
 		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
@@ -345,7 +353,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		for (StatType type : StatType.values())
 			conf.set("vitals.core-stats." + type.name().toLowerCase(), coreStats.get(type));
 
-		for (AuxStat stat : AuxStat.getAllAuxStats())
+		for (AuxStat stat : AuxStatFactory.getAll())
 			conf.set("vitals.aux-stats." + stat.getPathName(), stats.get(stat.getName()));
 
 		conf.set("vitals.class", rpgClass.getName());

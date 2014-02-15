@@ -1,5 +1,6 @@
 package me.dbstudios.solusrpg.events.player;
 
+import me.dbstudios.solusrpg.AuxStatFactory;
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 
@@ -11,10 +12,6 @@ public class RpgPlayerAuxStatLevelEvent extends RpgPlayerEvent implements Cancel
 
 	private int newLevel;
 	private boolean cancelled = false;
-
-	public RpgPlayerAuxStatLevelEvent(RpgPlayer player, String fqn, int oldLevel, int newLevel) {
-		this(player, AuxStat.getByFQN(fqn), oldLevel, newLevel);
-	}
 
 	public RpgPlayerAuxStatLevelEvent(RpgPlayer player, AuxStat stat, int oldLevel, int newLevel) {
 		super(player);

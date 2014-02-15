@@ -2,17 +2,27 @@ package me.dbstudios.solusrpg;
 
 import java.lang.reflect.Constructor;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.config.Configuration;
-import me.dbstudios.solusrpg.entities.AuxStat;
-import me.dbstudios.solusrpg.entities.SimpleAuxStat;
+import me.dbstudios.solusrpg.config.Directories;
+import me.dbstudios.solusrpg.entities.stats.AuxStat;
+import me.dbstudios.solusrpg.entities.stats.SimpleAuxStat;
+import me.dbstudios.solusrpg.exceptions.CreationException;
+import me.dbstudios.solusrpg.util.Util;
+
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public final class AuxStatFactory {
-	private static final Class<? extends AuxStat> statClass;
-
-	private static Map<String, AuxStat> stats = new HashMap<>();
+	private static Class<? extends AuxStat> statClass;
+	private static Map<String, AuxStat> stats = new HashMap<>();;
 	private static Map<String, String> dnameLookup = new HashMap<>();
 	private static Map<String, String> pnameLookup = new HashMap<>();
 	private static boolean initialized = false;
@@ -26,7 +36,10 @@ public final class AuxStatFactory {
 		String className = Configuration.getAsString("factory.aux-stat", "me.dbstudios.solusrpg.entities.stats.SimpleAuxStat");
 
 		try {
-			statClass = Class.forName(className);
+			Class<?> cl = Class.forName(className);
+
+			if (AuxStat.class.isAssignableFrom(cl))
+				statClass = cl.asSubclass(AuxStat.class);
 		} catch (Exception e) {
 			SolusRpg.log(Level.WARNING, String.format("Could not get class %s; please check your configuration and restart the server", className));
 
@@ -62,7 +75,7 @@ public final class AuxStatFactory {
 
 				if (Configuration.is("logging.verbose"))
 					e.printStackTrace();
-			} catch (Exception e) {
+			} catch (ReflectiveOperationException | LinkageError e) {
 				SolusRpg.log(Level.WARNING, String.format("%s has no constructor capable of accepting a single String as it's argument! THIS IS NOT GOOD!!!", statClass.getName()));
 
 				if (Configuration.is("logging.verbose"))
@@ -70,7 +83,7 @@ public final class AuxStatFactory {
 			}
 		}
 
-		for (AuxStat stat : AuxStatFactory.getAllAuxStats())
+		for (AuxStat stat : AuxStatFactory.getAll())
 			stat.validate();
 
 		initialized = true;
@@ -118,7 +131,7 @@ public final class AuxStatFactory {
 		return matches;
 	}
 
-	public static Collection<AuxStat> getAllAuxStats() {
+	public static Collection<AuxStat> getAll() {
 		return stats.values();
 	}
 }

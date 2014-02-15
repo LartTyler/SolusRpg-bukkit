@@ -1,7 +1,7 @@
 package me.dbstudios.solusrpg.events;
 
+import me.dbstudios.solusrpg.RpgPlayerFactory;
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
-import me.dbstudios.solusrpg.entities.player.SimpleRpgPlayer;
 import me.dbstudios.solusrpg.events.player.RpgPlayerJoinEvent;
 import me.dbstudios.solusrpg.events.player.RpgPlayerQuitEvent;
 import me.dbstudios.solusrpg.language.LanguageManager;
@@ -51,6 +51,6 @@ public class RpgStockListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onRpgPlayerQuitFinal(RpgPlayerQuitEvent ev) {
-		SimpleRpgPlayer.destroy(ev.getPlayer());
+		RpgPlayerFactory.removePlayer(ev.getPlayer());
 	}
 }

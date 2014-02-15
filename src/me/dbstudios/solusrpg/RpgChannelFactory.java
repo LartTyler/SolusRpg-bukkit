@@ -1,5 +1,6 @@
 package me.dbstudios.solusrpg;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -25,7 +26,7 @@ public final class RpgChannelFactory {
 
 	private static Class<? extends ChannelLogger> loggerClass;
 
-	static {
+	public static void initialize() {
 		long initStart = System.currentTimeMillis();
 		String loggerName = Configuration.getAsString("factory.channel-logger", "me.dbstudios.solusrpg.chat.ChatChannelLogger");
 
@@ -48,7 +49,7 @@ public final class RpgChannelFactory {
 		if (!f.exists())
 			throw new RuntimeException("Could not locate config.yml! This file is needed for SolusRpg to operate normally.");
 
-		FileConfiguration conf = YamlConfiguration.loadConfiguration(conf);
+		FileConfiguration conf = YamlConfiguration.loadConfiguration(f);
 
 		if (conf.getBoolean("chat.enabled", true)) {
 			for (String name : conf.getStringList("chat.channels")) {
@@ -62,29 +63,32 @@ public final class RpgChannelFactory {
 				}
 
 				FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-				String channelClass = config.getString("factory-class", "me.dbstudios.solusrpg.chat.ChatChannel");
-				Class<?> cl = null;
+				String channelClassName = config.getString("factory-class", "me.dbstudios.solusrpg.chat.ChatChannel");
+				Class<? extends Channel> channelClass = null;
 
 				try {
-					cl = Class.forName(channelClass);
+					Class<?> cl = Class.forName(channelClassName);
+
+					if (Channel.class.isAssignableFrom(cl))
+						channelClass = cl.asSubclass(Channel.class);
 				} catch (Exception e) {
-					SolusRpg.log(Level.WARNING, String.format("Could not get class '%s'; please check your configuration and restart the server.", channelClass));
+					SolusRpg.log(Level.WARNING, String.format("Could not get class '%s'; please check your configuration and restart the server.", channelClassName));
 
 					if (Configuration.is("logging.verbose"))
 						e.printStackTrace();
 				}
 
-				if (cl == null || !Channel.class.isAssignableFrom(cl))
+				if (channelClass == null || !Channel.class.isAssignableFrom(channelClass))
 					continue;
 
 				Channel channel = null;
 
 				try {
-					Constructor<? extends Channel> ctor = cl.getConstructor(String.class);
+					Constructor<? extends Channel> ctor = channelClass.getConstructor(String.class);
 
 					channel = ctor.newInstance(fqn);
 				} catch (Exception e) {
-					SolusRpg.log(Level.SEVERE, String.format("%s has no constructor capable of accepting a String as it's argument! THIS IS VERY, VERY BAD!!!", cl.getName()));
+					SolusRpg.log(Level.SEVERE, String.format("%s has no constructor capable of accepting a String as it's argument! THIS IS VERY, VERY BAD!!!", channelClass.getName()));
 
 					if (Configuration.is("logging.verbose"))
 						e.printStackTrace();

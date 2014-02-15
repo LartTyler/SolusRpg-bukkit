@@ -16,6 +16,6 @@ public interface Channel {
 	public Channel addMember(RpgPlayer player);
 	public Channel removeMember(RpgPlayer player);
 	public boolean hasMember(RpgPlayer player);
-	public Channel sendMessage(String message);
+	public Channel sendMessage(RpgPlayer sender, String message);
 	public Channel attachLogger(ChannelLogger logger);
 }

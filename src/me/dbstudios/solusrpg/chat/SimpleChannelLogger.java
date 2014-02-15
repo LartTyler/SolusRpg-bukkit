@@ -1,10 +1,9 @@
 package me.dbstudios.solusrpg.chat;
 
 import java.io.File;
-import java.nio.StandardOpenOption;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -12,6 +11,8 @@ import java.util.logging.Level;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
+import me.dbstudios.solusrpg.entities.player.RpgPlayer;
+import me.dbstudios.solusrpg.exceptions.CreationException;
 
 public class SimpleChannelLogger implements ChannelLogger {
 	private static String msgFormat = "[%3$tF %3$tH:%3$tM:%3$tS] %1$s (%0$s): %2$s";
@@ -24,11 +25,11 @@ public class SimpleChannelLogger implements ChannelLogger {
 
 	private List<String> buffer = new ArrayList<>();
 
-	public ChatChannelLogger(Channel channel) {
+	public SimpleChannelLogger(Channel channel) {
 		this(channel, Directories.DATA_LOGS + "chat" + File.separator + channel.getName() + ".log");
 	}
 
-	public ChatChannelLogger(Channel channel, String logPath) {
+	public SimpleChannelLogger(Channel channel, String logPath) {
 		this.channel = channel;
 		this.logFile = new File(logPath);
 
@@ -48,23 +49,31 @@ public class SimpleChannelLogger implements ChannelLogger {
 
 	public SimpleChannelLogger logChannelJoin(RpgPlayer player) {
 		buffer.add(String.format(joinFormat, player.getDisplayName(), player.getName(), System.currentTimeMillis()));
+
+		return this;
 	}
 
 	public SimpleChannelLogger logChannelLeave(RpgPlayer player) {
 		buffer.add(String.format(leaveFormat, player.getDisplayName(), player.getName(), System.currentTimeMillis()));
+
+		return this;
 	}
 
 	public SimpleChannelLogger logMessageSent(RpgPlayer sender, String message) {
 		buffer.add(String.format(msgFormat, sender.getDisplayName(), sender.getName(), message, System.currentTimeMillis()));
+
+		return this;
 	}
 
 	public SimpleChannelLogger logMessageRecieved(RpgPlayer sender, RpgPlayer receiver, String message) {
 		buffer.add(String.format(recFormat, sender.getDisplayName(), sender.getName(), receiver.getDisplayName(), receiver.getName(), message, System.currentTimeMillis()));
+
+		return this;
 	}
 
 	public SimpleChannelLogger flush() {
 		try {
-			Path.write(logFile.toPath(), this.buffer, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
+			Files.write(logFile.toPath(), this.buffer, Charset.forName("UTF-8"), StandardOpenOption.APPEND);
 		} catch (Exception e) {
 			SolusRpg.log(Level.SEVERE, String.format("Could not write log buffer to file (%s); please make sure the file exists and is writeable", logFile.getPath()));
 		}

@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.AuxStatFactory;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
@@ -23,13 +24,14 @@ import me.dbstudios.solusrpg.util.Util;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class AuxStat {
+public class SimpleAuxStat implements AuxStat {
 	private final String fullyQualifiedName;
 
+	private Map<Integer, StatRank> ranks = new HashMap<>();
 	private Metadata<String> metadata = new Metadata<>();
 	private List<StatScaler> scalers = new ArrayList<>();
 
-	private AuxStat(String fqn) {
+	public SimpleAuxStat(String fqn) {
 		File f = new File(Directories.CONFIG_STATS + fqn + ".yml");
 
 		if (!f.exists())
@@ -49,45 +51,48 @@ public class AuxStat {
 		if (!metadata.hasOfType("path-name", String.class))
 			SolusRpg.log(Level.WARNING, String.format("%s does not have a path name explicitly defined; '%s' will be used, thought it is recommended that you set one", fqn, this.getPathName()));
 
-		for (String ident : conf.getConfigurationSection("scaling.core-stats").getKeys(false)) {
-			StatType type = StatType.fromAbbreviation(ident);
+		if (conf.isConfigurationSection("scaling.core-stats"))
+			for (String ident : conf.getConfigurationSection("scaling.core-stats").getKeys(false)) {
+				StatType type = StatType.fromAbbreviation(ident);
 
-			if (type != null)
+				if (type != null)
+					try {
+						scalers.add(new StatScaler(type, conf.getString("scaling.core-stats." + ident)));
+					} catch (CreationException e) {
+						if (Configuration.is("logging.verbose"))
+							e.printStackTrace();
+					}
+				else
+					SolusRpg.log(Level.WARNING, String.format("'%s' is not a valid identifier for a core stat; please make sure you've used the abbreviation in the core stat scaling definition.", ident));
+			}
+
+		if (conf.isConfigurationSection("scaling.aux-stats"))
+			for (String ident : conf.getConfigurationSection("scaling.aux-stats").getKeys(false))
 				try {
-					scalers.add(new StatScaler(type, conf.getString("scaling.core-stats." + ident)));
+					scalers.add(new StatScaler(ident, conf.getString("scaling.aux-stats." + ident)));
 				} catch (CreationException e) {
 					if (Configuration.is("logging.verbose"))
 						e.printStackTrace();
 				}
-			else
-				SolusRpg.log(Level.WARNING, String.format("'%s' is not a valid identifier for a core stat; please make sure you've used the abbreviation in the core stat scaling definition.", ident));
-		}
-
-		for (String ident : conf.getConfigurationSection("scaling.aux-stats").getKeys(false))
-			try {
-				scalers.add(new StatScaler(ident, conf.getString("scaling.aux-stats." + ident)));
-			} catch (CreationException e) {
-				if (Configuration.is("logging.verbose"))
-					e.printStackTrace();
-			}
 
 		metadata.set("rank-cap", conf.getInt("ranks.rank-cap", 0));
 
 		for (String key : conf.getConfigurationSection("ranks").getKeys(false))
-			try {
-				int rankLevel = Integer.parseInt(key);
-				StatRank rank = new StatRank(this, rankLevel);
+			if (!key.equals("rank-cap"))
+				try {
+					int rankLevel = Integer.parseInt(key);
+					StatRank rank = new StatRank(this, rankLevel);
 
-				ranks.put(rankLevel, rank);
-			} catch (CreationException e) {
-				if (Configuration.is("logging.verbose"))
-					e.printStackTrace();
-			} catch (NumberFormatException e) {
-				SolusRpg.log(Level.WARNING, String.format("'%s' is not a valid rank level for %s; ranks must be an integer.", key, this.getDisplayName()));
+					ranks.put(rankLevel, rank);
+				} catch (CreationException e) {
+					if (Configuration.is("logging.verbose"))
+						e.printStackTrace();
+				} catch (NumberFormatException e) {
+					SolusRpg.log(Level.WARNING, String.format("'%s' is not a valid rank level for %s; ranks must be an integer.", key, this.getDisplayName()));
 
-				if (Configuration.is("logging.verbose"))
-					e.printStackTrace();
-			}
+					if (Configuration.is("logging.verbose"))
+						e.printStackTrace();
+				}
 	}
 
 	public String getName() {
@@ -110,22 +115,22 @@ public class AuxStat {
 		return this.getRankCap() > 0;
 	}
 
-	public void applyRank(RpgPlayer target, int rank) {
-		if (!ranks.containsKey(rank))
-			return;
+	public SimpleAuxStat applyRank(RpgPlayer target, int rank) {
+		if (ranks.containsKey(rank))
+			ranks.get(rank).applyRank(target);
 
-		ranks.get(rank).applyRank(target);
+		return this;
 	}
 
-	public void removeRank(RpgPlayer target, int rank) {
+	public SimpleAuxStat removeRank(RpgPlayer target, int rank) {
 		if (!ranks.containsKey(rank))
-			return;
+			ranks.get(rank).removeRank(target);
 
-		ranks.get(rank).removeRank(target);
+		return this;
 	}
 
 	public StatScaler getScalerFor(String fqn) {
-		return this.getScalerFor(AuxStat.getByFQN(fqn));
+		return this.getScalerFor(AuxStatFactory.getByFQN(fqn));
 	}
 
 	public StatScaler getScalerFor(AuxStat auxStat) {
@@ -144,7 +149,7 @@ public class AuxStat {
 		return null;
 	}
 
-	public AuxStat addStatScaler(StatScaler scaler, String fqn) {
+	public SimpleAuxStat addStatScaler(StatScaler scaler, String fqn) {
 		if (this.hasScalerFor(fqn))
 			this.removeStatScaler(fqn);
 
@@ -153,11 +158,11 @@ public class AuxStat {
 		return this;
 	}
 
-	public AuxStat addStatScaler(StatScaler scaler, AuxStat stat) {
+	public SimpleAuxStat addStatScaler(StatScaler scaler, AuxStat stat) {
 		return this.addStatScaler(scaler, stat.getName());
 	}
 
-	public AuxStat addStatScaler(StatScaler scaler, StatType type) {
+	public SimpleAuxStat addStatScaler(StatScaler scaler, StatType type) {
 		if (this.hasScalerFor(type))
 			this.removeStatScaler(type);
 
@@ -166,7 +171,7 @@ public class AuxStat {
 		return this;
 	}
 
-	public AuxStat removeStatScaler(String fqn) {
+	public SimpleAuxStat removeStatScaler(String fqn) {
 		StatScaler scaler = this.getScalerFor(fqn);
 
 		if (scaler != null)
@@ -175,11 +180,11 @@ public class AuxStat {
 		return this;
 	}
 
-	public AuxStat removeStatScaler(AuxStat stat) {
+	public SimpleAuxStat removeStatScaler(AuxStat stat) {
 		return this.removeStatScaler(stat.getName());
 	}
 
-	public AuxStat removeStatScaler(StatType type) {
+	public SimpleAuxStat removeStatScaler(StatType type) {
 		StatScaler scaler = this.getScalerFor(type);
 
 		if (scaler != null)
@@ -193,7 +198,7 @@ public class AuxStat {
 	}
 
 	public boolean hasScalerFor(String fqn) {
-		return this.hasScalerFor(AuxStat.getByFQN(fqn));
+		return this.hasScalerFor(AuxStatFactory.getByFQN(fqn));
 	}
 
 	public boolean hasScalerFor(AuxStat auxStat) {
@@ -204,7 +209,7 @@ public class AuxStat {
 		return this.getScalerFor(coreStat) != null;
 	}
 
-	public AuxStat validate() {
+	public SimpleAuxStat validate() {
 		for (StatScaler scaler : scalers)
 			if (!scaler.isCoreStatScaler() && AuxStatFactory.getByFQN(scaler.getIdentifier()) == null) {
 				scalers.remove(scaler);

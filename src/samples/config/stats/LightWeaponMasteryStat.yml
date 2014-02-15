@@ -8,8 +8,8 @@ scaling:
     #
     # Solus does NOT compute fractional bonuses.
     core-stats:
-        str: 2:1
-        dex: 1:1
+        str: "2:1"
+        dex: "1:1"
 ranks:
     rank-cap: 100
     1:

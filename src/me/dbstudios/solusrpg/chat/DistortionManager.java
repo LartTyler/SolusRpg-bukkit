@@ -1,5 +1,9 @@
 package me.dbstudios.solusrpg.chat;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.util.math.Expression;
 
 public class DistortionManager {
@@ -40,7 +44,7 @@ public class DistortionManager {
 		for (char c : str.toCharArray())
 			if (!Character.isWhitespace(c))
 				if (Math.random() * 100 < chance)
-					sb.append(".")
+					sb.append(".");
 				else
 					sb.append(c);
 			else

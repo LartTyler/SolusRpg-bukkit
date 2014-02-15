@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.AuxStatFactory;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
@@ -43,20 +44,22 @@ public class StatRank implements Listener {
 
 		ConfigurationSection sect = conf.getConfigurationSection("ranks." + rank);
 
-		for (String key : sect.getConfigurationSection("requires.core-stats").getKeys(false)) {
-			StatType type = StatType.fromAbbreviation(key);
+		if (sect.isConfigurationSection("requires.core-stats"))
+			for (String key : sect.getConfigurationSection("requires.core-stats").getKeys(false)) {
+				StatType type = StatType.fromAbbreviation(key);
 
-			if (type == null) {
-				SolusRpg.log(Level.WARNING, String.format("Unknown core stat abbreviation '%s'.", key));
+				if (type == null) {
+					SolusRpg.log(Level.WARNING, String.format("Unknown core stat abbreviation '%s'.", key));
 
-				continue;
+					continue;
+				}
+
+				requirements.add(new CoreStatRequirement(type, sect.getInt("requires.core-stats." + key)));
 			}
 
-			requirements.add(new CoreStatRequirement(type, sect.getInt("requires.core-stats." + key)));
-		}
-
-		for (String key : sect.getConfigurationSection("requires.aux-stats").getKeys(false))
-			requirements.add(new AuxStatRequirement(key, sect.getInt("requires.aux-stats." + key)));
+		if (sect.isConfigurationSection("requires.aux-stats"))
+			for (String key : sect.getConfigurationSection("requires.aux-stats").getKeys(false))
+				requirements.add(new AuxStatRequirement(key, sect.getInt("requires.aux-stats." + key)));
 
 		if (sect.isInt("requires.player-level"))
 			requirements.add(new PlayerLevelStatRequirement(sect.getInt("requires.player-level")));
@@ -101,7 +104,7 @@ public class StatRank implements Listener {
 			if (req.hasBeenValidated())
 				continue;
 
-			AuxStat stat = AuxStat.getByFQN(req.getStatName());
+			AuxStat stat = AuxStatFactory.getByFQN(req.getStatName());
 
 			if (stat == null) {
 				SolusRpg.log(Level.WARNING, String.format("Could not locate auxiliary stat with qualified name '%s' during initialization of rank %d of %s", req.getStatName(), this.rank, this.stat.getName()));

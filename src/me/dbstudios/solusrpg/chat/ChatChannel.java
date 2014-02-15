@@ -7,20 +7,22 @@ import java.util.Set;
 
 import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.config.Directories;
+import me.dbstudios.solusrpg.config.Metadata;
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.exceptions.CreationException;
 import me.dbstudios.solusrpg.language.Phrase;
 import me.dbstudios.solusrpg.language.SimplePhrase;
+import me.dbstudios.solusrpg.util.Util;
 
 import org.bukkit.ChatColor;
-import org.bukkit.configuration.FileConfiguration;
-import org.bukkit.configuration.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class ChatChannel implements Channel {
 	private final Metadata<String> metadata = new Metadata<>();
-	private final Set<RpgPlayer> members = new HashSet<>()
+	private final Set<RpgPlayer> members = new HashSet<>();
 	private final DistortionManager distorter;
-	private final qualifiedName;
+	private final String qualifiedName;
 
 	private ChannelLogger logger = null;
 
@@ -50,10 +52,10 @@ public class ChatChannel implements Channel {
 			for (String key : conf.getConfigurationSection("metadata").getKeys(true))
 				metadata.set(key, conf.get("metadata." + key));
 
-		if (!metadata.hasOfType("formatting.message"))
+		if (!metadata.hasOfType("formatting.message", String.class))
 			metadata.set("formatting.message", "[{symbol}] {sender}: {message}");
 
-		Phrase format = SimplePhrase.newInstance(metadata.getAsString("formatting.message"))
+		Phrase format = SimplePhrase.newInstance(metadata.getAsType("formatting.message", String.class))
 			.setParameter("symbol", this.getSymbol())
 			.setParameter("channel", this.getDisplayName())
 			.setParameter("primary-color", Configuration.getAsChatColor("color.primary", ChatColor.WHITE).toString())
@@ -61,9 +63,9 @@ public class ChatChannel implements Channel {
 
 		metadata.set("formatting.message", format.asText());
 
-		if (conf.getBoolean("distortion.enabled", true) && metadata.getAsInteger("max-range", 0) > 0 && conf.isString("distortion.algorithm"))
+		if (conf.getBoolean("distortion.enabled", true) && metadata.getAsType("max-range", Integer.class, 0) > 0 && conf.isString("distortion.algorithm"))
 			this.distorter = new DistortionManager(
-				metadata.getAsInteger("max-range", 0),
+				metadata.getAsType("max-range", Integer.class, 0),
 				conf.getDouble("distortion.threshold.distance", 0.0),
 				conf.getDouble("distortion.threshold.chance", 0.0),
 				conf.getString("distortion.algorithm")
@@ -77,15 +79,15 @@ public class ChatChannel implements Channel {
 	}
 
 	public String getDisplayName() {
-		return metadata.getAsString("display-name", this.getName());
+		return metadata.getAsType("display-name", String.class, this.getName());
 	}
 
 	public String getSymbol() {
-		return metadata.getAsString("symbol", Character.toString(this.getName().charAt(0)));
+		return metadata.getAsType("symbol", String.class, Character.toString(this.getName().charAt(0)));
 	}
 
 	public String getFormat() {
-		return metadata.getAsString("formatting.message");
+		return metadata.getAsType("formatting.message", String.class);
 	}
 
 	public int getMemberCount() {
@@ -126,7 +128,7 @@ public class ChatChannel implements Channel {
 			.setParameter("sender-class", sender.getRpgClass().getDisplayName());
 
 		if (this.logger != null)
-			logger.logMessageSent(msg.setParameter("message", message).asText());
+			logger.logMessageSent(sender, msg.setParameter("message", message).asText());
 
 		for (RpgPlayer member : this.members) {
 			if (this.distorter != null)
@@ -137,7 +139,7 @@ public class ChatChannel implements Channel {
 			String toSend = msg.asText();
 
 			if (this.logger != null)
-				logger.logMessageRecieved(toSend);
+				logger.logMessageRecieved(sender, member, toSend);
 
 			member.sendMessage(toSend);
 		}

@@ -1,5 +1,9 @@
 package me.dbstudios.solusrpg.entities.stats;
 
+import java.util.List;
+
+import me.dbstudios.solusrpg.entities.player.RpgPlayer;
+
 public interface AuxStat {
 	/**
 	 * Gets the fully-qualified name of the stat.

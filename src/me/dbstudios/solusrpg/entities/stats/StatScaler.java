@@ -32,7 +32,7 @@ public class StatScaler {
 		String[] parts = scaling.split(":");
 
 		if (parts.length < 2) {
-			SolusRpg.log(Level.WARNING, String.format("I encountered an error while initialzing a StatScaler; '%s' with identifier '%s' is an invalid ratio.", scaling, identifier));
+			SolusRpg.log(Level.WARNING, String.format("I encountered an error while initialzing a StatScaler; '%s' is an invalid ratio.", scaling));
 
 			throw new CreationException("Invalid scaler ratio");
 		}

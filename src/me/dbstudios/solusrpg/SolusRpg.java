@@ -4,6 +4,7 @@ import java.lang.reflect.Method;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.events.EventDistributor;
 import me.dbstudios.solusrpg.events.RpgStockListener;
@@ -17,6 +18,7 @@ public class SolusRpg extends JavaPlugin {
 	private static final Class<?>[] init = new Class<?>[] {
 		Configuration.class,
 		LanguageManager.class,
+		RpgChannelFactory.class,
 		AuxStatFactory.class,
 		RpgClassFactory.class,
 		RpgPlayerFactory.class
@@ -34,13 +36,15 @@ public class SolusRpg extends JavaPlugin {
 
 		for (Class<?> cl : init)
 			try {
-				cl.getMethod("initialize", null).invoke(null, null);
+				cl.getMethod("initialize").invoke(null);
 			} catch (Exception e) {
 				SolusRpg.log(Level.SEVERE, String.format("Could not initialize required class %s; SolusRpg will be disabled until server restart", cl.getSimpleName()));
 
 				e.printStackTrace();
 
 				Bukkit.getPluginManager().disablePlugin(this);
+
+				return;
 			}
 
 		SolusRpg.log("Successfully loaded in {0} milliseconds.", System.currentTimeMillis() - loadStart);

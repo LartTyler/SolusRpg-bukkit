@@ -110,7 +110,7 @@ public final class Configuration {
 		String name = metadata.getAsType(key, String.class);
 
 		try {
-			ChatColor color = ChatColor.valueOf(name);
+			ChatColor color = ChatColor.valueOf(name.toUpperCase().trim());
 
 			Configuration.set(key, color);
 

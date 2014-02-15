@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.AuxStatFactory;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.config.Metadata;
@@ -31,7 +32,7 @@ public class SimpleRpgClass implements RpgClass {
 	private Metadata<String> healthMeta = new Metadata<>();
 	private Metadata<String> energyMeta = new Metadata<>();
 
-	public SimpleRpgClass(String fqn, boolean restricted) {
+	public SimpleRpgClass(String fqn) {
 		File f = new File(Directories.CONFIG_CLASSES + fqn + ".yml");
 
 		if (!f.exists())
@@ -63,7 +64,7 @@ public class SimpleRpgClass implements RpgClass {
 		for (StatType type : StatType.values())
 			coreStats.put(type, conf.getInt("vitals.core-stats." + type.name().toLowerCase(), 1));
 
-		for (AuxStat stat : AuxStat.getAllAuxStats())
+		for (AuxStat stat : AuxStatFactory.getAll())
 			stats.put(stat.getName(), conf.getInt("vitals.aux-stats." + stat.getPathName().toLowerCase(), 1));
 
 		for (RpgActionType action : RpgActionType.values()) {

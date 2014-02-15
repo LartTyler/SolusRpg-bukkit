@@ -54,7 +54,7 @@ public class Util {
 	}
 
 	public static String toQualifiedName(String name, String suffix) {
-		if (Util.isQualifiedName(name))
+		if (Util.isQualifiedName(name, suffix))
 			return name;
 
 		StringBuilder fqn = new StringBuilder();
@@ -75,7 +75,7 @@ public class Util {
 	}
 
 	public static boolean isQualifiedName(String name, String suffix) {
-		return !name.matches("[ _.,'-]") && name.endsWith(suffix);
+		return !name.matches("[ _.,'-]") && (suffix.length() == 0 || name.endsWith(suffix));
 	}
 
 	public static String toPathName(String name) {

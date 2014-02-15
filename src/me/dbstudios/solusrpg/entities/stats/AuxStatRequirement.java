@@ -2,6 +2,7 @@ package me.dbstudios.solusrpg.entities.stats;
 
 import java.util.logging.Level;
 
+import me.dbstudios.solusrpg.AuxStatFactory;
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.util.Util;
@@ -16,7 +17,7 @@ public class AuxStatRequirement implements StatRequirement {
 	 * Temporary constructor; should only be used during initilization of stats
 	 */
 	public AuxStatRequirement(String stat, int level) {
-		this.statName = Util.toQualifiedName(stat);
+		this.statName = Util.toQualifiedName(stat, "Stat");
 		this.level = level;
 	}
 
@@ -28,10 +29,10 @@ public class AuxStatRequirement implements StatRequirement {
 
 	public boolean satisfiedBy(RpgPlayer player) {
 		if (!this.validated)
-			SolusRpg.log(Level.WARNING, "AuxStatRequirement#satisfiedBy called on an unverified AuxStatRequirement instance! Something went while I was initializing auxiliary stats...");
+			SolusRpg.log(Level.WARNING, "AuxStatRequirement#satisfiedBy called on an unverified AuxStatRequirement instance! Something went wrong while I was initializing auxiliary stats...");
 
 		if (this.stat == null)
-			this.stat = AuxStat.getByFQN(this.statName);
+			this.stat = AuxStatFactory.getByFQN(this.statName);
 
 		return player.getStatLevel(this.stat) >= this.level;
 	}
