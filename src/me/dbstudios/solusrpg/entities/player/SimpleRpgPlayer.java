@@ -35,7 +35,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
+
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public class SimpleRpgPlayer implements RpgPlayer {
 	private final Map<RpgActionType, Set<Material>> permits = new EnumMap<>(RpgActionType.class);
@@ -44,12 +45,12 @@ public class SimpleRpgPlayer implements RpgPlayer {
 	private final Set<PlayerModifier> modifiers = new HashSet<>();
 	private final Map<String, Integer> stats = new HashMap<>();
 	private final Metadata<String> metadata = new Metadata<>();
-	private final Player basePlayer;
+	private final SpoutPlayer basePlayer;
 
 	private ExperienceScaler expScaler = null;
 	private RpgClass rpgClass = null;
 
-	public SimpleRpgPlayer(Player basePlayer) {
+	public SimpleRpgPlayer(SpoutPlayer basePlayer) {
 		this.basePlayer = basePlayer;
 
 		File f = new File(Directories.getPlayerDataDir(basePlayer.getName()) + "player.yml");
@@ -109,7 +110,7 @@ public class SimpleRpgPlayer implements RpgPlayer {
 		}
 	}
 
-	public Player getBasePlayer() {
+	public SpoutPlayer getBasePlayer() {
 		return this.basePlayer;
 	}
 

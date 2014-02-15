@@ -1,6 +1,7 @@
 package me.dbstudios.solusrpg.events;
 
 import me.dbstudios.solusrpg.RpgPlayerFactory;
+import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.events.player.RpgPlayerJoinEvent;
 import me.dbstudios.solusrpg.events.player.RpgPlayerQuitEvent;
 
@@ -14,11 +15,17 @@ import org.bukkit.event.player.PlayerQuitEvent;
 public class EventDistributor implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerJoin(PlayerJoinEvent ev) {
-		RpgPlayerJoinEvent event = new RpgPlayerJoinEvent(RpgPlayerFactory.getPlayer(ev.getPlayer()), ev.getJoinMessage());
+		RpgPlayer player = RpgPlayerFactory.getPlayer(ev.getPlayer());
 
-		Bukkit.getPluginManager().callEvent(event);
+		if (player.getRpgClass() == null) {
 
-		ev.setJoinMessage(event.getJoinMessage());
+		} else {
+			RpgPlayerJoinEvent event = new RpgPlayerJoinEvent(RpgPlayerFactory.getPlayer(ev.getPlayer()), ev.getJoinMessage());
+
+			Bukkit.getPluginManager().callEvent(event);
+
+			ev.setJoinMessage(event.getJoinMessage());
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST)

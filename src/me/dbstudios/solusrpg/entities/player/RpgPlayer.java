@@ -13,7 +13,8 @@ import me.dbstudios.solusrpg.events.player.RpgActionType;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
+
+import org.getspout.spoutapi.player.SpoutPlayer;
 
 public interface RpgPlayer {
 	/**
@@ -21,7 +22,7 @@ public interface RpgPlayer {
 	 *
 	 * @return the <code>Player</code> instance that is being wrapped
 	 */
-	public Player getBasePlayer();
+	public SpoutPlayer getBasePlayer();
 
 	/**
 	 * Gets the player's username.
