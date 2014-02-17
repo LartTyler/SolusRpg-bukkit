@@ -36,7 +36,7 @@ public class SimlDocument implements Document {
 			switch (state) {
 				case DATA:
 					if (ch == '<') {
-						if (buffer.length() > 0) {
+						if (buffer.length() > 0 && buffer.toString().trim().length() > 0) {
 							element.appendChild(buffer.toString());
 
 							buffer = new StringBuffer();
@@ -240,7 +240,7 @@ public class SimlDocument implements Document {
 			reader.mark(1);
 		}
 
-		if (buffer.length() > 0)
+		if (buffer.length() > 0 && buffer.toString().trim().length() > 0)
 			element.appendChild(buffer.toString());
 
 		if (state != ConsumerState.DATA) {
