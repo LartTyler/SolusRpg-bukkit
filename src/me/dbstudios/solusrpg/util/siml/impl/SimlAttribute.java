@@ -1,6 +1,7 @@
 package me.dbstudios.solusrpg.util.siml.impl;
 
 import me.dbstudios.solusrpg.util.siml.Attribute;
+import me.dbstudios.solusrpg.util.siml.AttributeType;
 
 public class SimlAttribute implements Attribute {
 	private final String name;

@@ -1,6 +1,7 @@
 package me.dbstudios.solusrpg.util.siml;
 
 import java.util.List;
+import java.util.Map;
 
 public interface Element {
 	/**
@@ -16,6 +17,20 @@ public interface Element {
 	 * @return a list view of this element's children
 	 */
 	public List<Element> getChildren();
+
+	/**
+	 * Gets the size of the child element list.
+	 *
+	 * @return a count of the number of children this element has
+	 */
+	public int countChildren();
+
+	/**
+	 * Checks if this element has any children elements.
+	 *
+	 * @return true if children are found, false otherwise
+	 */
+	public boolean hasChildren();
 
 	/**
 	 * Appends the given element to the set of child elements.
@@ -246,4 +261,11 @@ public interface Element {
 	 * @return      the {@link Attribute} with the given name
 	 */
 	public Attribute getAttribute(String name);
+
+	/**
+	 * Gets a map view of the attributes currently on this element.
+	 *
+	 * @return a map view of this element's attributes
+	 */
+	public Map<String, Attribute> getAttributes();
 }

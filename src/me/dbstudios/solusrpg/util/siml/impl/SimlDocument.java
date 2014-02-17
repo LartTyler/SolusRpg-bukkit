@@ -1,15 +1,23 @@
 package me.dbstudios.solusrpg.util.siml.impl;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 
+import me.dbstudios.solusrpg.util.siml.Attribute;
+import me.dbstudios.solusrpg.util.siml.Document;
+import me.dbstudios.solusrpg.util.siml.DocumentCreationException;
+import me.dbstudios.solusrpg.util.siml.Element;
+
 public class SimlDocument implements Document {
 	private final Element root = new SimlElement("root");
+	private final boolean valid;
 
 	private ConsumerState state = ConsumerState.DATA;
 	private ConsumerState lastState = null;
@@ -29,7 +37,7 @@ public class SimlDocument implements Document {
 				case DATA:
 					if (ch == '<') {
 						if (buffer.length() > 0) {
-							element.appendChild(buffer.toString);
+							element.appendChild(buffer.toString());
 
 							buffer = new StringBuffer();
 						}
@@ -57,21 +65,26 @@ public class SimlDocument implements Document {
 					break;
 
 				case TAG_NAME:
-					if (Character.isWhitespace(ch) && this.lastState != ConsumerState.END_TAG_OPEN) {
-						element = new SimlElement(buffer.toString(), element);
-						element.getParent().appendChild(element);
+					ConsumerState oldState = this.lastState;
 
-						buffer = new StringBuffer();
+					if (Character.isWhitespace(ch) && oldState != ConsumerState.END_TAG_OPEN) {
 						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_NAME);
-					} else if (ch == '/' && this.lastState != ConsumerState.END_TAG_OPEN)
+					} else if (ch == '/' && oldState != ConsumerState.END_TAG_OPEN)
 						this.switchState(ConsumerState.SELF_CLOSING_TAG);
 					else if (Character.isLetter(ch))
 						buffer.append(Character.toLowerCase(ch));
-					else if (ch == '>') {
-						if (this.lastState == ConsumerState.END_TAG_OPEN) // We're closing a tag, so step up the tree
-							element = element.getParent();
-
+					else if (ch == '>')
 						this.switchState(ConsumerState.DATA);
+
+					if (this.state != ConsumerState.TAG_NAME) {
+						if (oldState == ConsumerState.END_TAG_OPEN) // We're closing a tag, so step up the tree
+							element = element.getParent();
+						else {
+							element = new SimlElement(buffer.toString(), element);
+							element.getParent().appendChild(element);
+						}
+
+						buffer = new StringBuffer();
 					}
 
 					break;
@@ -116,7 +129,7 @@ public class SimlDocument implements Document {
 						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_VALUE);
 					else
 						if (Character.isLetter(ch))
-							buffer.append(Character.toLowerCase(ch))
+							buffer.append(Character.toLowerCase(ch));
 						else
 							buffer.append(ch);
 
@@ -169,7 +182,9 @@ public class SimlDocument implements Document {
 					if (ch == '"' || ch == '\'') {
 						for (AttributeTypes type : AttributeTypes.values())
 							if (type.test(buffer.toString()))
-								attr.setValue(type.getType().convertFromString(buffer.toString()));
+								attr
+									.setType(type.getType())
+									.setValue(type.getType().convertFromString(buffer.toString()));
 
 						buffer = new StringBuffer();
 
@@ -225,8 +240,23 @@ public class SimlDocument implements Document {
 			reader.mark(1);
 		}
 
-		if (state != ConsumerState.DATA)
+		if (buffer.length() > 0)
+			element.appendChild(buffer.toString());
+
+		if (state != ConsumerState.DATA) {
+			this.valid = false;
+
 			throw new DocumentCreationException("Reached EOF while not in DATA state; this indicates a malformed document.");
+		} else
+			this.valid = true;
+	}
+
+	public boolean isValid() {
+		return this.valid;
+	}
+
+	public Element getRootElement() {
+		return this.root;
 	}
 
 	private void switchState(ConsumerState newState) {
@@ -242,17 +272,19 @@ public class SimlDocument implements Document {
 
 			e.printStackTrace();
 		}
+
+		return null;
 	}
 
-	public static Document create(File document) throws IOException e {
+	public static Document create(File file) throws IOException {
 		return SimlDocument.create(Files.newBufferedReader(file.toPath(), Charset.forName("UTF-8")));
 	}
 
-	public static Document create(InputStream stream) throws IOException e {
+	public static Document create(InputStream stream) throws IOException {
 		return SimlDocument.create(new InputStreamReader(stream));
 	}
 
-	public static Document create(Reader reader) throws IOException e {
+	public static Document create(Reader reader) throws IOException {
 		if (!(reader instanceof BufferedReader))
 			reader = new BufferedReader(reader);
 

@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import me.dbstudios.solusrpg.util.siml.Element;
+import me.dbstudios.solusrpg.util.siml.Attribute;
+
 public class SimlElement implements Element {
 	private final Element parent;
 	private final String tagName;
@@ -26,13 +29,13 @@ public class SimlElement implements Element {
 
 	public SimlElement(String tagName, String text) {
 		this.tagName = tagName;
-		this.textContent = text;
+		this.textContent = text.trim();
 		this.parent = null;
 	}
 
 	public SimlElement(String tagName, String text, Element parent) {
 		this.tagName = tagName;
-		this.textContent = text;
+		this.textContent = text.trim();
 		this.parent = parent;
 	}
 
@@ -42,6 +45,14 @@ public class SimlElement implements Element {
 
 	public List<Element> getChildren() {
 		return Collections.unmodifiableList(this.children);
+	}
+
+	public int countChildren() {
+		return children.size();
+	}
+
+	public boolean hasChildren() {
+		return !children.isEmpty();
 	}
 
 	public Element appendChild(Element child) {
@@ -114,12 +125,12 @@ public class SimlElement implements Element {
 	}
 
 	public Element setText(String text) {
-		this.textContent = text;
+		this.textContent = text.trim();
 
 		return this;
 	}
 
-	public Element isRoot() {
+	public boolean isRoot() {
 		return this.parent == null;
 	}
 
@@ -155,5 +166,9 @@ public class SimlElement implements Element {
 
 	public Attribute getAttribute(String name) {
 		return attributes.get(name);
+	}
+
+	public Map<String, Attribute> getAttributes() {
+		return Collections.unmodifiableMap(this.attributes);
 	}
 }

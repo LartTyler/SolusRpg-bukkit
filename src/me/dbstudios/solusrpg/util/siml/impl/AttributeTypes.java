@@ -1,5 +1,7 @@
 package me.dbstudios.solusrpg.util.siml.impl;
 
+import me.dbstudios.solusrpg.util.siml.AttributeType;
+
 public enum AttributeTypes {
 	INTEGER(new IntegerAttributeType()),
 	PERCENT(new PercentAttributeType()),

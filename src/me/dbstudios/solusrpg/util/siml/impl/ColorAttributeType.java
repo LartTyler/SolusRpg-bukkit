@@ -11,9 +11,7 @@ public class ColorAttributeType implements AttributeType<Color> {
 			TextColor.valueOf(value.toUpperCase());
 
 			return true;
-		} catch (Exception e) {
-			return false;
-		}
+		} catch (Exception e) {}
 
 		if (value.startsWith("#"))
 			try {
