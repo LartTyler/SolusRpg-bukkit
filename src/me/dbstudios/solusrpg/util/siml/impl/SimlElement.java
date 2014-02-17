@@ -24,6 +24,18 @@ public class SimlElement implements Element {
 		this.parent = null;
 	}
 
+	public SimlElement(String tagName, String text) {
+		this.tagName = tagName;
+		this.textContent = text;
+		this.parent = null;
+	}
+
+	public SimlElement(String tagName, String text, Element parent) {
+		this.tagName = tagName;
+		this.textContent = text;
+		this.parent = parent;
+	}
+
 	public String getTagName() {
 		return this.tagName;
 	}
@@ -39,6 +51,10 @@ public class SimlElement implements Element {
 		return this;
 	}
 
+	public Element appendChild(String text) {
+		return this.appendChild(new SimlElement("text", text, this));
+	}
+
 	public Element prependChild(Element child) {
 		if (!this.isChild(child))
 			children.add(0, child);
@@ -46,14 +62,26 @@ public class SimlElement implements Element {
 		return this;
 	}
 
+	public Element prependChild(String text) {
+		return this.prependChild(new SimlElement("text", text, this));
+	}
+
 	public Element replaceChildAt(int index, Element child) {
 		return children.set(index, child);
+	}
+
+	public Element replaceChildAt(int index, String text) {
+		return this.replaceChildAt(index, new SimlElement("text", text, this));
 	}
 
 	public Element insertChildAt(int index, Element child) {
 		children.add(index, child);
 
 		return this;
+	}
+
+	public Element insertChildAt(int index, String text) {
+		return this.insertChildAt(index, new SimlElement("text", text, this));
 	}
 
 	public boolean isChild(Element element) {

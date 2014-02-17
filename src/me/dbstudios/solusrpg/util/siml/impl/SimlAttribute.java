@@ -46,4 +46,10 @@ public class SimlAttribute implements Attribute {
 	public AttributeType<?> getType() {
 		return this.attrType;
 	}
+
+	public SimlAttribute setType(AttributeType<?> type) {
+		this.attrType = type;
+
+		return this;
+	}
 }

@@ -5,4 +5,5 @@ public interface Attribute {
 	public String getName();
 	public Attribute setValue(Object value);
 	public AttributeType<?> getType();
+	public Attribute setType(AttributeType<?> type);
 }

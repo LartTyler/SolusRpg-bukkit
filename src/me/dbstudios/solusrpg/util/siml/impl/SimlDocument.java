@@ -12,6 +12,7 @@ public class SimlDocument implements Document {
 	private final Element root = new SimlElement("root");
 
 	private ConsumerState state = ConsumerState.DATA;
+	private ConsumerState lastState = null;
 
 	private SimlDocument(Reader reader) throws IOException {
 		StringBuffer buffer = new StringBuffer();
@@ -26,52 +27,64 @@ public class SimlDocument implements Document {
 
 			switch (state) {
 				case DATA:
-					if (ch == '<')
-						state = ConsumerState.TAG_OPEN;
-					else
+					if (ch == '<') {
+						if (buffer.length() > 0) {
+							element.appendChild(buffer.toString);
+
+							buffer = new StringBuffer();
+						}
+
+						this.switchState(ConsumerState.TAG_OPEN);
+					} else
 						buffer.append(ch);
 
 					break;
 
 				case TAG_OPEN:
 					if (ch == '/')
-						state = ConsumerState.END_TAG_OPEN;
+						this.switchState(ConsumerState.END_TAG_OPEN);
 					else if (Character.isLetter(ch)) {
 						buffer.append(Character.toLowerCase(ch));
 
-						state = ConsumerState.TAG_NAME;
+						this.switchState(ConsumerState.TAG_NAME);
 					} else {
 						buffer.append('>');
 						reader.reset();
 
-						state = ConsumerState.DATA;
+						this.switchState(ConsumerState.DATA);
 					}
 
 					break;
 
 				case TAG_NAME:
-					if (Character.isWhitespace(ch)) {
+					if (Character.isWhitespace(ch) && this.lastState != ConsumerState.END_TAG_OPEN) {
 						element = new SimlElement(buffer.toString(), element);
 						element.getParent().appendChild(element);
 
 						buffer = new StringBuffer();
-						state = ConsumerState.BEFORE_ATTRIBUTE_NAME;
-					} else if (ch == '/')
-						state = ConsumerState.SELF_CLOSING_TAG;
+						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_NAME);
+					} else if (ch == '/' && this.lastState != ConsumerState.END_TAG_OPEN)
+						this.switchState(ConsumerState.SELF_CLOSING_TAG);
 					else if (Character.isLetter(ch))
 						buffer.append(Character.toLowerCase(ch));
-					else if (ch == '>')
-						state = ConsumerState.DATA;
+					else if (ch == '>') {
+						if (this.lastState == ConsumerState.END_TAG_OPEN) // We're closing a tag, so step up the tree
+							element = element.getParent();
+
+						this.switchState(ConsumerState.DATA);
+					}
 
 					break;
 
 				case SELF_CLOSING_TAG:
-					if (ch == '>')
-						state = ConsumerState.DATA;
-					else {
+					if (ch == '>') {
+						element = element.getParent(); // We've closed a tag, so step up the tree
+
+						this.switchState(ConsumerState.DATA);
+					} else {
 						reader.reset();
 
-						state = ConsumerState.BEFORE_ATTRIBUTE_NAME;
+						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_NAME);
 					}
 
 					break;
@@ -80,27 +93,27 @@ public class SimlDocument implements Document {
 					if (Character.isWhitespace(ch))
 						break;
 					else if (ch == '/')
-						state = ConsumerState.SELF_CLOSING_TAG;
+						this.switchState(ConsumerState.SELF_CLOSING_TAG);
 					else if (ch == '>')
-						state = ConsumerState.DATA;
+						this.switchState(ConsumerState.DATA);
 					else {
 						if (Character.isLetter(ch))
 							buffer.append(Character.toLowerCase(ch));
 						else
 							buffer.append(ch);
 
-						state = ConsumerState.ATTRIBUTE_NAME;
+						this.switchState(ConsumerState.ATTRIBUTE_NAME);
 					}
 
 					break;
 
 				case ATTRIBUTE_NAME:
 					if (Character.isWhitespace(ch))
-						state = ConsumerState.AFTER_ATTRIBUTE_NAME;
+						this.switchState(ConsumerState.AFTER_ATTRIBUTE_NAME);
 					else if (ch == '/')
-						state = ConsumerState.SELF_CLOSING_TAG;
+						this.switchState(ConsumerState.SELF_CLOSING_TAG);
 					else if (ch == '=')
-						state = ConsumerState.BEFORE_ATTRIBUTE_VALUE;
+						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_VALUE);
 					else
 						if (Character.isLetter(ch))
 							buffer.append(Character.toLowerCase(ch))
@@ -120,16 +133,16 @@ public class SimlDocument implements Document {
 					if (Character.isWhitespace(ch))
 						break;
 					else if (ch == '/')
-						state = ConsumerState.SELF_CLOSING_TAG;
+						this.switchState(ConsumerState.SELF_CLOSING_TAG);
 					else if (ch == '=')
-						state = ConsumerState.BEFORE_ATTRIBUTE_VALUE;
+						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_VALUE);
 					else {
 						if (Character.isLetter(ch))
 							buffer.append(Character.toLowerCase(ch));
 						else
 							buffer.append(ch);
 
-						state = ConsumerState.ATTRIBUTE_NAME;
+						this.switchState(ConsumerState.ATTRIBUTE_NAME);
 					}
 
 					break;
@@ -138,24 +151,75 @@ public class SimlDocument implements Document {
 					if (Character.isWhitespace(ch))
 						break;
 					else if (ch == '"' || ch =='\'')
-						state = ConsumerState.ATTRIBUTE_VALUE_QUOTED;
+						this.switchState(ConsumerState.ATTRIBUTE_VALUE_QUOTED);
 					else if (ch == '>')
-						state = ConsumerState.DATA;
+						this.switchState(ConsumerState.DATA);
 					else {
 						if (Character.isLetter(ch))
 							buffer.append(Character.toLowerCase(ch));
 						else
 							buffer.append(ch);
 
-						state = ConsumerState.ATTRIBUTE_VALUE_UNQUOTED;
+						this.switchState(ConsumerState.ATTRIBUTE_VALUE_UNQUOTED);
 					}
 
 					break;
 
 				case ATTRIBUTE_VALUE_QUOTED:
 					if (ch == '"' || ch == '\'') {
-						
+						for (AttributeTypes type : AttributeTypes.values())
+							if (type.test(buffer.toString()))
+								attr.setValue(type.getType().convertFromString(buffer.toString()));
+
+						buffer = new StringBuffer();
+
+						this.switchState(ConsumerState.AFTER_ATTRIBUTE_VALUE);
+					} else
+						buffer.append(ch);
+
+					break;
+
+				case ATTRIBUTE_VALUE_UNQUOTED:
+					if (Character.isWhitespace(ch))
+						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_NAME);
+					else if (ch == '>')
+						this.switchState(ConsumerState.DATA);
+					else
+						buffer.append(ch);
+
+					if (state != ConsumerState.ATTRIBUTE_VALUE_UNQUOTED) {
+						for (AttributeTypes type : AttributeTypes.values())
+							if (type.test(buffer.toString()))
+								attr.setValue(type.getType().convertFromString(buffer.toString()));
+
+						buffer = new StringBuffer();
 					}
+
+					break;
+
+				case AFTER_ATTRIBUTE_VALUE:
+					if (Character.isWhitespace(ch))
+						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_NAME);
+					else if (ch == '/')
+						this.switchState(ConsumerState.SELF_CLOSING_TAG);
+					else if (ch == '>')
+						this.switchState(ConsumerState.DATA);
+					else {
+						this.switchState(ConsumerState.BEFORE_ATTRIBUTE_NAME);
+
+						reader.reset();
+					}
+
+					break;
+
+				case END_TAG_OPEN:
+					if (Character.isLetter(ch)) {
+						buffer.append(Character.toLowerCase(ch));
+
+						this.switchState(ConsumerState.TAG_NAME);
+					} else
+						this.switchState(ConsumerState.DATA);
+
 			}
 
 			reader.mark(1);
@@ -163,6 +227,11 @@ public class SimlDocument implements Document {
 
 		if (state != ConsumerState.DATA)
 			throw new DocumentCreationException("Reached EOF while not in DATA state; this indicates a malformed document.");
+	}
+
+	private void switchState(ConsumerState newState) {
+		this.lastState = this.state;
+		this.state = newState;
 	}
 
 	public static Document create(String document) {
