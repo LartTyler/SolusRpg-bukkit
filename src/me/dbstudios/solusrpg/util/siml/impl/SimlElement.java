@@ -18,23 +18,23 @@ public class SimlElement implements Element {
 	private String textContent = null;
 
 	public SimlElement(String tagName, Element parent) {
-		this.tagName = tagName;
+		this.tagName = tagName.trim();
 		this.parent = parent;
 	}
 
 	public SimlElement(String tagName) {
-		this.tagName = tagName;
+		this.tagName = tagName.trim();
 		this.parent = null;
 	}
 
 	public SimlElement(String tagName, String text) {
-		this.tagName = tagName;
+		this.tagName = tagName.trim();
 		this.textContent = text.trim();
 		this.parent = null;
 	}
 
 	public SimlElement(String tagName, String text, Element parent) {
-		this.tagName = tagName;
+		this.tagName = tagName.trim();
 		this.textContent = text.trim();
 		this.parent = parent;
 	}
