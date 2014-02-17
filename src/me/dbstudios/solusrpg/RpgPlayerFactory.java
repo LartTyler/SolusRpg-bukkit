@@ -16,6 +16,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import org.getspout.spoutapi.SpoutManager;
+import org.getspout.spoutapi.player.SpoutPlayer;
+
 public final class RpgPlayerFactory {
 	private static final Map<UUID, RpgPlayer> players = new HashMap<>();
 
@@ -56,24 +59,28 @@ public final class RpgPlayerFactory {
 	}
 
 	public static RpgPlayer getPlayer(Player player) {
-		if (players.containsKey(player.getUniqueId()))
-			return players.get(player.getUniqueId());
+		return RpgPlayerFactory.getPlayer(player.getUniqueId());
+	}
+
+	public static RpgPlayer getPlayer(UUID uid) {
+		if (players.containsKey(uid))
+			return players.get(uid);
 
 		RpgPlayer p = null;
 
 		try {
-			Constructor<? extends RpgPlayer> ctor = playerClass.getConstructor(Player.class);
+			Constructor<? extends RpgPlayer> ctor = playerClass.getConstructor(SpoutPlayer.class);
 
-			p = ctor.newInstance(player);
+			p = ctor.newInstance(SpoutManager.getPlayerFromId(uid));
 		} catch (Exception e) {
-			SolusRpg.log(Level.SEVERE, String.format("Factory target class %s has no constructor capable of accepting %s as an argument.", playerClass.getName(), player.getClass().getName()));
+			SolusRpg.log(Level.SEVERE, String.format("Factory target class %s has no constructor capable of accepting %s as an argument.", playerClass.getName(), SpoutPlayer.class.getName()));
 
 			if (Configuration.is("logging.verbose"))
 				e.printStackTrace();
 		}
 
 		if (p != null)
-			players.put(player.getUniqueId(), p);
+			players.put(uid, p);
 
 		return p;
 	}

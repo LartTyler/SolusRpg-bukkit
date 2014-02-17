@@ -18,7 +18,7 @@ public class EventDistributor implements Listener {
 		RpgPlayer player = RpgPlayerFactory.getPlayer(ev.getPlayer());
 
 		if (player.getRpgClass() == null) {
-
+			System.out.println(player.getName() + " has joined for the first time.");
 		} else {
 			RpgPlayerJoinEvent event = new RpgPlayerJoinEvent(RpgPlayerFactory.getPlayer(ev.getPlayer()), ev.getJoinMessage());
 
