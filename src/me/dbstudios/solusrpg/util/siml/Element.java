@@ -263,6 +263,16 @@ public interface Element {
 	public Attribute getAttribute(String name);
 
 	/**
+	 * Gets the value held be the {@link Attribute} with the given name.
+	 *
+	 * In effect, calling this method should be the same as calling {@link Element#getAttribute(String)}{@link Attribute#getValue() .getValue()}.
+	 *
+	 * @param  name the name of the attribute to retrieve
+	 * @return      the value of the attribute, or null if no such attribute exists
+	 */
+	public Object getAttributeValue(String name);
+
+	/**
 	 * Gets a map view of the attributes currently on this element.
 	 *
 	 * @return a map view of this element's attributes

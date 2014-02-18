@@ -5,8 +5,9 @@ import me.dbstudios.solusrpg.util.siml.AttributeType;
 public enum AttributeTypes {
 	INTEGER(new IntegerAttributeType()),
 	PERCENT(new PercentAttributeType()),
-	HEXIDECIMAL(new HexidecimalAttributeType()),
+	// HEXIDECIMAL(new HexidecimalAttributeType()),
 	COLOR(new ColorAttributeType()),
+	LIST(new ListAttributeType()),
 	STRING(new StringAttributeType());
 
 	private final AttributeType<?> type;

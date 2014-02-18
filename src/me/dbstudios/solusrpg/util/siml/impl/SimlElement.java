@@ -168,6 +168,13 @@ public class SimlElement implements Element {
 		return attributes.get(name);
 	}
 
+	public Object getAttributeValue(String name) {
+		if (!this.hasAttribute(name))
+			return null;
+
+		return this.getAttribute(name).getValue();
+	}
+
 	public Map<String, Attribute> getAttributes() {
 		return Collections.unmodifiableMap(this.attributes);
 	}
