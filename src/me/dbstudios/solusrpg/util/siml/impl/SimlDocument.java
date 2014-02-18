@@ -205,7 +205,9 @@ public class SimlDocument implements Document {
 					if (state != ConsumerState.ATTRIBUTE_VALUE_UNQUOTED) {
 						for (AttributeTypes type : AttributeTypes.values())
 							if (type.test(buffer.toString()))
-								attr.setValue(type.getType().convertFromString(buffer.toString()));
+								attr
+									.setType(type.getType())
+									.setValue(type.getType().convertFromString(buffer.toString()));
 
 						buffer = new StringBuffer();
 					}
