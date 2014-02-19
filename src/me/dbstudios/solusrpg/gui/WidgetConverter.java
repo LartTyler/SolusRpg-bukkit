@@ -9,9 +9,10 @@ import org.getspout.spoutapi.gui.Container;
 import org.getspout.spoutapi.gui.Widget;
 
 public class WidgetConverter {
-	private static Map<String, Converter> converters = new HashMap<>();
+	private static Map<String, Converter<? extends Widget>> converters = new HashMap<>();
 
 	static {
+		WidgetConverter.registerConverter("widget", new GenericConverter());
 		WidgetConverter.registerConverter("container", new ContainerConverter());
 		WidgetConverter.registerConverter(null, new TextConverter());
 	}
@@ -46,5 +47,9 @@ public class WidgetConverter {
 	 */
 	public static void registerConverter(String tag, Converter converter) {
 		converters.put(tag, converter);
+	}
+
+	public static Converter<? extends Widget> getConverter(String tag) {
+		return converters.get(tag);
 	}
 }

@@ -11,6 +11,7 @@ import me.dbstudios.solusrpg.util.siml.impl.ListAttributeType;
 import me.dbstudios.solusrpg.util.siml.impl.StringAttributeType;
 
 import org.getspout.spoutapi.gui.GenericWidget;
+import org.getspout.spoutapi.gui.WidgetAnchor;
 
 public class GenericConverter implements Converter<GenericWidget> {
 	public GenericWidget convert(Element element) {
@@ -23,8 +24,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 				widget.setX((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
 				widget.setX((int)Math.round((double)widget.getMaxWidth() * ((double)attr.getValue() / 100.0)));
-
-			if (Configuration.is("logging.verbose")) {
+			else (Configuration.is("logging.verbose")) {
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'x'.", attr.getValue()));
 
 				e.printStackTrace();
@@ -38,8 +38,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 				widget.setY((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
 				widget.setY((int)Math.round((double)widget.getMaxHeight() * ((double)attr.getValue() / 100.0)));
-
-			if (Configuration.is("logging.verbose")) {
+			else (Configuration.is("logging.verbose")) {
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'y'.", attr.getValue()));
 
 				e.printStackTrace();
@@ -53,8 +52,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 				widget.setWidth((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
 				widget.setWidth((int)Math.round((double)widget.getMaxWidth() * ((double)attr.getValue() / 100.0)));
-
-			if (Configuration.is("logging.verbose")) {
+			else (Configuration.is("logging.verbose")) {
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'width'.", attr.getValue()));
 
 				e.printStackTrace();
@@ -68,8 +66,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 				widget.setHeight((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
 				widget.setHeight((int)Math.round((double)widget.getMaxHeight() * ((double)attr.getValue() / 100.0)));
-
-			if (Configuration.is("logging.verbose")) {
+			else (Configuration.is("logging.verbose")) {
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'height'.", attr.getValue()));
 
 				e.printStackTrace();
@@ -197,14 +194,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 			}
 		}
 
-		if (element.hasAttribute("min-width")) {
-			Attribute attr = element.getAttribute("min-width");
-
-			if (attr.getType() instanceof IntegerAttributeType)
-				widget.setMinWidth((int)attr.getValue());
-			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setMinWidth((int)Math.round((double)widget.getMaxWidth() * ((double)attr.getValue() / 100.0)));
-		}
+		return widget;
 	}
 
 	private Double toDouble(String s) {
