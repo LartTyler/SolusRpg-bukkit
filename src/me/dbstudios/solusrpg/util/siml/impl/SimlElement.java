@@ -125,7 +125,12 @@ public class SimlElement implements Element {
 	}
 
 	public Element setText(String text) {
-		this.textContent = text.trim();
+		if (text != null)
+			this.textContent = text.trim();
+		else
+			this.text = null;
+
+		children.clear();
 
 		return this;
 	}
