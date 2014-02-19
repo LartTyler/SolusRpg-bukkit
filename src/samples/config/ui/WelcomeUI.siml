@@ -1,0 +1,27 @@
+<container margin="5">
+	<text font-size="150%">Hey there!</text>
+
+	<br />
+
+	<text>
+		It looks like this is your first time using SolusRpg on this server. Please take a few moments
+		to configure your character using the form below!
+	</text>
+
+	<container width="250">
+		<text font-size="125%">Select a Class:</text>
+
+		<input type="radio" name="class" value="Knight" />
+		<input type="radio" name="class" value="Light Mage" />
+	</container>
+
+	<container width="250">
+		<text font-size="125%">Enter a Display Name:</text>
+
+		<input type="text" name="name" />
+	</container>
+
+	<br />
+
+	<button type="submit">Submit</button>
+</container>

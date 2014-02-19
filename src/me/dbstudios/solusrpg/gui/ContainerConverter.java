@@ -11,29 +11,8 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 
 public class ContainerConverter implements Converter<Container> {
 	public Container convert(Element element) {
-		Widget w = WidgetConverter.getConverter("widget");
-		Container container = new GenericContainer();
-
-		if (w.hasPosition())
-			container
-				.setX(w.getX())
-				.setY(w.getY());
-
-		if (w.hasSize())
-			container
-				.setWidth(w.getWidth())
-				.setHeight(w.getHeight());
-
-		container
-			.setPriority(w.getPriority())
-			.setAnchor(w.getAnchor())
-			.setTooltip(w.getTooltip())
-
-		container
-			.setMarginTop(w.getMarginTop())
-			.setMarginRight(w.getMarginRight())
-			.setMarginBottom(w.getMarginBottom())
-			.setMarginLeft(w.getMarginLeft());
+		Widget w = WidgetConverter.getConverter("widget").convert(element);
+		Container container = WidgetConverter.copyProperties(w, new GenericContainer());
 
 		if (element.hasAttribute("type")) {
 			Attribute attr = element.getAttribute("type");
@@ -64,6 +43,10 @@ public class ContainerConverter implements Converter<Container> {
 					}
 				}
 		}
+
+		if (element.hasChildren())
+			for (Element child : el.getChildren())
+				container.addChild(WidgetConverter.convert(child));
 
 		return container;
 	}

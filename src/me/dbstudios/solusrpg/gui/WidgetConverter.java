@@ -14,17 +14,9 @@ public class WidgetConverter {
 	static {
 		WidgetConverter.registerConverter("widget", new GenericConverter());
 		WidgetConverter.registerConverter("container", new ContainerConverter());
+		WidgetConverter.registerConverter("root", WidgetConverter.getConverter("container"));
+		WidgetConverter.registerConverter("input", new InputConverter());
 		WidgetConverter.registerConverter(null, new TextConverter());
-	}
-
-	public static Widget convertTree(Element el) {
-		Widget widget = WidgetConverter.convert(el);
-
-		if (el.hasChildren() && widget instanceof Container)
-			for (Element child : el.getChildren())
-				((Container)widget).addChild(WidgetConverter.convertTree(child));
-
-		return widget;
 	}
 
 	public static Widget convert(Element element) {
@@ -51,5 +43,28 @@ public class WidgetConverter {
 
 	public static Converter<? extends Widget> getConverter(String tag) {
 		return converters.get(tag);
+	}
+
+	public static <T extends Widget> T copyProperties(Widget fromWidget, T toWidget) {
+		if (fromWidget.hasPosition())
+			toWidget
+				.setX(fromWidget.getX())
+				.setY(fromWidget.getY());
+
+		if (fromWidget.hasSize())
+			toWidget
+				.setWidth(fromWidget.getWidth())
+				.setHeight(fromWidget.getHeight());
+
+		toWidget
+			.setPriority(fromWidget.getPriority())
+			.setAnchor(fromWidget.getAnchor())
+			.setTooltip(fromWidget.getTooltip())
+			.setMarginTop(fromWidget.getMarginTop())
+			.setMarginRight(fromWidget.getMarginRight())
+			.setMarginBottom(fromWidget.getMarginBottom())
+			.setMarginLeft(fromWidget.getMarginLeft());
+
+		return toWidget;
 	}
 }
