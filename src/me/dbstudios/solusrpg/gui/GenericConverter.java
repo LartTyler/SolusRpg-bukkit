@@ -10,12 +10,12 @@ import me.dbstudios.solusrpg.util.siml.impl.PercentAttributeType;
 import me.dbstudios.solusrpg.util.siml.impl.ListAttributeType;
 import me.dbstudios.solusrpg.util.siml.impl.StringAttributeType;
 
-import org.getspout.spoutapi.gui.GenericWidget;
+import org.getspout.spoutapi.gui.RenderPriority;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 
-public class GenericConverter implements Converter<GenericWidget> {
-	public GenericWidget convert(Element element) {
-		GenericWidget widget = new GenericWidget();
+public class GenericConverter implements Converter<SolusGenericWidget> {
+	public SolusGenericWidget convert(Element element) {
+		SolusGenericWidget widget = new SolusGenericWidget();
 
 		if (element.hasAttribute("x")) {
 			Attribute attr = element.getAttribute("x");
@@ -23,7 +23,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 			if (attr.getType() instanceof IntegerAttributeType)
 				widget.setX((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setX((int)Math.round((double)widget.getMaxWidth() * ((double)attr.getValue() / 100.0)));
+				widget.setX((int)Math.round((double)widget.getScreen().getMaxWidth() * ((double)attr.getValue() / 100.0)));
 			else (Configuration.is("logging.verbose")) {
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'x'.", attr.getValue()));
 
@@ -37,7 +37,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 			if (attr.getType() instanceof IntegerAttributeType)
 				widget.setY((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setY((int)Math.round((double)widget.getMaxHeight() * ((double)attr.getValue() / 100.0)));
+				widget.setY((int)Math.round((double)widget.getScreen().getMaxHeight() * ((double)attr.getValue() / 100.0)));
 			else (Configuration.is("logging.verbose")) {
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'y'.", attr.getValue()));
 
@@ -51,7 +51,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 			if (attr.getType() instanceof IntegerAttributeType)
 				widget.setWidth((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setWidth((int)Math.round((double)widget.getMaxWidth() * ((double)attr.getValue() / 100.0)));
+				widget.setWidth((int)Math.round((double)widget.getScreen().getMaxWidth() * ((double)attr.getValue() / 100.0)));
 			else (Configuration.is("logging.verbose")) {
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'width'.", attr.getValue()));
 
@@ -65,7 +65,7 @@ public class GenericConverter implements Converter<GenericWidget> {
 			if (attr.getType() instanceof IntegerAttributeType)
 				widget.setHeight((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setHeight((int)Math.round((double)widget.getMaxHeight() * ((double)attr.getValue() / 100.0)));
+				widget.setHeight((int)Math.round((double)widget.getScreen().getMaxHeight() * ((double)attr.getValue() / 100.0)));
 			else (Configuration.is("logging.verbose")) {
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'height'.", attr.getValue()));
 
@@ -123,8 +123,8 @@ public class GenericConverter implements Converter<GenericWidget> {
 						if (d != null)
 							if (list.get(0).endsWith("%"))
 								widget.setMargin(
-									(int)Math.round((double)widget.getMaxHeight() * (d / 100.0)),
-									(int)Math.round((double)widget.getMaxWidth() * (d / 100.0))
+									(int)Math.round((double)widget.getScreen().getMaxHeight() * (d / 100.0)),
+									(int)Math.round((double)widget.getScreen().getMaxWidth() * (d / 100.0))
 								);
 							else
 								widget.setMargin((int)Math.round(d));
@@ -137,10 +137,10 @@ public class GenericConverter implements Converter<GenericWidget> {
 
 						if (mTB != null && mRL != null) {
 							if (list.get(0).endsWith("%"))
-								mTB = (double)widget.getMaxHeight() * (mTB / 100.0);
+								mTB = (double)widget.getScreen().getMaxHeight() * (mTB / 100.0);
 
 							if (list.get(1).endsWith("%"))
-								mRL = (double)widget.getMaxWidth() * (mRL / 100.0);
+								mRL = (double)widget.getScreen().getMaxWidth() * (mRL / 100.0);
 
 							widget.setMargin((int)Math.round(mTB), (int)Math.round(mRL));
 						}
@@ -154,13 +154,13 @@ public class GenericConverter implements Converter<GenericWidget> {
 
 						if (mT != null && mRL != null && mB != null) {
 							if (list.get(0).endsWith("%"))
-								mT = (double)widget.getMaxHeight() * (mT / 100.0);
+								mT = (double)widget.getScreen().getMaxHeight() * (mT / 100.0);
 
 							if (list.get(1).endsWith("%"))
-								mRL = (double)widget.getMaxWidth() * (mRL / 100.0);
+								mRL = (double)widget.getScreen().getMaxWidth() * (mRL / 100.0);
 
 							if (list.get(2).endsWith("%"))
-								mB = (double)widget.getMaxHeight() * (mB / 100.0);
+								mB = (double)widget.getScreen().getMaxHeight() * (mB / 100.0);
 
 							widget.setMargin((int)Math.round(mT), (int)Math.round(mRL), (int)Math.round(mB));
 						}
@@ -175,16 +175,16 @@ public class GenericConverter implements Converter<GenericWidget> {
 
 						if (mT != null && mR != null && mB != null && mL != null) {
 							if (list.get(0).endsWith("%"))
-								mT = (double)widget.getMaxHeight() * (mT / 100.0);
+								mT = (double)widget.getScreen().getMaxHeight() * (mT / 100.0);
 
 							if (list.get(1).endsWith("%"))
-								mR = (double)widget.getMaxWidth() * (mR / 100.0);
+								mR = (double)widget.getScreen().getMaxWidth() * (mR / 100.0);
 
 							if (list.get(2).endsWith("%"))
-								mB = (double)widget.getMaxHeight() * (mB / 100.0);
+								mB = (double)widget.getScreen().getMaxHeight() * (mB / 100.0);
 
 							if (list.get(3).endsWith("%"))
-								mL = (double)widget.getMaxHeight() * (mL / 100.0);
+								mL = (double)widget.getScreen().getMaxHeight() * (mL / 100.0);
 
 							widget.setMargin((int)Math.round(mT), (int)Math.round(mR), (int)Math.round(mB), (int)Math.round(mL));
 						}

@@ -8,14 +8,14 @@
 		to configure your character using the form below!
 	</text>
 
-	<container width="250">
+	<container width="150">
 		<text font-size="125%">Select a Class:</text>
 
 		<input type="radio" name="class" value="Knight" />
 		<input type="radio" name="class" value="Light Mage" />
 	</container>
 
-	<container width="250">
+	<container width="150">
 		<text font-size="125%">Enter a Display Name:</text>
 
 		<input type="text" name="name" />

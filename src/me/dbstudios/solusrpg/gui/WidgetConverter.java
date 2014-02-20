@@ -3,9 +3,12 @@ package me.dbstudios.solusrpg.gui;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.util.siml.Element;
 
 import org.getspout.spoutapi.gui.Container;
+import org.getspout.spoutapi.gui.GenericOverlayScreen;
+import org.getspout.spoutapi.gui.OverlayScreen;
 import org.getspout.spoutapi.gui.Widget;
 
 public class WidgetConverter {
@@ -16,6 +19,7 @@ public class WidgetConverter {
 		WidgetConverter.registerConverter("container", new ContainerConverter());
 		WidgetConverter.registerConverter("root", WidgetConverter.getConverter("container"));
 		WidgetConverter.registerConverter("input", new InputConverter());
+		WidgetConverter.registerConverter("br", new LineBreakConverter());
 		WidgetConverter.registerConverter(null, new TextConverter());
 	}
 
@@ -24,6 +28,14 @@ public class WidgetConverter {
 			return converters.get(element.getTagName()).convert(element);
 
 		return converters.get(null).convert(element);
+	}
+
+	public static OverlayScreen createScreen(Element root, boolean transparent) {
+		OverlayScreen screen = new GenericOverlayScreen();
+
+		return screen
+			.setBgVisible(transparent);
+			.attachWidget(SolusRpg.getInstance(), WidgetConverter.convert(root));
 	}
 
 	/**
