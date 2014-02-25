@@ -1,12 +1,8 @@
 package me.dbstudios.solusrpg.util.siml.impl;
 
-import java.util.regex.Pattern;
-
 import me.dbstudios.solusrpg.util.siml.AttributeType;
 
 public class PercentAttributeType implements AttributeType<Double> {
-	private static final Pattern pattern = Pattern.compile("^\d+(\.\d+)?%$");
-
 	public boolean test(String value) {
 		if (!value.endsWith("%"))
 			return false;

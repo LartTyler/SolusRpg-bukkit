@@ -1,4 +1,4 @@
-package me.dbstudios.solusrpg.util.siml;
+package me.dbstudios.solusrpg.util.siml.impl;
 
 public enum ConsumerState {
 	DATA,

@@ -3,6 +3,8 @@ package me.dbstudios.solusrpg.util.siml.impl;
 import java.util.Arrays;
 import java.util.List;
 
+import me.dbstudios.solusrpg.util.siml.AttributeType;
+
 public class ListAttributeType implements AttributeType<List<String>> {
 	public boolean test(String value) {
 		int count = 0;
@@ -26,13 +28,14 @@ public class ListAttributeType implements AttributeType<List<String>> {
 	}
 
 	public String convertToString(Object value) {
-		if (!(value instanceof List<String>))
+		if (!(value instanceof List<?>))
 			throw new IllegalArgumentException(String.format("'%s' is not a valid list!", value));
 
 		StringBuilder sb = new StringBuilder();
 
-		for (String s : (List<String>)value)
-			sb.append("," + s);
+		for (Object o : (List<?>)value)
+			if (o instanceof String)
+				sb.append("," + o);
 
 		return sb.toString().substring(1);
 	}

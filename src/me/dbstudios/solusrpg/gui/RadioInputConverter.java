@@ -5,7 +5,7 @@ import me.dbstudios.solusrpg.util.siml.Element;
 import org.getspout.spoutapi.gui.GenericRadioButton;
 import org.getspout.spoutapi.gui.RadioButton;
 
-public class RadioInputConverter extends InputConverter<RadioButton> {
+public class RadioInputConverter implements Converter<RadioButton> {
 	public RadioButton convert(Element element) {
 		RadioButton radio = WidgetConverter.copyProperties(WidgetConverter.getConverter("generic").convert(element), new GenericRadioButton());
 

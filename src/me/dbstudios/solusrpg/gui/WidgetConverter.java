@@ -7,8 +7,8 @@ import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.util.siml.Element;
 
 import org.getspout.spoutapi.gui.Container;
-import org.getspout.spoutapi.gui.GenericOverlayScreen;
-import org.getspout.spoutapi.gui.OverlayScreen;
+import org.getspout.spoutapi.gui.GenericPopup;
+import org.getspout.spoutapi.gui.PopupScreen;
 import org.getspout.spoutapi.gui.Widget;
 
 public class WidgetConverter {
@@ -30,12 +30,17 @@ public class WidgetConverter {
 		return converters.get(null).convert(element);
 	}
 
-	public static OverlayScreen createScreen(Element root, boolean transparent) {
-		OverlayScreen screen = new GenericOverlayScreen();
+	public static PopupScreen createScreen(Element root) {
+		return WidgetConverter.createScreen(root, false);
+	}
 
-		return screen
-			.setBgVisible(transparent);
+	public static PopupScreen createScreen(Element root, boolean transparent) {
+		PopupScreen screen = new GenericPopup();
+		screen
+			.setTransparent(transparent)
 			.attachWidget(SolusRpg.getInstance(), WidgetConverter.convert(root));
+
+		return screen;
 	}
 
 	/**

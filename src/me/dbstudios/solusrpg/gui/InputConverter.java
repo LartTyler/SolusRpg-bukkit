@@ -3,10 +3,13 @@ package me.dbstudios.solusrpg.gui;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.getspout.spoutapi.gui.Control;
+import me.dbstudios.solusrpg.util.siml.Element;
 
-public class InputConverter implements Converter<? extends Control> {
-	private static final Map<String, InputConverter> typeConverters = new HashMap<>();
+import org.getspout.spoutapi.gui.Control;
+import org.getspout.spoutapi.gui.Widget;
+
+public class InputConverter implements Converter<Control> {
+	private static final Map<String, Converter<? extends Control>> typeConverters = new HashMap<>();
 
 	static {
 		typeConverters.put("radio", new RadioInputConverter());

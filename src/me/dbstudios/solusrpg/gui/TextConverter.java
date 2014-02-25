@@ -1,5 +1,7 @@
 package me.dbstudios.solusrpg.gui;
 
+import me.dbstudios.solusrpg.util.siml.Element;
+
 import org.getspout.spoutapi.gui.GenericLabel;
 import org.getspout.spoutapi.gui.Label;
 

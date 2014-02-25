@@ -128,7 +128,7 @@ public class SimlElement implements Element {
 		if (text != null)
 			this.textContent = text.trim();
 		else
-			this.text = null;
+			this.textContent = null;
 
 		children.clear();
 

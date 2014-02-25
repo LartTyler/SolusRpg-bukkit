@@ -14,7 +14,7 @@ public class SimlAttribute implements Attribute {
 	}
 
 	public SimlAttribute(String name, Object value) {
-		this(name, new StringAttributeType(), value);
+		this(name, value, new StringAttributeType());
 	}
 
 	public SimlAttribute(String name, Object value, AttributeType<?> type) {
@@ -35,7 +35,7 @@ public class SimlAttribute implements Attribute {
 		if (!attrType.test(value))
 			throw new IllegalArgumentException(String.format("'%s' is not a valid value according to this attribute's type (%s)!", value, attrType.getClass().getName()));
 
-		return this.setValue(attrType.convert(value));
+		return this.setValue(attrType.convertFromString(value));
 	}
 
 	public SimlAttribute setValue(Object value) {

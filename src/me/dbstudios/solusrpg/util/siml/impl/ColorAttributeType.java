@@ -52,7 +52,7 @@ public class ColorAttributeType implements AttributeType<Color> {
 
 	public Color convertFromString(String value) {
 		try {
-			return TextColor.valueOf(value.toUpperCase());
+			return TextColor.valueOf(value.toUpperCase()).getColor();
 		} catch (Exception e) {}
 
 		if (value.startsWith("#"))
@@ -87,14 +87,14 @@ public class ColorAttributeType implements AttributeType<Color> {
 
 					case 4:
 						if (channel.contains("."))
-							color.setAlpha(this.clamp(Double.valueOf(channel), 0.0, 1.0));
+							color.setAlpha((float)this.clamp(Double.valueOf(channel), 0.0, 1.0));
 						else
 							color.setAlpha(this.clamp(Integer.valueOf(channel), 0, 255));
 
 						break;
 				}
 			} catch (Exception e) {
-				throw new IllegalArgumentexception(String.format("'%s' is not a valid color!", value));
+				throw new IllegalArgumentException(String.format("'%s' is not a valid color!", value));
 			}
 
 		return color;
@@ -102,7 +102,7 @@ public class ColorAttributeType implements AttributeType<Color> {
 
 	public String convertToString(Object value) {
 		if (!(value instanceof Color))
-			throw new IllegalArgumentexception(String.format("'%s' is not a valid color!", value));
+			throw new IllegalArgumentException(String.format("'%s' is not a valid color!", value));
 
 		Color c = (Color)value;
 
