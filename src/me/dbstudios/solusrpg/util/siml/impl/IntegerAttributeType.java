@@ -19,13 +19,13 @@ public class IntegerAttributeType implements AttributeType<Integer> {
 		try {
 			return Integer.valueOf(value);
 		} catch (Exception e) {
-			throw new IllegalArgumentException(String.format("'%s' is not a valid interger!", value));
+			throw new IllegalArgumentException(String.format("'%s' is not a valid integer!", value));
 		}
 	}
 
 	public String convertToString(Object value) {
 		if (!(value instanceof Integer))
-			throw new IllegalArgumentException(String.format("'%s' is not a valid interger!", value));
+			throw new IllegalArgumentException(String.format("'%s' is not a valid integer!", value));
 
 		return value.toString();
 	}
