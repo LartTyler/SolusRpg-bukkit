@@ -1,4 +1,4 @@
-package me.dbstudios.solusrpg.gui;
+package me.dbstudios.solusrpg.gui.widgets;
 
 import org.getspout.spoutapi.gui.GenericWidget;
 import org.getspout.spoutapi.gui.WidgetType;

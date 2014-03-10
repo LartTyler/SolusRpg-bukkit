@@ -1,4 +1,4 @@
-package me.dbstudios.solusrpg.gui;
+package me.dbstudios.solusrpg.gui.converters;
 
 import me.dbstudios.solusrpg.util.siml.Element;
 
