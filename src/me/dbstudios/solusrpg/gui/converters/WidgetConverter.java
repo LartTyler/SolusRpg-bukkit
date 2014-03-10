@@ -20,6 +20,7 @@ public class WidgetConverter {
 		WidgetConverter.registerConverter("root", WidgetConverter.getConverter("container"));
 		WidgetConverter.registerConverter("input", new InputConverter());
 		WidgetConverter.registerConverter("br", new LineBreakConverter());
+		WidgetConverter.registerConverter("button", new ButtonConverter());
 		WidgetConverter.registerConverter(null, new TextConverter());
 	}
 
