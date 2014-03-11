@@ -40,6 +40,8 @@ public class SolusButton extends GenericButton {
 
 		if (screen instanceof SolusPopup)
 			this.setParent((SolusPopup)screen);
+		else
+			this.setParent(null);
 
 		return this;
 	}
