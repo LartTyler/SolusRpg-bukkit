@@ -53,6 +53,8 @@ public class SimpleRpgClass implements RpgClass {
 				for (String key : base.getKeys(true))
 					if (!key.equals("extends") && !conf.isSet(key))
 						conf.set(key, base.get(key));
+					else
+						SolusRpg.log(Level.WARNING, String.format("Parent class of %s is a child of another class, and descending inheritance is not supported!", fqn));
 			}
 		}
 
