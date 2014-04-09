@@ -4,7 +4,7 @@ import me.dbstudios.solusrpg.gui.widgets.SolusButton;
 
 import org.getspout.spoutapi.gui.Widget;
 
-public class WelcomePopup extends SolusPopup {
+public class WelcomePopup extends RpgPopup {
 	public void onAction(String action, Widget sender) {
 		switch (action.toLowerCase()) {
 			case "click":
