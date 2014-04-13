@@ -18,7 +18,7 @@ public class PercentAttributeType implements AttributeType<Double> {
 
 	public Double convertFromString(String value) {
 		try {
-			return Double.valueOf(value);
+			return Double.valueOf(value.substring(0, value.length() - 2));
 		} catch (Exception e) {
 			throw new IllegalArgumentException(String.format("'%s' is not a valid double!", value));
 		}

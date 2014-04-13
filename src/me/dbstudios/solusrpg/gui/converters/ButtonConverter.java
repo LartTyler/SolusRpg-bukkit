@@ -1,6 +1,7 @@
 package me.dbstudios.solusrpg.gui.converters;
 
 import me.dbstudios.solusrpg.gui.widgets.SolusButton;
+import me.dbstudios.solusrpg.util.siml.Element;
 
 import org.getspout.spoutapi.gui.Button;
 

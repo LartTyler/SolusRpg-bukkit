@@ -8,6 +8,7 @@ public enum Directories {
 	CONFIG_CHANNELS(CONFIG + "channels::"),
 	CONFIG_CLASSES(CONFIG + "classes::"),
 	CONFIG_STATS(CONFIG + "stats::"),
+	CONFIG_UI(CONFIG + "ui::"),
 	DATA(BASE + "data::"),
 	DATA_LOGS(DATA + "logs::"),
 	DATA_PLAYERS(DATA + "players::");

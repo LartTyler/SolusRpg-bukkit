@@ -7,7 +7,7 @@ import org.getspout.spoutapi.gui.RadioButton;
 
 public class RadioInputConverter implements Converter<RadioButton> {
 	public RadioButton convert(Element element) {
-		RadioButton radio = WidgetConverter.copyProperties(WidgetConverter.getConverter("generic").convert(element), new GenericRadioButton());
+		RadioButton radio = WidgetConverter.copyProperties(WidgetConverter.getConverter("widget").convert(element), new GenericRadioButton());
 
 		if (element.hasAttribute("name"))
 			radio.setGroup(element.getAttribute("name").getValue().toString().hashCode());

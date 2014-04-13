@@ -23,9 +23,9 @@ chat:
     #   If a configuration is not found, an error will be emitted and Solus will proceed to the next entry
     channels:
         - Global
-        - Whisper
+        # - Whisper
         - Local
-        - Yell
+        # - Yell
     # Log formats follow the definition for Java's String.format method, documented here: http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html#syntax
     log-format:
         log-original: true
@@ -79,10 +79,10 @@ classes:
     # player data) they will be able to select the class as their own.
     enabled:
         - Knight
-        - Paladin
-        - Thief
-        - Necromancer
-        - Light Mage
+        # - Paladin
+        # - Thief
+        # - Necromancer
+        # - Light Mage
 aux-stats:
     # Valid auxiliary stat names are either:
     #   - The fully-qualified "LightWeaponMasteryStat" variant
@@ -96,9 +96,9 @@ aux-stats:
     #   If a configuration is not found, an error will be emitted and Solus will proceed to the next entry
     enabled:
         - Light Weapon Mastery
-        - Heavy Weapon Mastery
-        - Light Armor Mastery
-        - Heavy Armor Mastery
+        # - Heavy Weapon Mastery
+        # - Light Armor Mastery
+        # - Heavy Armor Mastery
 leveling:
     # The experience algorithm will always receive the player's level as a variable called "level".
     # This variable can be freely placed anywhere in the algorithm.

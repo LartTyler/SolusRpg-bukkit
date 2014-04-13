@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import me.dbstudios.solusrpg.SolusRpg;
-import me.dbstudios.solusrpg.gui.popups.SolusPopup;
+import me.dbstudios.solusrpg.gui.popups.RpgPopup;
+import me.dbstudios.solusrpg.util.siml.Document;
 import me.dbstudios.solusrpg.util.siml.Element;
 
 import org.getspout.spoutapi.gui.Container;
@@ -25,6 +26,14 @@ public class WidgetConverter {
 		WidgetConverter.registerConverter(null, new TextConverter());
 	}
 
+	public static Widget convert(Document document) {
+		return WidgetConverter.convert(document.getRootElement());
+	}
+
+	public static Widget convert(Document document, RpgPopup screen) {
+		return WidgetConverter.convert(document.getRootElement(), screen);
+	}
+
 	public static Widget convert(Element element) {
 		if (converters.containsKey(element.getTagName()))
 			return converters.get(element.getTagName()).convert(element);
@@ -32,21 +41,8 @@ public class WidgetConverter {
 		return converters.get(null).convert(element);
 	}
 
-	public static Widget convert(Element element, SolusPopup screen) {
+	public static Widget convert(Element element, RpgPopup screen) {
 		return WidgetConverter.convert(element).setScreen(screen);
-	}
-
-	public static PopupScreen createScreen(Element root) {
-		return WidgetConverter.createScreen(root, false);
-	}
-
-	public static PopupScreen createScreen(Element root, boolean transparent) {
-		SolusPopup screen = new SolusPopup();
-		screen
-			.setTransparent(transparent)
-			.attachWidget(SolusRpg.getInstance(), WidgetConverter.convert(root, screen));
-
-		return screen;
 	}
 
 	/**

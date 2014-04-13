@@ -21,7 +21,8 @@ public class SolusRpg extends JavaPlugin {
 		RpgChannelFactory.class,
 		AuxStatFactory.class,
 		RpgClassFactory.class,
-		RpgPlayerFactory.class
+		RpgPlayerFactory.class,
+		RpgPopupFactory.class
 	};
 
 	private static SolusRpg instance = null;

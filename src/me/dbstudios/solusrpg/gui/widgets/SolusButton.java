@@ -1,12 +1,13 @@
 package me.dbstudios.solusrpg.gui.widgets;
 
-import me.dbstudios.solusrpg.gui.popups.SolusPopup;
+import me.dbstudios.solusrpg.gui.popups.RpgPopup;
 
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.gui.GenericButton;
+import org.getspout.spoutapi.gui.Screen;
 
 public class SolusButton extends GenericButton {
-	private SolusPopup parent;
+	private RpgPopup parent;
 	private String name;
 
 	public SolusButton() {
@@ -27,21 +28,21 @@ public class SolusButton extends GenericButton {
 		return this;
 	}
 
-	public SolusPopup getParent() {
+	public RpgPopup getParent() {
 		return this.parent;
 	}
 
-	public SolusButton setParent(SolusPopup parent) {
+	public SolusButton setParent(RpgPopup parent) {
 		return this.setScreen(parent);
 	}
 
 	public SolusButton setScreen(Screen screen) {
 		super.setScreen(screen);
 
-		if (screen instanceof SolusPopup)
-			this.setParent((SolusPopup)screen);
+		if (screen instanceof RpgPopup)
+			this.parent = (RpgPopup)parent;
 		else
-			this.setParent(null);
+			this.parent = null;
 
 		return this;
 	}

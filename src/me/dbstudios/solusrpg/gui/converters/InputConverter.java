@@ -13,6 +13,7 @@ public class InputConverter implements Converter<Control> {
 
 	static {
 		typeConverters.put("radio", new RadioInputConverter());
+		typeConverters.put("text", new TextInputConverter());
 	}
 
 	public Control convert(Element element) {

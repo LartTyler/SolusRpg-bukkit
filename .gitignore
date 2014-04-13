@@ -1,5 +1,7 @@
 /build/
 /doc/
+/test/
+/dist/
 *.class
 build.xml
 
