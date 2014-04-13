@@ -17,6 +17,10 @@ public class RpgPopupFactory {
 
 	private static boolean initialized = false;
 
+	static {
+		registerPopup("Welcome", new WelcomePopup());
+	}
+
 	protected static void registerPopup(String name, RpgPopup popup) {
 		popups.put(name, popup);
 
@@ -41,6 +45,14 @@ public class RpgPopupFactory {
 		initialized = true;
 	}
 
+	public static Map<String, RpgPopup> getPopups() {
+		return Collections.unmodifiableMap(popups);
+	}
+
+	public static Set<String> getPopupNames() {
+		return popups.keySet();
+	}
+
 	public static RpgPopup getPopup(String name) {
 		return RpgPopupFactory.getPopup(name, RpgPopup.class);
 	}
@@ -50,7 +62,7 @@ public class RpgPopupFactory {
 
 		if (cl.isInstance(popup))
 			return cl.cast(popup);
-		
+
 		return null;
 	}
 }
