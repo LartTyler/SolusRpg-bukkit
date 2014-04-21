@@ -1,5 +1,7 @@
 package me.dbstudios.solusrpg.gui.converters;
 
+import me.dbstudios.solusrpg.gui.Converter;
+import me.dbstudios.solusrpg.gui.SimlConverter;
 import me.dbstudios.solusrpg.util.siml.Element;
 
 import org.getspout.spoutapi.gui.GenericLabel;
@@ -7,8 +9,8 @@ import org.getspout.spoutapi.gui.Label;
 
 public class TextConverter implements Converter<Label> {
 	public Label convert(Element element) {
-		Label text = WidgetConverter.copyProperties(WidgetConverter.getConverter("widget").convert(element), new GenericLabel());
+		Label label = SimlConverter.copyProperties(SimlConverter.getConverter(null).convert(element), new GenericLabel());
 
-		return text.setText(element.isPlainText() ? element.getText() : "");
+		return label.setText(element.getText());
 	}
 }

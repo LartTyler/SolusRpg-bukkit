@@ -3,6 +3,7 @@ package me.dbstudios.solusrpg.gui.converters;
 import java.util.HashMap;
 import java.util.Map;
 
+import me.dbstudios.solusrpg.gui.Converter;
 import me.dbstudios.solusrpg.util.siml.Element;
 
 import org.getspout.spoutapi.gui.Control;

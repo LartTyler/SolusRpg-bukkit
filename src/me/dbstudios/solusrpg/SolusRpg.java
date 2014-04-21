@@ -8,6 +8,7 @@ import me.dbstudios.solusrpg.config.Configuration;
 import me.dbstudios.solusrpg.entities.stats.AuxStat;
 import me.dbstudios.solusrpg.events.EventDistributor;
 import me.dbstudios.solusrpg.events.RpgStockListener;
+import me.dbstudios.solusrpg.gui.SimlConverter;
 import me.dbstudios.solusrpg.language.LanguageManager;
 
 import org.bukkit.Bukkit;
@@ -22,7 +23,8 @@ public class SolusRpg extends JavaPlugin {
 		AuxStatFactory.class,
 		RpgClassFactory.class,
 		RpgPlayerFactory.class,
-		RpgPopupFactory.class
+		RpgPopupFactory.class,
+		SimlConverter.class
 	};
 
 	private static SolusRpg instance = null;

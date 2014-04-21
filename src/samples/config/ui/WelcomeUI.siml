@@ -1,4 +1,4 @@
-<container width="427" margin="5">
+<container width="100%" margin="5">
 	<text font-size="150%">Hey there!</text>
 
 	<br />

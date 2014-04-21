@@ -5,40 +5,23 @@ import java.io.IOException;
 
 import me.dbstudios.solusrpg.config.Directories;
 import me.dbstudios.solusrpg.exceptions.CreationException;
-import me.dbstudios.solusrpg.gui.converters.WidgetConverter;
-import me.dbstudios.solusrpg.gui.widgets.SolusButton;
-import me.dbstudios.solusrpg.util.siml.impl.SimlDocument;
+import me.dbstudios.solusrpg.gui.RpgPopup;
+import me.dbstudios.solusrpg.gui.SimlConverter;
+import me.dbstudios.solusrpg.util.siml.Document;
 
+import org.getspout.spoutapi.gui.Container;
 import org.getspout.spoutapi.gui.Widget;
 
 public class WelcomePopup extends RpgPopup {
-	private Widget root = null;
+	private final Container root;
 
-	public WelcomePopup() {
-		File f = new File(Directories.CONFIG_UI + "WelcomeUI.siml");
+	public WelcomePopup(Document document) {
+		this.root = (Container)SimlConverter.convert(document);
 
-		if (!f.exists())
-			throw new CreationException("Missing core UI file: WelcomeUI.siml");
-
-		try {
-			this.root = WidgetConverter.convert(SimlDocument.create(f), this);
-		} catch (IOException e) {
-			e.printStackTrace();
-
-			throw new CreationException("Could not properly read from WelcomeUI.siml; please make sure the file exists and is readable.");
-		}
+		// LayoutManager.layout(this.root, this);
 	}
 
-	public void onAction(String action, Widget sender) {
-		switch (action.toLowerCase()) {
-			case "click":
-				if (!(sender instanceof SolusButton))
-					throw new UnsupportedOperationException("Click events cannot be thrown by widgets that do not inherit from Button!");
+	public void onAction(String action, Widget source) {
 
-				SolusButton button = (SolusButton)sender;
-
-				if (!button.getName().equalsIgnoreCase("submit"))
-					break;
-		}
 	}
 }

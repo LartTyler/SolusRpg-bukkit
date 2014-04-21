@@ -5,7 +5,8 @@ import me.dbstudios.solusrpg.RpgPopupFactory;
 import me.dbstudios.solusrpg.entities.player.RpgPlayer;
 import me.dbstudios.solusrpg.events.player.RpgPlayerJoinEvent;
 import me.dbstudios.solusrpg.events.player.RpgPlayerQuitEvent;
-import me.dbstudios.solusrpg.gui.popups.RpgPopup;
+import me.dbstudios.solusrpg.gui.RpgPopup;
+import me.dbstudios.solusrpg.gui.RpgPopupType;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
@@ -22,11 +23,11 @@ public class EventDistributor implements Listener {
 		if (player.getRpgClass() == null) {
 			System.out.println(player.getName() + " has joined for the first time.");
 
-			RpgPopup popup = RpgPopupFactory.getPopup("Welcome");
+			RpgPopup popup = RpgPopupFactory.getPopup(RpgPopupType.WELCOME);
 
-			if (popup != null)
+			if (popup != null) {
 				player.getBasePlayer().getMainScreen().attachPopupScreen(popup);
-			else
+			} else
 				System.out.println("Could not attach welcome popup!");
 		} else {
 			RpgPlayerJoinEvent event = new RpgPlayerJoinEvent(RpgPlayerFactory.getPlayer(ev.getPlayer()), ev.getJoinMessage());

@@ -1,6 +1,6 @@
 package me.dbstudios.solusrpg.gui.widgets;
 
-import me.dbstudios.solusrpg.gui.popups.RpgPopup;
+import me.dbstudios.solusrpg.gui.RpgPopup;
 
 import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.gui.GenericButton;

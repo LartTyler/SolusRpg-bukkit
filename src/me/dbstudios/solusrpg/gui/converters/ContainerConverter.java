@@ -4,6 +4,8 @@ import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
+import me.dbstudios.solusrpg.gui.Converter;
+import me.dbstudios.solusrpg.gui.SimlConverter;
 import me.dbstudios.solusrpg.util.siml.Attribute;
 import me.dbstudios.solusrpg.util.siml.Element;
 import me.dbstudios.solusrpg.util.siml.impl.StringAttributeType;
@@ -15,7 +17,7 @@ import org.getspout.spoutapi.gui.WidgetAnchor;
 
 public class ContainerConverter implements Converter<Container> {
 	public Container convert(Element element) {
-		Container container = WidgetConverter.copyProperties(WidgetConverter.getConverter("widget").convert(element), new GenericContainer());
+		Container container = SimlConverter.copyProperties(SimlConverter.getConverter(null).convert(element), new GenericContainer());
 
 		if (element.hasAttribute("type")) {
 			Attribute attr = element.getAttribute("type");
@@ -49,7 +51,7 @@ public class ContainerConverter implements Converter<Container> {
 
 		if (element.hasChildren())
 			for (Element child : element.getChildren())
-				container.addChild(WidgetConverter.convert(child));
+				container.addChild(SimlConverter.convert(child));
 
 		return container;
 	}

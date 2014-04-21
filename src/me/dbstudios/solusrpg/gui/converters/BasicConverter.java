@@ -5,21 +5,22 @@ import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
 import me.dbstudios.solusrpg.config.Configuration;
-import me.dbstudios.solusrpg.gui.widgets.SolusGenericWidget;
+import me.dbstudios.solusrpg.gui.Converter;
+import me.dbstudios.solusrpg.gui.widgets.BasicWidget;
 import me.dbstudios.solusrpg.util.siml.Attribute;
 import me.dbstudios.solusrpg.util.siml.Element;
 import me.dbstudios.solusrpg.util.siml.impl.IntegerAttributeType;
-import me.dbstudios.solusrpg.util.siml.impl.PercentAttributeType;
 import me.dbstudios.solusrpg.util.siml.impl.ListAttributeType;
+import me.dbstudios.solusrpg.util.siml.impl.PercentAttributeType;
 import me.dbstudios.solusrpg.util.siml.impl.StringAttributeType;
 
-import org.getspout.spoutapi.gui.GenericWidget;
+import org.getspout.spoutapi.gui.Widget;
 import org.getspout.spoutapi.gui.RenderPriority;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 
-public class GenericConverter implements Converter<GenericWidget> {
-	public GenericWidget convert(Element element) {
-		GenericWidget widget = new SolusGenericWidget();
+public class BasicConverter implements Converter<Widget> {
+	public Widget convert(Element element) {
+		Widget widget = new BasicWidget();
 
 		if (element.hasAttribute("x")) {
 			Attribute attr = element.getAttribute("x");

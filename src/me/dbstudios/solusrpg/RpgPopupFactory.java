@@ -1,68 +1,56 @@
 package me.dbstudios.solusrpg;
 
-import java.util.HashMap;
+import java.io.File;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.logging.Level;
 
 import me.dbstudios.solusrpg.SolusRpg;
-import me.dbstudios.solusrpg.gui.LayoutManager;
-import me.dbstudios.solusrpg.gui.popups.RpgPopup;
-import me.dbstudios.solusrpg.gui.popups.WelcomePopup;
+import me.dbstudios.solusrpg.config.Configuration;
+import me.dbstudios.solusrpg.config.Directories;
+import me.dbstudios.solusrpg.gui.RegisteredPopup;
+import me.dbstudios.solusrpg.gui.RpgPopup;
+import me.dbstudios.solusrpg.gui.RpgPopupType;
+import me.dbstudios.solusrpg.util.siml.Document;
+import me.dbstudios.solusrpg.util.siml.impl.SimlDocument;
 
-import org.getspout.spoutapi.gui.Container;
-import org.getspout.spoutapi.gui.Widget;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 public class RpgPopupFactory {
-	private static final Map<String, RpgPopup> popups = new HashMap<>();
+	private static final Map<RpgPopupType, RegisteredPopup> popups = new EnumMap<>(RpgPopupType.class);
 
 	private static boolean initialized = false;
 
-	static {
-		registerPopup("Welcome", new WelcomePopup());
-	}
-
-	protected static void registerPopup(String name, RpgPopup popup) {
-		popups.put(name, popup);
-
-		Widget w = popup.getAttachedWidgets()[0];
-
-		if (w instanceof Container)
-			LayoutManager.layout((Container)w);
-		else if (w.hasContainer())
-			LayoutManager.layout(w.getContainer());
-	}
-
 	public static void initialize() {
+		long start = System.currentTimeMillis();
+
 		if (initialized)
 			return;
 
-		long start = System.currentTimeMillis();
+		for (RpgPopupType type : RpgPopupType.values())
+			try {
+				Document doc = SimlDocument.create(new File(Directories.CONFIG_UI + type.getQualifiedName() + ".siml"));
 
-		registerPopup("Welcome", new WelcomePopup());
+				if (doc.isValid())
+					popups.put(type, new RegisteredPopup(type.getPopupClass(), doc));
+			} catch (Exception e) {
+				SolusRpg.log(Level.WARNING, String.format("Could not create RegisteredPopup for %s: %s", type.getQualifiedName(), e.getClass().getSimpleName()));
 
-		SolusRpg.log(Level.INFO, String.format("RpgPopupFactory initialized in %d seconds with %d SIML layouts.", System.currentTimeMillis() - start, popups.size()));
+				if (Configuration.is("logging.verbose"))
+					e.printStackTrace();
+			}
+
+		SolusRpg.log(Level.INFO, String.format("RpgPopupFactory loading in %d milliseconds with %d SIML documents pre-parsed.", System.currentTimeMillis() - start, popups.size()));
 
 		initialized = true;
 	}
 
-	public static Map<String, RpgPopup> getPopups() {
-		return Collections.unmodifiableMap(popups);
-	}
-
-	public static Set<String> getPopupNames() {
-		return popups.keySet();
-	}
-
 	public static RpgPopup getPopup(String name) {
-		return RpgPopupFactory.getPopup(name, RpgPopup.class);
+		return RpgPopupFactory.getPopup(RpgPopupType.valueOf(name));
 	}
 
-	public static <T extends RpgPopup> T getPopup(String name, Class<T> cl) {
-		RpgPopup popup = popups.get(name);
-
-		if (cl.isInstance(popup))
-			return cl.cast(popup);
-
-		return null;
+	public static RpgPopup getPopup(RpgPopupType type) {
+		return popups.get(type).createPopup();
 	}
 }

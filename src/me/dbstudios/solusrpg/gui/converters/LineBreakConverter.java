@@ -1,5 +1,6 @@
 package me.dbstudios.solusrpg.gui.converters;
 
+import me.dbstudios.solusrpg.gui.Converter;
 import me.dbstudios.solusrpg.gui.widgets.LineBreakWidget;
 import me.dbstudios.solusrpg.util.siml.Element;
 

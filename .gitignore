@@ -2,6 +2,7 @@
 /doc/
 /test/
 /dist/
+/gui_bad/
 *.class
 build.xml
 
