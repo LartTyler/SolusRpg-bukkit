@@ -16,8 +16,8 @@ import org.getspout.spoutapi.gui.GenericContainer;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 
 public class ContainerConverter implements Converter<Container> {
-	public Container convert(Element element) {
-		Container container = SimlConverter.copyProperties(SimlConverter.getConverter(null).convert(element), new GenericContainer());
+	public Container convert(Element element, Object parent) {
+		Container container = SimlConverter.copyProperties(SimlConverter.getConverter(null).convert(element, parent), new GenericContainer());
 
 		if (element.hasAttribute("type")) {
 			Attribute attr = element.getAttribute("type");

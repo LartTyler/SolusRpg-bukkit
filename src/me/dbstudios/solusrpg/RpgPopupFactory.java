@@ -34,6 +34,8 @@ public class RpgPopupFactory {
 
 				if (doc.isValid())
 					popups.put(type, new RegisteredPopup(type.getPopupClass(), doc));
+				else
+					throw new RuntimeException(type.getQualifiedName() + " is not a valid SIML document.");
 			} catch (Exception e) {
 				SolusRpg.log(Level.WARNING, String.format("Could not create RegisteredPopup for %s: %s", type.getQualifiedName(), e.getClass().getSimpleName()));
 
@@ -41,7 +43,7 @@ public class RpgPopupFactory {
 					e.printStackTrace();
 			}
 
-		SolusRpg.log(Level.INFO, String.format("RpgPopupFactory loading in %d milliseconds with %d SIML documents pre-parsed.", System.currentTimeMillis() - start, popups.size()));
+		SolusRpg.log(Level.INFO, String.format("RpgPopupFactory loading in %d milliseconds with %d SIML document%s pre-parsed.", System.currentTimeMillis() - start, popups.size(), popups.size() != 1 ? "s" : ""));
 
 		initialized = true;
 	}

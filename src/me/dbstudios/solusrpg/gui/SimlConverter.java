@@ -45,7 +45,8 @@ public class SimlConverter {
 		converters.remove(tag);
 	}
 
-	public static Widget convert(Document document) {
+	public static Widget convert(Document document, RpgPopup popup) {
+		// TODO
 		return SimlConverter.convert(document.getRootElement());
 	}
 

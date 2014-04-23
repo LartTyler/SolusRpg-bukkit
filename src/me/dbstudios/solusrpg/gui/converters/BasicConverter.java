@@ -19,8 +19,14 @@ import org.getspout.spoutapi.gui.RenderPriority;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 
 public class BasicConverter implements Converter<Widget> {
-	public Widget convert(Element element) {
+	public Widget convert(Element element, Object parent) {
 		Widget widget = new BasicWidget();
+
+		if (parent != null)
+			if (parent instanceof Container)
+				((Container)parent).addChild(widget);
+			else if (parent instanceof Popup)
+				((Popup)parent).attachWidget(((Popup)parent).getPlugin(), widget);
 
 		if (element.hasAttribute("x")) {
 			Attribute attr = element.getAttribute("x");
