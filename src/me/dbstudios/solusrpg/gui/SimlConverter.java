@@ -77,6 +77,12 @@ public class SimlConverter {
 			.setMarginBottom(fromWidget.getMarginBottom())
 			.setMarginLeft(fromWidget.getMarginLeft());
 
+		if (fromWidget.hasContainer())
+			fromWidget.getContainer().removeChild(fromWidget);
+
+		if (fromWidget.getScreen() != null)
+			fromWidget.getScreen().removeWidget(this);
+
 		return toWidget;
 	}
 }

@@ -13,10 +13,11 @@ import me.dbstudios.solusrpg.util.siml.impl.StringAttributeType;
 import org.getspout.spoutapi.gui.Container;
 import org.getspout.spoutapi.gui.ContainerType;
 import org.getspout.spoutapi.gui.GenericContainer;
+import org.getspout.spoutapi.gui.Widget;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 
 public class ContainerConverter implements Converter<Container> {
-	public Container convert(Element element, Object parent) {
+	public Container convert(Element element, Widget parent) {
 		Container container = SimlConverter.copyProperties(SimlConverter.getConverter(null).convert(element, parent), new GenericContainer());
 
 		if (element.hasAttribute("type")) {

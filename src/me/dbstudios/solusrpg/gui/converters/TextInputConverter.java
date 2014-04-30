@@ -6,10 +6,11 @@ import me.dbstudios.solusrpg.util.siml.Element;
 
 import org.getspout.spoutapi.gui.GenericTextField;
 import org.getspout.spoutapi.gui.TextField;
+import org.getspout.spoutapi.gui.Widget;
 
 public class TextInputConverter implements Converter<TextField> {
-	public TextField convert(Element element) {
-		TextField text = SimlConverter.copyProperties(SimlConverter.getConverter(null).convert(element), new GenericTextField());
+	public TextField convert(Element element, Widget parent) {
+		TextField text = SimlConverter.copyProperties(SimlConverter.getConverter(null).convert(element, parent), new GenericTextField());
 
 		return text;
 	}

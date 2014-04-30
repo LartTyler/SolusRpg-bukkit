@@ -14,19 +14,23 @@ import me.dbstudios.solusrpg.util.siml.impl.ListAttributeType;
 import me.dbstudios.solusrpg.util.siml.impl.PercentAttributeType;
 import me.dbstudios.solusrpg.util.siml.impl.StringAttributeType;
 
-import org.getspout.spoutapi.gui.Widget;
+import org.getspout.spoutapi.gui.Container;
 import org.getspout.spoutapi.gui.RenderPriority;
+import org.getspout.spoutapi.gui.Screen;
+import org.getspout.spoutapi.gui.Widget;
 import org.getspout.spoutapi.gui.WidgetAnchor;
 
 public class BasicConverter implements Converter<Widget> {
-	public Widget convert(Element element, Object parent) {
+	public Widget convert(Element element, Widget parent) {
 		Widget widget = new BasicWidget();
+		int parentWidth = parent.hasSize() ? parent.getMaxWidth() : 427;
+		int parentHeight = parent.hasSize() ? parent.getMaxHeight() : 0;
 
 		if (parent != null)
 			if (parent instanceof Container)
 				((Container)parent).addChild(widget);
-			else if (parent instanceof Popup)
-				((Popup)parent).attachWidget(((Popup)parent).getPlugin(), widget);
+			else if (parent instanceof Screen)
+				((Screen)parent).attachWidget(((Screen)parent).getPlugin(), widget);
 
 		if (element.hasAttribute("x")) {
 			Attribute attr = element.getAttribute("x");
@@ -34,7 +38,7 @@ public class BasicConverter implements Converter<Widget> {
 			if (attr.getType() instanceof IntegerAttributeType)
 				widget.setX((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setX((int)Math.round((double)widget.getScreen().getMaxWidth() * ((double)attr.getValue() / 100.0)));
+				widget.setX((int)Math.round((double)parentWidth * ((double)attr.getValue() / 100.0)));
 			else if (Configuration.is("logging.verbose"))
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'x'.", attr.getValue()));
 		}
@@ -45,18 +49,20 @@ public class BasicConverter implements Converter<Widget> {
 			if (attr.getType() instanceof IntegerAttributeType)
 				widget.setY((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setY((int)Math.round((double)widget.getScreen().getMaxHeight() * ((double)attr.getValue() / 100.0)));
+				widget.setY((int)Math.round((double)parentHeight * ((double)attr.getValue() / 100.0)));
 			else if (Configuration.is("logging.verbose"))
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'y'.", attr.getValue()));
 		}
 
-		if (element.hasAttribute("width")) {
+		if (element.getTagName().equals("root"))
+			widget.setWidth(427);
+		else if (element.hasAttribute("width")) {
 			Attribute attr = element.getAttribute("width");
 
 			if (attr.getType() instanceof IntegerAttributeType)
 				widget.setWidth((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setWidth((int)Math.round((double)widget.getScreen().getMaxWidth() * ((double)attr.getValue() / 100.0)));
+				widget.setWidth((int)Math.round((double)parentWidth * ((double)attr.getValue() / 100.0)));
 			else if (Configuration.is("logging.verbose"))
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'width'.", attr.getValue()));
 		}
@@ -67,7 +73,7 @@ public class BasicConverter implements Converter<Widget> {
 			if (attr.getType() instanceof IntegerAttributeType)
 				widget.setHeight((int)attr.getValue());
 			else if (attr.getType() instanceof PercentAttributeType)
-				widget.setHeight((int)Math.round((double)widget.getScreen().getMaxHeight() * ((double)attr.getValue() / 100.0)));
+				widget.setHeight((int)Math.round((double)parentHeight * ((double)attr.getValue() / 100.0)));
 			else if (Configuration.is("logging.verbose"))
 				SolusRpg.log(Level.WARNING, String.format("'%s' is not valid for attribute 'height'.", attr.getValue()));
 		}
@@ -121,8 +127,8 @@ public class BasicConverter implements Converter<Widget> {
 					if (d != null)
 						if (list.get(0).endsWith("%"))
 							widget.setMargin(
-								(int)Math.round((double)widget.getScreen().getMaxHeight() * (d / 100.0)),
-								(int)Math.round((double)widget.getScreen().getMaxWidth() * (d / 100.0))
+								(int)Math.round((double)parentHeight * (d / 100.0)),
+								(int)Math.round((double)parentWidth * (d / 100.0))
 							);
 						else
 							widget.setMargin((int)Math.round(d));
@@ -132,10 +138,10 @@ public class BasicConverter implements Converter<Widget> {
 
 					if (mTB != null && mRL != null) {
 						if (list.get(0).endsWith("%"))
-							mTB = (double)widget.getScreen().getMaxHeight() * (mTB / 100.0);
+							mTB = (double)parentHeight * (mTB / 100.0);
 
 						if (list.get(1).endsWith("%"))
-							mRL = (double)widget.getScreen().getMaxWidth() * (mRL / 100.0);
+							mRL = (double)parentWidth * (mRL / 100.0);
 
 						widget.setMargin((int)Math.round(mTB), (int)Math.round(mRL));
 					}
@@ -146,13 +152,13 @@ public class BasicConverter implements Converter<Widget> {
 
 					if (mT != null && mRL != null && mB != null) {
 						if (list.get(0).endsWith("%"))
-							mT = (double)widget.getScreen().getMaxHeight() * (mT / 100.0);
+							mT = (double)parentHeight * (mT / 100.0);
 
 						if (list.get(1).endsWith("%"))
-							mRL = (double)widget.getScreen().getMaxWidth() * (mRL / 100.0);
+							mRL = (double)parentWidth * (mRL / 100.0);
 
 						if (list.get(2).endsWith("%"))
-							mB = (double)widget.getScreen().getMaxHeight() * (mB / 100.0);
+							mB = (double)parentHeight * (mB / 100.0);
 
 						widget.setMargin((int)Math.round(mT), (int)Math.round(mRL), (int)Math.round(mB));
 					}
@@ -164,16 +170,16 @@ public class BasicConverter implements Converter<Widget> {
 
 					if (mT != null && mR != null && mB != null && mL != null) {
 						if (list.get(0).endsWith("%"))
-							mT = (double)widget.getScreen().getMaxHeight() * (mT / 100.0);
+							mT = (double)parentHeight * (mT / 100.0);
 
 						if (list.get(1).endsWith("%"))
-							mR = (double)widget.getScreen().getMaxWidth() * (mR / 100.0);
+							mR = (double)parentWidth * (mR / 100.0);
 
 						if (list.get(2).endsWith("%"))
-							mB = (double)widget.getScreen().getMaxHeight() * (mB / 100.0);
+							mB = (double)parentHeight * (mB / 100.0);
 
 						if (list.get(3).endsWith("%"))
-							mL = (double)widget.getScreen().getMaxHeight() * (mL / 100.0);
+							mL = (double)parentHeight * (mL / 100.0);
 
 						widget.setMargin((int)Math.round(mT), (int)Math.round(mR), (int)Math.round(mB), (int)Math.round(mL));
 					}

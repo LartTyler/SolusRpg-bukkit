@@ -17,7 +17,7 @@ public class InputConverter implements Converter<Control> {
 		typeConverters.put("text", new TextInputConverter());
 	}
 
-	public Control convert(Element element) {
+	public Control convert(Element element, Widget parent) {
 		String type = null;
 
 		if (!element.hasAttribute("type"))
@@ -28,6 +28,6 @@ public class InputConverter implements Converter<Control> {
 		if (!typeConverters.containsKey(type))
 			throw new IllegalArgumentException("No input type converter exists with the name '" + type + "'.");
 
-		return typeConverters.get(type).convert(element);
+		return typeConverters.get(type).convert(element, parent);
 	}
 }
